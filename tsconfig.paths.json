@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@atom/*": ["./src/atom/*"],
+      "@components/*": ["./src/components/*"],
+      "@views/*": ["./src/views/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@domain/*": ["./src/domain/*"],
+      "@src/*": ["./src/*"]
+    }
+  }
+}

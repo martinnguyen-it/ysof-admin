@@ -1,0 +1,6 @@
+version: "2.1"
+services:
+    webapp:
+        container_name: ysof_admin_production
+        ports:
+            - "3000:80"

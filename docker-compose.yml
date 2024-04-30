@@ -1,0 +1,13 @@
+version: "2.1"
+services:
+    webapp:
+        image: ysof_admin
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        networks:
+            - ysof_admin
+networks:
+    ysof_admin:
+        driver: bridge
