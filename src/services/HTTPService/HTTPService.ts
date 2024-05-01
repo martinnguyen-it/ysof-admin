@@ -97,7 +97,7 @@ instance.interceptors.response.use(
   },
 )
 
-function isUnauthorizedError(error: any) {
+const isUnauthorizedError = (error: any) => {
   const {
     response: { status },
   } = error

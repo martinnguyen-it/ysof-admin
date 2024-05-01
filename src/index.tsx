@@ -7,14 +7,23 @@ import { RecoilRoot } from 'recoil'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import RecoilNexus from 'recoil-nexus'
+import { ConfigProvider } from 'antd'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
     <RecoilRoot>
       <RecoilNexus />
-      <App />
-      <ToastContainer autoClose={1500} />
+      <ConfigProvider
+        theme={{
+          token: {
+            fontFamily: 'sans-serif',
+          },
+        }}
+      >
+        <App />
+        <ToastContainer autoClose={1500} />
+      </ConfigProvider>
     </RecoilRoot>
   </React.StrictMode>,
 )

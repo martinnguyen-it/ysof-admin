@@ -2,12 +2,13 @@ import LoginV from '@views/auth/LoginV'
 import { generateRouteElements, IRoute } from './utils'
 import ResetPasswordV from '@views/auth/ForgotPasswordV'
 import ForgotPasswordV from '@views/auth/ForgotPasswordV'
+import Layout from '@components/Layout'
+import { lazy } from 'react'
+// import { withLoading } from '@src/hocs/withLoading.hoc'
 
-// // Layouts
-// import { AuthLayout } from '@src/layouts'
+const DashboardV = lazy(() => import('@views/DashboardV'))
 
-// // Screens
-// import { LoginScreen } from '@src/screens'
+// const DashboardPage = withLoading(DashboardV)
 
 export const routes: IRoute[] = [
   //   // {
@@ -16,6 +17,18 @@ export const routes: IRoute[] = [
   //   //   requiredLogin: false,
   //   //   Layout: DashboardLayout,
   //   // },
+  {
+    path: '/',
+    element: <DashboardV />,
+    requiredLogin: true,
+    Layout: Layout,
+  },
+  {
+    path: '*',
+    element: <DashboardV />,
+    requiredLogin: true,
+    Layout: Layout,
+  },
   {
     path: '/auth/login',
     element: <LoginV />,

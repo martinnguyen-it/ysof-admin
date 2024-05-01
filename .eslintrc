@@ -56,5 +56,5 @@
       "version": "detect"
     }
   },
-  "ignorePatterns": ["node_modules", "yarn.lock", ".husky", "craco.config.js"]
+  "ignorePatterns": ["node_modules", "yarn.lock", ".husky", "craco.config.js", "postcss.config.js", "tailwind.config.js"]
 }

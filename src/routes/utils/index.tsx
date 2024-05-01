@@ -1,7 +1,9 @@
-import { accessTokenState } from '@atom/authAtom'
-import React from 'react'
+import { accessTokenState, userInfoState } from '@atom/authAtom'
+import { getMe } from '@src/services/admin'
+import { isEmpty } from 'lodash'
+import React, { useEffect } from 'react'
 import { Navigate, Route, Routes, BrowserRouter } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 export interface IRoute {
   path: string
@@ -10,7 +12,7 @@ export interface IRoute {
   Layout?: React.FC<any> | React.FunctionComponent<any>
 }
 
-export function generateRouteElements(routes: IRoute[]) {
+export const generateRouteElements = (routes: IRoute[]) => {
   return (
     <BrowserRouter>
       <Routes>
@@ -29,10 +31,18 @@ export function generateRouteElements(routes: IRoute[]) {
   )
 }
 
-function RequiredLoginRoute(props: { children: React.ReactNode }) {
+const RequiredLoginRoute = (props: { children: React.ReactNode }) => {
   const accessToken = useRecoilValue(accessTokenState)
+  const setUserInfo = useSetRecoilState(userInfoState)
+  useEffect(() => {
+    if (accessToken)
+      (async () => {
+        const data = await getMe()
+        if (!isEmpty(data)) setUserInfo(data)
+      })()
+  }, [accessToken])
   if (!accessToken) {
-    return <Navigate to='/login/' replace />
+    return <Navigate to='/auth/login' replace />
   } else {
     return <>{props.children}</>
   }

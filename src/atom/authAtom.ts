@@ -12,4 +12,5 @@ export const accessTokenState = atom<string>({
 
 export const userInfoState = atom<IAdmin>({
   key: 'userInfo',
+  default: undefined,
 })
