@@ -19,7 +19,7 @@ const Layout: FC<Props> = ({ children, className = '' }: Props) => {
       <div className={`flex ${className}`}>
         <Sidebar />
         <div
-          className={`relative ml-auto min-h-screen bg-[#FAFAFB] pt-20 transition-all duration-200 ease-out ${className} ${
+          className={`relative ml-auto min-h-screen bg-[#d8ecef42] pt-12 transition-all duration-200 ease-out ${className} ${
             !isCollapseSidebar ? 'w-right-layout' : 'w-left-sidebar'
           }`}
         >

@@ -1,13 +1,16 @@
-import { LogoutOutlined } from '@ant-design/icons'
+import { HomeOutlined, LogoutOutlined } from '@ant-design/icons'
+import { appState } from '@atom/appAtom'
 import { userInfoState } from '@atom/authAtom'
 import { handleClearAuthorization } from '@src/services/HTTPService'
-import { Avatar, Button, Dropdown, Menu, MenuProps, Tooltip } from 'antd'
-import { FC, MouseEvent, useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
+import { Avatar, Breadcrumb, Dropdown, MenuProps } from 'antd'
+import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
+import { FC, useEffect, useMemo } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 const Header: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
+  const [{ menuActive, isCollapseSidebar }, setAppState] = useRecoilState(appState)
 
   const { pathname } = useLocation()
 
@@ -42,10 +45,31 @@ const Header: FC = () => {
     },
   ]
 
+  const breadcrumbItems = useMemo(() => {
+    const items: ItemType[] = [
+      {
+        title: (
+          <Link
+            onClick={() => {
+              setAppState((prev) => ({ ...prev, menuActive: '' }))
+            }}
+            to='/'
+          >
+            <HomeOutlined size={20} />
+          </Link>
+        ),
+      },
+    ]
+    if (menuActive && menuActive != 'Bảng tin') items.push({ title: menuActive })
+    return items
+  }, [menuActive])
+
   return (
     <>
       <div className='fixed z-[1] w-full border-b bg-white pr-8 shadow-sm'>
-        <div className='flex h-12 items-center justify-end'>
+        <div className='flex h-12 items-center justify-between'>
+          <Breadcrumb className={`flex cursor-pointer items-center pl-5 text-base font-medium  ${isCollapseSidebar ? 'ml-14' : 'ml-60'}`} items={breadcrumbItems} />
+
           <div className='flex items-center gap-3' id='dropdown'>
             <Dropdown menu={{ items }} placement='bottomRight' arrow>
               <Avatar src={userInfo?.avatar || '/images/avatar.png'} size={28} />

@@ -1,5 +1,6 @@
 export interface IAppState {
   isCollapseSidebar: boolean
+  menuActive: string
 }
 
 export interface IRouter {

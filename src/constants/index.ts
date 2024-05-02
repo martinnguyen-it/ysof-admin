@@ -1,4 +1,4 @@
-import { DashboardOutlined, FileTextOutlined, ProjectOutlined, UserOutlined } from '@ant-design/icons'
+import { ApartmentOutlined, DashboardOutlined, FileTextOutlined, ProjectOutlined, UserOutlined } from '@ant-design/icons'
 import { IRouter } from '@domain/app'
 
 export const API_CONFIG = {
@@ -25,6 +25,7 @@ export const API_LIST = {
     login: '/api/v1/admin/auth/login',
   },
   getMe: '/api/v1/admins/me',
+  season: '/api/v1/seasons',
 }
 
 export const ROUTES_SIDEBAR: IRouter[] = [
@@ -34,14 +35,19 @@ export const ROUTES_SIDEBAR: IRouter[] = [
     icon: DashboardOutlined,
   },
   {
+    name: 'Mùa',
+    path: '/mua',
+    icon: ApartmentOutlined,
+  },
+  {
+    name: 'Công việc chung',
+    path: '/cong-viec-chung',
+    icon: ProjectOutlined,
+  },
+  {
     name: 'Tài liệu',
     path: '/document',
     icon: FileTextOutlined,
-  },
-  {
-    name: 'Công việc',
-    path: '/work',
-    icon: ProjectOutlined,
   },
   {
     name: 'Học viên',

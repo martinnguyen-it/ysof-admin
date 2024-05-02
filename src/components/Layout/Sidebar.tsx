@@ -1,15 +1,14 @@
 import { appState } from '@atom/appAtom'
 import { IAppState, IRouter } from '@domain/app'
-import { includes, map, size, split } from 'lodash'
+import { includes, map, size } from 'lodash'
 import { MouseEvent, useCallback, useMemo, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
 import { ROUTES_SIDEBAR } from '@constants/index'
 import { EAdminRole } from '@domain/admin/type'
 import { hasMatch } from '@src/utils'
-import { CaretDownOutlined, CaretUpOutlined, DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons'
-import { Divider } from 'antd'
+import { CaretUpOutlined, DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons'
 
 const SidebarGroup = ({
   menuItem,
@@ -19,7 +18,7 @@ const SidebarGroup = ({
 }: {
   menuItem: IRouter
   userRoles?: EAdminRole[]
-  menuExpand: string
+  menuExpand?: string
   onExpandMenu: (e: MouseEvent<HTMLLIElement>) => void
 }) => {
   const { isCollapseSidebar } = useRecoilValue(appState)
@@ -33,7 +32,6 @@ const SidebarGroup = ({
   const isVisitedSubPage = useMemo(() => {
     return includes(pathname, menuExpand)
   }, [pathname])
-  console.log('🚀 ~ isVisitedSubPage ~ menuExpand:', menuExpand)
 
   return (
     <>
@@ -54,7 +52,11 @@ const SidebarGroup = ({
 
                 <span className={`text-md ml-3 whitespace-nowrap`}>{!isCollapseSidebar ? name : null}</span>
               </div>
-              {!isCollapseSidebar ? <span>{isExpandGroup || isVisitedSubPage ? <CaretDownOutlined /> : <CaretUpOutlined />}</span> : null}
+              {!isCollapseSidebar ? (
+                <span>
+                  <CaretUpOutlined className={`${isExpandGroup || isVisitedSubPage ? 'rotate-180 duration-700' : 'rotate-0 duration-700'}`} />
+                </span>
+              ) : null}
             </div>
           </li>
           {(isExpandGroup || isVisitedSubPage) && !isCollapseSidebar && (
@@ -69,7 +71,6 @@ const SidebarGroup = ({
 const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: EAdminRole[] }) => {
   const { path, name } = menuItem
   const [{ isCollapseSidebar }, setAppState] = useRecoilState(appState)
-  const navigate = useNavigate()
   const { pathname } = useLocation()
 
   const isActive = useMemo(() => {
@@ -78,10 +79,7 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
 
   const redirectUrl = () => {
     if (menuItem?.icon) {
-      setAppState((prev: IAppState) => ({ ...prev, menuActive: '' }))
-      navigate(path || '')
-    } else {
-      navigate(path || '')
+      setAppState((prev: IAppState) => ({ ...prev, menuActive: name }))
     }
   }
 
@@ -93,7 +91,8 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
             isActive && !isCollapseSidebar ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-gray-400 hover:bg-[#E6F4FF]'
           }`}
         >
-          <button
+          <Link
+            to={path}
             onClick={redirectUrl}
             className={`relative flex min-h-[48px] w-full items-center px-4 py-3 text-base group-hover:text-[#1677ff] ${isActive ? 'text-[#1677ff]' : 'text-black/60'}`}
           >
@@ -102,7 +101,7 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
             </div>
             {isActive && !isCollapseSidebar ? <div className='absolute right-0 h-full w-[2px] bg-[#5776bf]' /> : null}
             {!isCollapseSidebar ? <span className={`text-md ml-3 whitespace-nowrap ${isActive ? 'text-[#1677ff]' : ''}`}>{name}</span> : null}
-          </button>
+          </Link>
         </li>
       ) : null}
     </>
@@ -121,12 +120,12 @@ const Sidebar = () => {
     }))
   }, [isCollapseSidebar, setAppState])
 
-  const [menuExpand, setMenuExpand] = useState('-')
+  const [menuExpand, setMenuExpand] = useState<string>()
 
   const onExpandMenu = useCallback((e: MouseEvent<HTMLLIElement>) => {
     e.stopPropagation()
     const path = e.currentTarget.getAttribute('data-item')
-    setMenuExpand((prev) => (path === prev ? '-' : path || '-'))
+    setMenuExpand((prev) => (path === prev ? undefined : path || undefined))
   }, [])
 
   return (

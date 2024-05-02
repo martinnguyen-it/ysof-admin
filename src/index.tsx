@@ -17,7 +17,7 @@ root.render(
       <ConfigProvider
         theme={{
           token: {
-            fontFamily: 'sans-serif',
+            fontFamily: 'inherit',
           },
         }}
       >

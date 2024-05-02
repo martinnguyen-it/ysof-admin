@@ -6,6 +6,6 @@ const { persistAtom } = recoilPersist()
 
 export const appState = atom<IAppState>({
   key: 'app',
-  default: { isCollapseSidebar: false },
+  default: { isCollapseSidebar: false, menuActive: '' },
   effects_UNSTABLE: [persistAtom],
 })

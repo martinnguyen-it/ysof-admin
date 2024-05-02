@@ -2,11 +2,10 @@ import LoginV from '@views/auth/LoginV'
 import { generateRouteElements, IRoute } from './utils'
 import ResetPasswordV from '@views/auth/ForgotPasswordV'
 import ForgotPasswordV from '@views/auth/ForgotPasswordV'
+import DashboardV from '@views/DashboardV'
+import SeasonV from '@views/SeasonV'
 import Layout from '@components/Layout'
-import { lazy } from 'react'
 // import { withLoading } from '@src/hocs/withLoading.hoc'
-
-const DashboardV = lazy(() => import('@views/DashboardV'))
 
 // const DashboardPage = withLoading(DashboardV)
 
@@ -19,6 +18,18 @@ export const routes: IRoute[] = [
   //   // },
   {
     path: '/',
+    element: <DashboardV />,
+    requiredLogin: true,
+    Layout: Layout,
+  },
+  {
+    path: '/mua',
+    element: <SeasonV />,
+    requiredLogin: true,
+    Layout: Layout,
+  },
+  {
+    path: '/cong-viec-chung',
     element: <DashboardV />,
     requiredLogin: true,
     Layout: Layout,
