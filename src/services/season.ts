@@ -21,7 +21,7 @@ export const createSeason = async (data: ICreateSeason): Promise<ISeasonResponse
 
 export const getCurrentSeason = async (): Promise<ISeasonResponse> => {
   const response = await get({
-    url: API_LIST.season,
+    url: API_LIST.season + '/current',
   })
   return response?.data
 }

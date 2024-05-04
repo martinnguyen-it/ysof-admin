@@ -32,6 +32,16 @@ export enum EAdminRole {
   BHD = 'bhd',
 }
 
+export const EAdminRoleDetail: { [key in EAdminRole]: string } = {
+  [EAdminRole.ADMIN]: 'Quản trị viên',
+  [EAdminRole.BDH]: 'Ban điều hành',
+  [EAdminRole.BKT]: 'Ban kỹ thuật',
+  [EAdminRole.BTT]: 'Ban truyền thông',
+  [EAdminRole.BKL]: 'Ban kỷ luật',
+  [EAdminRole.BHV]: 'Ban học vụ',
+  [EAdminRole.BHD]: 'Ban hoạt động',
+}
+
 export enum EAccountStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',

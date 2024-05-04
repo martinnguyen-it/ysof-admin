@@ -8,6 +8,14 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import RecoilNexus from 'recoil-nexus'
 import { ConfigProvider } from 'antd'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+import { VN_TIMEZONE } from './constants'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault(VN_TIMEZONE)
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(

@@ -46,6 +46,12 @@ const SeasonV: FC = () => {
 
   const columns: ColumnsType<ISeasonResponse> = [
     {
+      title: 'STT',
+      dataIndex: 'index',
+      key: 'index',
+      render: (_text, _record, index) => index + 1,
+    },
+    {
       title: 'Tên',
       dataIndex: 'title',
       key: 'title',
@@ -85,15 +91,15 @@ const SeasonV: FC = () => {
   ]
 
   return (
-    <div className='m-5 rounded-xl bg-white p-6'>
+    <div className='m-5 rounded-xl bg-white p-6 shadow-lg'>
       {isAdmin && (
         <div className='mb-4 flex justify-end'>
           <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
-            Add
+            Thêm
           </Button>
         </div>
       )}
-      <Table columns={columns} pagination={false} dataSource={tableData.data} loading={tableData.loading} bordered />
+      <Table columns={columns} rowKey='id' pagination={false} dataSource={tableData.data} loading={tableData.loading} bordered />
       {openForm.active && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
       {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
     </div>

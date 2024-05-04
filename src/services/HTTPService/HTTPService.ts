@@ -114,8 +114,10 @@ const get: HTTPRequest = serviceErrorHandler(async ({ url, data, options }: Requ
   if (data) {
     reqOptions = {
       ...options,
-
       params: data,
+      paramsSerializer: {
+        indexes: null,
+      },
     }
   }
 

@@ -1,4 +1,5 @@
 import { ApartmentOutlined, DashboardOutlined, FileTextOutlined, ProjectOutlined, UserOutlined } from '@ant-design/icons'
+import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
 import { IRouter } from '@domain/app'
 
 export const API_CONFIG = {
@@ -7,6 +8,10 @@ export const API_CONFIG = {
   unauthorizedErrorCode: 401,
   HOST: process.env.REACT_APP_BASE_URL || 'http://localhost:8000',
 }
+
+export const VN_TIMEZONE = 'Asia/Ho_Chi_Minh'
+
+export const PAGE_SIZE_OPTIONS_DEFAULT = [10, 20, 50, 100, 300]
 
 export const DEFAULT_TABLE_PAGINATION = {
   total: 0,
@@ -26,6 +31,7 @@ export const API_LIST = {
   },
   getMe: '/api/v1/admins/me',
   season: '/api/v1/seasons',
+  document: '/api/v1/documents',
 }
 
 export const ROUTES_SIDEBAR: IRouter[] = [
@@ -46,7 +52,7 @@ export const ROUTES_SIDEBAR: IRouter[] = [
   },
   {
     name: 'Tài liệu',
-    path: '/document',
+    path: '/tai-lieu',
     icon: FileTextOutlined,
   },
   {
@@ -61,3 +67,8 @@ export const ROUTES_SIDEBAR: IRouter[] = [
     ],
   },
 ]
+
+export const OPTIONS_ROLE = Object.keys(EAdminRoleDetail).map((key) => ({
+  value: key,
+  label: EAdminRoleDetail[key as EAdminRole],
+}))

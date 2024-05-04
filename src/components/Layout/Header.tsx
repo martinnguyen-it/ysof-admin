@@ -66,7 +66,7 @@ const Header: FC = () => {
 
   return (
     <>
-      <div className='fixed z-[1] w-full border-b bg-white pr-8 shadow-sm'>
+      <div className='fixed z-10 w-full border-b bg-white pr-8 shadow-sm'>
         <div className='flex h-12 items-center justify-between'>
           <Breadcrumb className={`flex cursor-pointer items-center pl-5 text-base font-medium  ${isCollapseSidebar ? 'ml-14' : 'ml-60'}`} items={breadcrumbItems} />
 

@@ -9,8 +9,8 @@ export interface ISort {
 }
 
 export enum ESort {
-  ASCE = 'asce',
-  DESC = 'desc',
+  ASCE = 'ascend',
+  DESC = 'descend',
 }
 
 export interface ICreateSeason {
@@ -25,4 +25,10 @@ export interface IUpdateSeason extends Partial<ICreateSeason> {}
 export interface IOpenForm<T> {
   active: boolean
   item?: T
+}
+
+export interface IPaginationAPI {
+  total: number
+  page_index: number
+  total_pages: number
 }

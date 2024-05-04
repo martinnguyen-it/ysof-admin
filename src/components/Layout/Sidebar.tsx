@@ -78,9 +78,7 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
   }, [path, pathname])
 
   const redirectUrl = () => {
-    if (menuItem?.icon) {
-      setAppState((prev: IAppState) => ({ ...prev, menuActive: name }))
-    }
+    setAppState((prev: IAppState) => ({ ...prev, menuActive: name }))
   }
 
   return (

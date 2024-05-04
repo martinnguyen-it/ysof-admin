@@ -1,5 +1,7 @@
 import { accessTokenState, userInfoState } from '@atom/authAtom'
+import { currentSeasonState } from '@atom/seasonAtom'
 import { getMe } from '@src/services/admin'
+import { getCurrentSeason } from '@src/services/season'
 import { isEmpty } from 'lodash'
 import React, { useEffect } from 'react'
 import { Navigate, Route, Routes, BrowserRouter } from 'react-router-dom'
@@ -34,11 +36,14 @@ export const generateRouteElements = (routes: IRoute[]) => {
 const RequiredLoginRoute = (props: { children: React.ReactNode }) => {
   const accessToken = useRecoilValue(accessTokenState)
   const setUserInfo = useSetRecoilState(userInfoState)
+  const setCurrentSeason = useSetRecoilState(currentSeasonState)
   useEffect(() => {
     if (accessToken)
       (async () => {
         const data = await getMe()
+        const currentSeason = await getCurrentSeason()
         if (!isEmpty(data)) setUserInfo(data)
+        if (!isEmpty(currentSeason)) setCurrentSeason(currentSeason)
       })()
   }, [accessToken])
   if (!accessToken) {
