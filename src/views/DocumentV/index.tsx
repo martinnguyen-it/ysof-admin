@@ -19,11 +19,13 @@ import ModalDelete from './ModalDelete'
 import { EDocumentTypeDetail, OPTIONS_DOCUMENT_LABEL, OPTIONS_DOCUMENT_TYPE } from '@constants/document'
 import { currentSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
+import ModalUpdate from './ModalUpdate'
 
 const DocumentV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
-  const [openForm, setOpenForm] = useState<IOpenForm<IDocumentInResponse>>({ active: false })
+  const [openForm, setOpenForm] = useState(false)
+  const [openEdit, setOpenEdit] = useState<IDocumentInResponse>()
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
   const [tableData, setTableData] = useState<IDocumentInResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -42,18 +44,25 @@ const DocumentV: FC = () => {
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
 
-  const onClickAdd = () => {
-    setOpenForm({ active: true })
+  const onClickAdd = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    setOpenForm(true)
   }
 
   const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
     const item = tableData.find((val) => val.id === e.currentTarget.id)
-    setOpenForm({ active: true, item: item })
+    setOpenEdit(item)
   }
 
   const onClickDelete = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
     setOpenDel({ active: true, item: e.currentTarget.id })
   }
+
+  useEffect(() => {
+    setTableQueries(initPaging)
+  }, [search])
 
   useEffect(() => {
     ;(async () => {
@@ -80,7 +89,7 @@ const DocumentV: FC = () => {
       dataIndex: 'name',
       sorter: true,
       key: 'name',
-      width: '25%',
+      width: '200px',
       render: (text, record: IDocumentInResponse) => {
         return (
           <Avatar.Group className='flex items-center'>
@@ -115,6 +124,12 @@ const DocumentV: FC = () => {
       render: (text: string[]) => text.join(', '),
     },
     {
+      title: 'Mô tả',
+      dataIndex: 'description',
+      key: 'description',
+      render: (text: string) => <span className='text-wrap italic'>{text}</span>,
+    },
+    {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
@@ -127,6 +142,26 @@ const DocumentV: FC = () => {
       key: 'updated_at',
       sorter: true,
       render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+    },
+    {
+      title: 'Người tạo',
+      dataIndex: 'name',
+      sorter: true,
+      key: 'name',
+      width: '150px',
+      render: (_, record: IDocumentInResponse) => {
+        return (
+          <Avatar.Group className='flex items-center'>
+            <img className='mr-4 size-7 object-cover' src={record.author.avatar || '/images/avatar.png'}></img>
+            <Tooltip placement='bottom' title='Nhấn vào đây để xem file'>
+              {/* <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
+                {record.author.full_name}
+              </Link> */}
+              <p className='text-wrap font-medium text-black'>{record.author.full_name}</p>
+            </Tooltip>
+          </Avatar.Group>
+        )
+      },
     },
     {
       title: 'Hành động',
@@ -226,7 +261,7 @@ const DocumentV: FC = () => {
         pagination={false}
         dataSource={tableData}
         loading={isLoading}
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1500 }}
         bordered
       />
       <Pagination
@@ -245,7 +280,8 @@ const DocumentV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-      {openForm.active && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
+      {openForm && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
+      {openEdit && <ModalUpdate open={openEdit} setOpen={setOpenEdit} setReloadData={setReloadData} />}
       {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
     </div>
   )

@@ -100,7 +100,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
           <Input placeholder='2020-2021' />
         </Form.Item>
         <Form.Item label='Mô tả' name='description'>
-          <Input placeholder='Nhập mô tả' />
+          <Input.TextArea rows={3} placeholder='Nhập mô tả' />
         </Form.Item>
       </Form>
     </Modal>

@@ -27,3 +27,14 @@ export const OPTIONS_GOOGLE_FILE_TYPE = Object.keys(EGoogleFileTypeDetail).map((
   value: key,
   label: EGoogleFileTypeDetail[key as EGoogleFileType],
 }))
+
+export const OPTIONS_MODE_FILE = [
+  {
+    value: 'file',
+    label: 'Tải file lên từ máy',
+  },
+  {
+    value: 'google',
+    label: 'Tạo file từ google',
+  },
+]

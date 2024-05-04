@@ -1,5 +1,5 @@
 import { ICreateDocumentGoogle, ICreateDocumentWithFile, IDocumentInResponse, IListDocumentInResponse, IParamsGetListDocument, IUpdateDocument } from '@domain/document'
-import { del, get, patch, post } from './HTTPService'
+import { del, get, put, post } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
 export const getListDocuments = async (params?: IParamsGetListDocument): Promise<IListDocumentInResponse> => {
@@ -22,7 +22,7 @@ export const createDocumentWithFile = async (data: ICreateDocumentWithFile): Pro
   formData.append('file', new Blob([data.file]))
   formData.append('payload', JSON.stringify(data.payload))
   const response = await post({
-    url: API_LIST.document,
+    url: API_LIST.document + '/file',
     data: formData,
   })
   return response?.data
@@ -30,16 +30,22 @@ export const createDocumentWithFile = async (data: ICreateDocumentWithFile): Pro
 
 export const createDocumentGoogle = async (data: ICreateDocumentGoogle): Promise<IDocumentInResponse> => {
   const response = await post({
-    url: API_LIST.document,
+    url: API_LIST.document + '/google',
     data,
   })
   return response?.data
 }
 
 export const updateDocument = async (id: string, data: IUpdateDocument): Promise<IDocumentInResponse> => {
-  const response = await patch({
+  const formData = new FormData()
+  if (data?.file) {
+    formData.append('file', new Blob([data.file]))
+  }
+  formData.append('payload', JSON.stringify(data.payload))
+
+  const response = await put({
     url: API_LIST.document + '/' + id,
-    data,
+    data: formData,
   })
   return response?.data
 }
