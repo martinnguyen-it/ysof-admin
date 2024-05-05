@@ -32,6 +32,7 @@ export const API_LIST = {
   getMe: '/api/v1/admins/me',
   season: '/api/v1/seasons',
   document: '/api/v1/documents',
+  generalTask: '/api/v1/general-tasks',
 }
 
 export const ROUTES_SIDEBAR: IRouter[] = [

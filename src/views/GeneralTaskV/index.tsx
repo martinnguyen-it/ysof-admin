@@ -7,27 +7,25 @@ import type { TableProps } from 'antd'
 import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
-import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
 import { isArray, isEmpty } from 'lodash'
-import { getListDocuments } from '@src/services/document'
-import { EDocumentType, IDocumentInResponse } from '@domain/document'
-import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { OPTIONS_ROLE, PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
-import ModalAdd from './ModalAdd'
 import ModalDelete from './ModalDelete'
-import { EDocumentTypeDetail, OPTIONS_DOCUMENT_LABEL, OPTIONS_DOCUMENT_TYPE } from '@constants/document'
 import { currentSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
-import ModalUpdate from './ModalUpdate'
+import { getListGeneralTasks } from '@src/services/generalTask'
+import { EGeneralTaskType, IGeneralTaskInResponse, IOpenFormGeneralTask } from '@domain/generalTask'
+import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
+import { EGeneralTaskTypeDetail, OPTIONS_GENERAL_TASK_LABEL, OPTIONS_GENERAL_TASK_TYPE } from '@constants/generalTask'
+import ModalAdd from './ModalAdd'
+import ModalView from './ModalView'
 
-const DocumentV: FC = () => {
+const GeneralTaskV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
-  const [openForm, setOpenForm] = useState(false)
-  const [openEdit, setOpenEdit] = useState<IDocumentInResponse>()
+  const [openForm, setOpenForm] = useState<IOpenFormGeneralTask>({ active: false, mode: 'add' })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
-  const [tableData, setTableData] = useState<IDocumentInResponse[]>([])
+  const [tableData, setTableData] = useState<IGeneralTaskInResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
 
@@ -39,20 +37,20 @@ const DocumentV: FC = () => {
   const [paging, setPaging] = useState({ total: 0, current: 1 })
   const [search, setSearch] = useState('')
   const [roles, setRoles] = useState<EAdminRole[]>([])
-  const [type, setType] = useState<EDocumentType>()
+  const [type, setType] = useState<EGeneralTaskType>()
   const [label, setLabel] = useState<string[]>()
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
 
   const onClickAdd = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    setOpenForm(true)
+    setOpenForm({ active: true, mode: 'add' })
   }
 
   const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     const item = tableData.find((val) => val.id === e.currentTarget.id)
-    setOpenEdit(item)
+    setOpenForm({ active: true, mode: 'add', item })
   }
 
   const onClickDelete = (e: MouseEvent<HTMLButtonElement>) => {
@@ -67,7 +65,7 @@ const DocumentV: FC = () => {
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const res = await getListDocuments({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy })
+      const res = await getListGeneralTasks({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy })
       if (!isEmpty(res)) {
         setTableData(res.data)
         setPaging({ current: res.pagination.page_index, total: res.pagination.total })
@@ -76,7 +74,7 @@ const DocumentV: FC = () => {
     })()
   }, [reloadData, tableQueries, search, roles, type, label, sort, sortBy])
 
-  const columns: ColumnsType<IDocumentInResponse> = [
+  const columns: ColumnsType<IGeneralTaskInResponse> = [
     {
       title: 'STT',
       dataIndex: 'index',
@@ -85,23 +83,10 @@ const DocumentV: FC = () => {
       render: (_text, _record, index) => index + 1 + (paging.current - 1) * tableQueries.pageSize,
     },
     {
-      title: 'Tên',
-      dataIndex: 'name',
+      title: 'Tiêu đề',
+      dataIndex: 'title',
       sorter: true,
-      key: 'name',
-      width: '200px',
-      render: (text, record: IDocumentInResponse) => {
-        return (
-          <Avatar.Group className='flex items-center'>
-            <img className='mr-4 size-7 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${record?.mimeType}`}></img>
-            <Tooltip placement='bottom' title='Nhấn vào đây để xem file'>
-              <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
-                {text}
-              </Link>
-            </Tooltip>
-          </Avatar.Group>
-        )
-      },
+      key: 'title',
     },
     {
       title: 'Quản lý',
@@ -115,7 +100,7 @@ const DocumentV: FC = () => {
       dataIndex: 'type',
       key: 'type',
       sorter: true,
-      render: (text: EDocumentType) => EDocumentTypeDetail[text],
+      render: (text: EGeneralTaskType) => EGeneralTaskTypeDetail[text],
     },
     {
       title: 'Nhãn tài liệu',
@@ -124,10 +109,17 @@ const DocumentV: FC = () => {
       render: (text: string[]) => text.join(', '),
     },
     {
-      title: 'Mô tả',
-      dataIndex: 'description',
-      key: 'description',
+      title: 'Mô tả ngắn',
+      dataIndex: 'short_desc',
+      key: 'short_desc',
       render: (text: string) => <span className='text-wrap italic'>{text}</span>,
+    },
+    {
+      title: 'Ngày bắt đầu',
+      dataIndex: 'start_at',
+      key: 'start_at',
+      sorter: true,
+      render: (text) => <>{dayjs(text).format('DD-MM-YYYY')}</>,
     },
     {
       title: 'Ngày tạo',
@@ -149,14 +141,16 @@ const DocumentV: FC = () => {
       sorter: true,
       key: 'name',
       width: '150px',
-      render: (_, record: IDocumentInResponse) => {
+      render: (_, record: IGeneralTaskInResponse) => {
         return (
           <Avatar.Group className='flex items-center'>
             <img className='mr-4 size-7 object-cover' src={record.author.avatar || '/images/avatar.png'}></img>
-            {/* <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
+            <Tooltip placement='bottom' title='Nhấn vào đây để xem file'>
+              {/* <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
                 {record.author.full_name}
               </Link> */}
-            <p className='text-wrap font-medium text-black'>{record.author.full_name}</p>
+              <p className='text-wrap font-medium text-black'>{record.author.full_name}</p>
+            </Tooltip>
           </Avatar.Group>
         )
       },
@@ -166,7 +160,7 @@ const DocumentV: FC = () => {
       key: 'actions',
       dataIndex: 'actions',
       fixed: 'right',
-      render: (_, data: IDocumentInResponse) => {
+      render: (_, data: IGeneralTaskInResponse) => {
         return (
           <Flex gap='small' wrap='wrap'>
             {userInfo && (userInfo.roles.includes(data.role) || isSuperAdmin(true)) ? (
@@ -194,7 +188,7 @@ const DocumentV: FC = () => {
   const onSearch = (val: string) => {
     setSearch(val)
   }
-  const onChangType = (val: EDocumentType) => {
+  const onChangType = (val: EGeneralTaskType) => {
     setType(val)
   }
   const onChangeRole = (val: EAdminRole[]) => {
@@ -204,7 +198,7 @@ const DocumentV: FC = () => {
     setLabel(val)
   }
 
-  const handleTableChange: TableProps<IDocumentInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<IGeneralTaskInResponse>['onChange'] = (_pagination, _filters, sorter) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -229,7 +223,16 @@ const DocumentV: FC = () => {
           allowClear
           maxTagCount='responsive'
         />
-        <Select className='w-60' size='large' placeholder='Lọc theo loại' onChange={onChangType} value={type} options={OPTIONS_DOCUMENT_TYPE} allowClear maxTagCount='responsive' />
+        <Select
+          className='w-60'
+          size='large'
+          placeholder='Lọc theo loại'
+          onChange={onChangType}
+          value={type}
+          options={OPTIONS_GENERAL_TASK_TYPE}
+          allowClear
+          maxTagCount='responsive'
+        />
         <Select
           className='w-60'
           mode='multiple'
@@ -237,7 +240,7 @@ const DocumentV: FC = () => {
           placeholder='Lọc theo nhãn'
           onChange={onChangeLabel}
           value={label}
-          options={OPTIONS_DOCUMENT_LABEL}
+          options={OPTIONS_GENERAL_TASK_LABEL}
           allowClear
           maxTagCount='responsive'
         />
@@ -261,6 +264,13 @@ const DocumentV: FC = () => {
         loading={isLoading}
         scroll={{ x: 1500 }}
         bordered
+        onRow={(record) => {
+          return {
+            onClick: () => {
+              setOpenForm({ active: true, mode: 'view', item: record })
+            },
+          }
+        }}
       />
       <Pagination
         className='mt-4'
@@ -278,11 +288,11 @@ const DocumentV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-      {openForm && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
-      {openEdit && <ModalUpdate open={openEdit} setOpen={setOpenEdit} setReloadData={setReloadData} />}
+      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
+      {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />}
       {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
     </div>
   )
 }
 
-export default DocumentV
+export default GeneralTaskV

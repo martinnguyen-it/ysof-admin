@@ -11,9 +11,9 @@ export const EGoogleFileTypeDetail: { [key in EGoogleFileType]: string } = {
   [EGoogleFileType.DOCUMENT]: 'Google tài liệu',
 }
 
-export const LABEL = ['Tài liệu đầu năm', 'Tài liệu tuyển sinh', 'Tài liệu chung']
+export const DOCUMENT_LABEL = ['Tài liệu đầu năm', 'Tài liệu tuyển sinh', 'Tài liệu chung']
 
-export const OPTIONS_DOCUMENT_LABEL = LABEL.map((value) => ({
+export const OPTIONS_DOCUMENT_LABEL = DOCUMENT_LABEL.map((value) => ({
   value,
   label: value,
 }))

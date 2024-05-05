@@ -71,7 +71,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
         }))) ||
       []
     )
-  }, [])
+  }, [userInfo])
 
   const mode = Form.useWatch('mode', form)
 
@@ -125,7 +125,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
         </Form.Item>
         <Form.Item
           name='role'
-          label='Thuộc ban'
+          label='Quản lý'
           rules={[
             {
               required: true,

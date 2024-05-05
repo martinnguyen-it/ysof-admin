@@ -127,7 +127,7 @@ const Sidebar = () => {
   }, [])
 
   return (
-    <div className='fixed z-[9999] h-full bg-white shadow-lg transition-all duration-200 ease-out'>
+    <div className='fixed z-10 h-full bg-white shadow-lg transition-all duration-200 ease-out'>
       <div className={`${isCollapseSidebar ? 'w-14' : 'w-60'}`}>
         <div className='flex h-12 items-center justify-center text-xl font-semibold text-black'>{!isCollapseSidebar ? 'YSOF' : null}</div>
         <ul className='max-h-[calc(100vh-146px)] overflow-auto border-gray-200'>

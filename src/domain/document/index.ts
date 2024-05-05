@@ -1,4 +1,4 @@
-import { EAdminRole } from '@domain/admin/type'
+import { EAdminRole, IAdminShort } from '@domain/admin/type'
 import { IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
 
 export interface IDocumentInResponse {
@@ -10,7 +10,7 @@ export interface IDocumentInResponse {
   description?: string
   label?: string[]
   id: string
-  author: IAdminInDocument
+  author: IAdminShort
   season: number
   created_at: Date
   updated_at: Date
@@ -24,7 +24,7 @@ export interface IListDocumentInResponse {
 
 export interface ICreateDocumentBase {
   name: string
-  type: DocumentType
+  type: EDocumentType
   description?: string
   role: EAdminRole
   label?: string[]
@@ -42,13 +42,6 @@ export interface ICreateDocumentGoogle extends ICreateDocumentBase {
 export interface IUpdateDocument {
   payload: Partial<ICreateDocumentBase>
   file?: File
-}
-
-export interface IAdminInDocument {
-  id: string
-  full_name: string
-  avatar: string
-  active: boolean
 }
 
 export interface IParamsGetListDocument extends IPaginationAPIParams, ISort {

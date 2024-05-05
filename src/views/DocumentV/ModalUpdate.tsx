@@ -84,7 +84,7 @@ const ModalUpdate: FC<IProps> = ({ open, setOpen, setReloadData }) => {
         <Form.Item label='Mô tả' name='description'>
           <Input.TextArea rows={3} placeholder='Nhập mô tả' />
         </Form.Item>
-        <Form.Item name='role' label='Thuộc ban'>
+        <Form.Item name='role' label='Quản lý'>
           <Select placeholder='Chọn ban' options={optionsRole} />
         </Form.Item>
         <Form.Item name='label' label='Nhãn tài liệu'>

@@ -47,3 +47,10 @@ export enum EAccountStatus {
   INACTIVE = 'inactive',
   DELETED = 'deleted',
 }
+
+export interface IAdminShort {
+  id: string
+  full_name: string
+  avatar: string
+  active: boolean
+}
