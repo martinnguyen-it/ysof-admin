@@ -1,6 +1,7 @@
 import { EGeneralTaskTypeDetail } from '@constants/generalTask'
 import { EAdminRoleDetail } from '@domain/admin/type'
-import { IOpenFormGeneralTask } from '@domain/generalTask'
+import { IOpenFormWithMode } from '@domain/common'
+import { IGeneralTaskInResponse } from '@domain/generalTask'
 import { Avatar, Card, Divider, Modal, Tooltip } from 'antd'
 import dayjs from 'dayjs'
 import { size } from 'lodash'
@@ -8,8 +9,8 @@ import { Dispatch, FC } from 'react'
 import { Link } from 'react-router-dom'
 
 interface IProps {
-  open: IOpenFormGeneralTask
-  setOpen: Dispatch<React.SetStateAction<IOpenFormGeneralTask>>
+  open: IOpenFormWithMode<IGeneralTaskInResponse>
+  setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<IGeneralTaskInResponse>>>
 }
 
 const ModalView: FC<IProps> = ({ open, setOpen }) => {
@@ -20,7 +21,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
   return (
     <>
       {open.item && (
-        <Modal title={'Xem'} open={open.active} onCancel={handleCancel} cancelText='Hủy' okText={false} width={'80%'}>
+        <Modal title={'Xem'} open={open.active} onCancel={handleCancel} cancelText='Đóng' okButtonProps={{ style: { display: 'none' } }} okText={false} width={'80%'}>
           <Divider />
           <div className='flex flex-col gap-4 text-base'>
             <Card>

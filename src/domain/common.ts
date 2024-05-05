@@ -27,6 +27,12 @@ export interface IOpenForm<T> {
   item?: T
 }
 
+export interface IOpenFormWithMode<T> {
+  item?: T
+  active: boolean
+  mode: 'view' | 'add' | 'update'
+}
+
 export interface IPaginationAPI {
   total: number
   page_index: number

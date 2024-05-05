@@ -1,6 +1,6 @@
 import { WarningFilled } from '@ant-design/icons'
 import { IOpenForm } from '@domain/common'
-import { deleteGeneralTask } from '@src/services/generalTask'
+import { deleteLecturer } from '@src/services/lecturer'
 import { Button, Modal } from 'antd'
 import { isEmpty } from 'lodash'
 import React, { FC, useState } from 'react'
@@ -17,7 +17,7 @@ const ModalDelete: FC<IProps> = ({ open, setOpen, setReloadData }) => {
 
   const handleOk = async () => {
     setConfirmLoading(true)
-    const res = await deleteGeneralTask(open?.item || '')
+    const res = await deleteLecturer(open?.item || '')
     if (!isEmpty(res)) {
       toast.success('Xóa thành công')
       setOpen({ active: false })
@@ -45,7 +45,7 @@ const ModalDelete: FC<IProps> = ({ open, setOpen, setReloadData }) => {
         </Button>,
       ]}
     >
-      Bạn muốn xóa công việc này ?
+      Bạn muốn xóa giảng viên này ?
     </Modal>
   )
 }

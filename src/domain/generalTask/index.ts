@@ -58,9 +58,3 @@ export enum EGeneralTaskType {
   COMMON = 'common',
   INTERNAL = 'internal',
 }
-
-export interface IOpenFormGeneralTask {
-  item?: IGeneralTaskInResponse
-  active: boolean
-  mode: 'view' | 'add' | 'update'
-}

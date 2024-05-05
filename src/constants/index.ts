@@ -1,4 +1,4 @@
-import { ApartmentOutlined, DashboardOutlined, FileTextOutlined, ProjectOutlined, UserOutlined } from '@ant-design/icons'
+import { ApartmentOutlined, DashboardOutlined, FileTextOutlined, ProjectOutlined, SolutionOutlined, UserOutlined } from '@ant-design/icons'
 import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
 import { IRouter } from '@domain/app'
 
@@ -33,6 +33,11 @@ export const API_LIST = {
   season: '/api/v1/seasons',
   document: '/api/v1/documents',
   generalTask: '/api/v1/general-tasks',
+  lecturer: '/api/v1/lecturers',
+  subject: '/api/v1/subjects',
+  evaluation: '/api/v1/subjects/evaluations',
+  evaluationQuestion: '/api/v1/subjects/evaluation-questions',
+  studentByAdmin: '/api/v1/students',
 }
 
 export const ROUTES_SIDEBAR: IRouter[] = [
@@ -66,6 +71,11 @@ export const ROUTES_SIDEBAR: IRouter[] = [
         name: 'Danh sách học viên',
       },
     ],
+  },
+  {
+    name: 'Giảng viên',
+    path: '/giang-vien',
+    icon: SolutionOutlined,
   },
 ]
 

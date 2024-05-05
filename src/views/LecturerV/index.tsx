@@ -1,6 +1,6 @@
 import { FileAddOutlined } from '@ant-design/icons'
 import { ESort, IOpenForm, IOpenFormWithMode } from '@domain/common'
-import { Avatar, Button, Flex, Input, Pagination, Select, Tooltip } from 'antd'
+import { Button, Flex, Input, Pagination } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
@@ -9,23 +9,22 @@ import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
 import { isArray, isEmpty } from 'lodash'
 import dayjs from 'dayjs'
-import { OPTIONS_ROLE, PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
+import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
 import ModalDelete from './ModalDelete'
 import { currentSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
-import { getListGeneralTasks } from '@src/services/generalTask'
-import { EGeneralTaskType, IGeneralTaskInResponse } from '@domain/generalTask'
-import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
-import { EGeneralTaskTypeDetail, OPTIONS_GENERAL_TASK_LABEL, OPTIONS_GENERAL_TASK_TYPE } from '@constants/generalTask'
+import { EAdminRole } from '@domain/admin/type'
+import { ILecturerInResponse } from '@domain/lecturer'
+import { getListLecturers } from '@src/services/lecturer'
 import ModalAdd from './ModalAdd'
 import ModalView from './ModalView'
 
-const GeneralTaskV: FC = () => {
+const LecturerV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
-  const [openForm, setOpenForm] = useState<IOpenFormWithMode<IGeneralTaskInResponse>>({ active: false, mode: 'add' })
+  const [openForm, setOpenForm] = useState<IOpenFormWithMode<ILecturerInResponse>>({ active: false, mode: 'add' })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
-  const [tableData, setTableData] = useState<IGeneralTaskInResponse[]>([])
+  const [tableData, setTableData] = useState<ILecturerInResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
 
@@ -36,9 +35,6 @@ const GeneralTaskV: FC = () => {
   const [tableQueries, setTableQueries] = useState(initPaging)
   const [paging, setPaging] = useState({ total: 0, current: 1 })
   const [search, setSearch] = useState('')
-  const [roles, setRoles] = useState<EAdminRole[]>([])
-  const [type, setType] = useState<EGeneralTaskType>()
-  const [label, setLabel] = useState<string[]>()
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
 
@@ -65,16 +61,16 @@ const GeneralTaskV: FC = () => {
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const res = await getListGeneralTasks({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy })
+      const res = await getListLecturers({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy })
       if (!isEmpty(res)) {
         setTableData(res.data)
         setPaging({ current: res.pagination.page_index, total: res.pagination.total })
       }
       setIsLoading(false)
     })()
-  }, [reloadData, tableQueries, search, roles, type, label, sort, sortBy])
+  }, [reloadData, tableQueries, search, sort, sortBy])
 
-  const columns: ColumnsType<IGeneralTaskInResponse> = [
+  const columns: ColumnsType<ILecturerInResponse> = [
     {
       title: 'STT',
       dataIndex: 'index',
@@ -83,43 +79,23 @@ const GeneralTaskV: FC = () => {
       render: (_text, _record, index) => index + 1 + (paging.current - 1) * tableQueries.pageSize,
     },
     {
-      title: 'Tiêu đề',
-      dataIndex: 'title',
+      title: 'Họ tên',
+      dataIndex: 'full_name',
+      key: 'full_name',
       sorter: true,
-      key: 'title',
+      render: (_, record: ILecturerInResponse) => (
+        <>
+          {record?.title ? record.title + ' ' : ''}
+          {record?.holy_name ? record.holy_name + ' ' : ''}
+          {record.full_name}
+        </>
+      ),
     },
     {
-      title: 'Quản lý',
-      dataIndex: 'role',
-      key: 'role',
-      sorter: true,
-      render: (text: EAdminRole) => EAdminRoleDetail[text],
-    },
-    {
-      title: 'Loại tài liệu',
-      dataIndex: 'type',
-      key: 'type',
-      sorter: true,
-      render: (text: EGeneralTaskType) => EGeneralTaskTypeDetail[text],
-    },
-    {
-      title: 'Nhãn tài liệu',
-      dataIndex: 'label',
-      key: 'label',
-      render: (text: string[]) => text.join(', '),
-    },
-    {
-      title: 'Mô tả ngắn',
-      dataIndex: 'short_desc',
-      key: 'short_desc',
-      render: (text: string) => <span className='text-wrap italic'>{text}</span>,
-    },
-    {
-      title: 'Ngày bắt đầu',
-      dataIndex: 'start_at',
-      key: 'start_at',
-      sorter: true,
-      render: (text) => <>{dayjs(text).format('DD-MM-YYYY')}</>,
+      title: 'Thông tin cơ bản',
+      dataIndex: 'information',
+      key: 'information',
+      render: (text) => <div style={{ whiteSpace: 'pre-line' }}>{text}</div>,
     },
     {
       title: 'Ngày tạo',
@@ -136,48 +112,23 @@ const GeneralTaskV: FC = () => {
       render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
     },
     {
-      title: 'Người tạo',
-      dataIndex: 'name',
-      sorter: true,
-      key: 'name',
-      width: '150px',
-      render: (_, record: IGeneralTaskInResponse) => {
-        return (
-          <Avatar.Group className='flex items-center'>
-            <img className='mr-4 size-7 object-cover' src={record.author.avatar || '/images/avatar.png'}></img>
-            <Tooltip placement='bottom' title='Nhấn vào đây để xem file'>
-              {/* <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
-                {record.author.full_name}
-              </Link> */}
-              <p className='text-wrap font-medium text-black'>{record.author.full_name}</p>
-            </Tooltip>
-          </Avatar.Group>
-        )
-      },
-    },
-    {
       title: 'Hành động',
       key: 'actions',
       dataIndex: 'actions',
       fixed: 'right',
-      render: (_, data: IGeneralTaskInResponse) => {
+      render: (_, data: ILecturerInResponse) => {
         return (
           <Flex gap='small' wrap='wrap'>
-            {userInfo && (userInfo.roles.includes(data.role) || isSuperAdmin(true)) ? (
-              <>
-                <Button color='' type='primary' id={data.id} onClick={onClickUpdate} className='!bg-yellow-400 hover:opacity-80'>
-                  Sửa
-                </Button>
-                <Button type='primary' id={data.id} onClick={onClickDelete} danger>
-                  Xóa
-                </Button>
-              </>
-            ) : (
-              <>--</>
-            )}
+            <Button color='' type='primary' id={data.id} onClick={onClickUpdate} className='!bg-yellow-400 hover:opacity-80'>
+              Sửa
+            </Button>
+            <Button type='primary' id={data.id} onClick={onClickDelete} danger>
+              Xóa
+            </Button>
           </Flex>
         )
       },
+      hidden: !userInfo || !(userInfo.roles.includes(EAdminRole.BHV) || isSuperAdmin(true)),
     },
   ]
 
@@ -188,17 +139,8 @@ const GeneralTaskV: FC = () => {
   const onSearch = (val: string) => {
     setSearch(val)
   }
-  const onChangType = (val: EGeneralTaskType) => {
-    setType(val)
-  }
-  const onChangeRole = (val: EAdminRole[]) => {
-    setRoles(val)
-  }
-  const onChangeLabel = (val: string[]) => {
-    setLabel(val)
-  }
 
-  const handleTableChange: TableProps<IGeneralTaskInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<ILecturerInResponse>['onChange'] = (_pagination, _filters, sorter) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -212,38 +154,6 @@ const GeneralTaskV: FC = () => {
     <div className='m-5 rounded-xl bg-white p-6 shadow-lg'>
       <div className='mb-4 flex flex-wrap gap-3'>
         <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
-        <Select
-          className='w-60'
-          mode='multiple'
-          size='large'
-          placeholder='Lọc theo ban'
-          onChange={onChangeRole}
-          value={roles}
-          options={OPTIONS_ROLE}
-          allowClear
-          maxTagCount='responsive'
-        />
-        <Select
-          className='w-60'
-          size='large'
-          placeholder='Lọc theo loại'
-          onChange={onChangType}
-          value={type}
-          options={OPTIONS_GENERAL_TASK_TYPE}
-          allowClear
-          maxTagCount='responsive'
-        />
-        <Select
-          className='w-60'
-          mode='multiple'
-          size='large'
-          placeholder='Lọc theo nhãn'
-          onChange={onChangeLabel}
-          value={label}
-          options={OPTIONS_GENERAL_TASK_LABEL}
-          allowClear
-          maxTagCount='responsive'
-        />
       </div>
 
       {userInfo && (userInfo.roles.includes(EAdminRole.ADMIN) || userInfo.current_season === currentSeason?.season) && (
@@ -262,7 +172,7 @@ const GeneralTaskV: FC = () => {
         pagination={false}
         dataSource={tableData}
         loading={isLoading}
-        scroll={{ x: 1500 }}
+        scroll={{ x: 800 }}
         bordered
         onRow={(record) => {
           return {
@@ -295,4 +205,4 @@ const GeneralTaskV: FC = () => {
   )
 }
 
-export default GeneralTaskV
+export default LecturerV

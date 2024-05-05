@@ -7,7 +7,7 @@ import { isEmpty } from 'lodash'
 import React, { Dispatch, DispatchWithoutAction, FC, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
-import { IGeneralTaskInResponse, IOpenFormGeneralTask } from '@domain/generalTask'
+import { IGeneralTaskInResponse } from '@domain/generalTask'
 import { createGeneralTask, updateGeneralTask } from '@src/services/generalTask'
 import { OPTIONS_GENERAL_TASK_LABEL, OPTIONS_GENERAL_TASK_TYPE } from '@constants/generalTask'
 import { useQuill } from 'react-quilljs'
@@ -16,10 +16,11 @@ import { getListDocuments } from '@src/services/document'
 import { useDebounce } from '@src/hooks/useDebounce'
 import dayjs from 'dayjs'
 import 'quill/dist/quill.snow.css' // Add css for snow theme
+import { IOpenFormWithMode } from '@domain/common'
 
 interface IProps {
-  open: IOpenFormGeneralTask
-  setOpen: Dispatch<React.SetStateAction<IOpenFormGeneralTask>>
+  open: IOpenFormWithMode<IGeneralTaskInResponse>
+  setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<IGeneralTaskInResponse>>>
   setReloadData: DispatchWithoutAction
 }
 

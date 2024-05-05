@@ -9,6 +9,7 @@ import { ROUTES_SIDEBAR } from '@constants/index'
 import { EAdminRole } from '@domain/admin/type'
 import { hasMatch } from '@src/utils'
 import { CaretUpOutlined, DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons'
+import { Tooltip } from 'antd'
 
 const SidebarGroup = ({
   menuItem,
@@ -36,7 +37,7 @@ const SidebarGroup = ({
   return (
     <>
       {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) ? (
-        <>
+        <Tooltip placement='rightBottom' title={name}>
           <li
             className={`group relative flex w-full items-center text-base font-normal ${
               (isExpandGroup && isVisitedSubPage) || isVisitedSubPage ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-black/60 hover:bg-[#E6F4FF] hover:text-[#1677ff] '
@@ -62,7 +63,7 @@ const SidebarGroup = ({
           {(isExpandGroup || isVisitedSubPage) && !isCollapseSidebar && (
             <ul>{size(children) > 0 && map(children, (item: IRouter) => <SidebarItem key={item.name} menuItem={item} userRoles={userRoles} />)}</ul>
           )}
-        </>
+        </Tooltip>
       ) : null}
     </>
   )
@@ -84,23 +85,25 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
   return (
     <>
       {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) ? (
-        <li
-          className={`group flex w-full items-center text-base font-normal text-black ${
-            isActive && !isCollapseSidebar ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-gray-400 hover:bg-[#E6F4FF]'
-          }`}
-        >
-          <Link
-            to={path}
-            onClick={redirectUrl}
-            className={`relative flex min-h-[48px] w-full items-center px-4 py-3 text-base group-hover:text-[#1677ff] ${isActive ? 'text-[#1677ff]' : 'text-black/60'}`}
+        <Tooltip placement='rightBottom' title={name}>
+          <li
+            className={`group flex w-full items-center text-base font-normal text-black ${
+              isActive && !isCollapseSidebar ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-gray-400 hover:bg-[#E6F4FF]'
+            }`}
           >
-            <div className='w-5' title={name}>
-              {menuItem.icon && <menuItem.icon />}
-            </div>
-            {isActive && !isCollapseSidebar ? <div className='absolute right-0 h-full w-[2px] bg-[#5776bf]' /> : null}
-            {!isCollapseSidebar ? <span className={`text-md ml-3 whitespace-nowrap ${isActive ? 'text-[#1677ff]' : ''}`}>{name}</span> : null}
-          </Link>
-        </li>
+            <Link
+              to={path}
+              onClick={redirectUrl}
+              className={`relative flex min-h-[48px] w-full items-center px-4 py-3 text-base group-hover:text-[#1677ff] ${isActive ? 'text-[#1677ff]' : 'text-black/60'}`}
+            >
+              <div className='w-5' title={name}>
+                {menuItem.icon && <menuItem.icon />}
+              </div>
+              {isActive && !isCollapseSidebar ? <div className='absolute right-0 h-full w-[2px] bg-[#5776bf]' /> : null}
+              {!isCollapseSidebar ? <span className={`text-md ml-3 whitespace-nowrap ${isActive ? 'text-[#1677ff]' : ''}`}>{name}</span> : null}
+            </Link>
+          </li>
+        </Tooltip>
       ) : null}
     </>
   )
