@@ -4,7 +4,7 @@ export const EDocumentTypeDetail: { [key in EDocumentType]: string } = {
   [EDocumentType.ANNUAL]: 'Hằng năm',
   [EDocumentType.COMMON]: 'Trong năm',
   [EDocumentType.INTERNAL]: 'Nội bộ ban',
-  [EDocumentType.STUDENT]: 'Học viên',
+  [EDocumentType.STUDENT]: 'Dành cho học viên',
 }
 export const EGoogleFileTypeDetail: { [key in EGoogleFileType]: string } = {
   [EGoogleFileType.SPREAD_SHEET]: 'Google trang tính',

@@ -1,6 +1,6 @@
 import { appState } from '@atom/appAtom'
 import { IAppState, IRouter } from '@domain/app'
-import { includes, map, size } from 'lodash'
+import { map, size } from 'lodash'
 import { MouseEvent, useCallback, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -19,7 +19,7 @@ const SidebarGroup = ({
 }: {
   menuItem: IRouter
   userRoles?: EAdminRole[]
-  menuExpand?: string
+  menuExpand?: string[]
   onExpandMenu: (e: MouseEvent<HTMLLIElement>) => void
 }) => {
   const { isCollapseSidebar } = useRecoilValue(appState)
@@ -27,11 +27,11 @@ const SidebarGroup = ({
   const { name, children, path } = menuItem
 
   const isExpandGroup = useMemo(() => {
-    return menuExpand === path
+    return menuExpand && menuExpand.includes(path)
   }, [menuExpand, path])
 
   const isVisitedSubPage = useMemo(() => {
-    return includes(pathname, menuExpand)
+    return menuExpand && pathname.startsWith(path)
   }, [pathname])
 
   return (
@@ -40,7 +40,7 @@ const SidebarGroup = ({
         <Tooltip placement='rightBottom' title={name}>
           <li
             className={`group relative flex w-full items-center text-base font-normal ${
-              (isExpandGroup && isVisitedSubPage) || isVisitedSubPage ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-black/60 hover:bg-[#E6F4FF] hover:text-[#1677ff] '
+              isExpandGroup && isVisitedSubPage ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-black/60 hover:bg-[#E6F4FF] hover:text-[#1677ff] '
             }`}
             onClick={onExpandMenu}
             data-item={path}
@@ -55,12 +55,12 @@ const SidebarGroup = ({
               </div>
               {!isCollapseSidebar ? (
                 <span>
-                  <CaretUpOutlined className={`${isExpandGroup || isVisitedSubPage ? 'rotate-180 duration-700' : 'rotate-0 duration-700'}`} />
+                  <CaretUpOutlined className={`${isExpandGroup ? 'rotate-180 duration-700' : 'rotate-0 duration-700'}`} />
                 </span>
               ) : null}
             </div>
           </li>
-          {(isExpandGroup || isVisitedSubPage) && !isCollapseSidebar && (
+          {isExpandGroup && !isCollapseSidebar && (
             <ul>{size(children) > 0 && map(children, (item: IRouter) => <SidebarItem key={item.name} menuItem={item} userRoles={userRoles} />)}</ul>
           )}
         </Tooltip>
@@ -75,7 +75,7 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
   const { pathname } = useLocation()
 
   const isActive = useMemo(() => {
-    return path === pathname
+    return pathname === path
   }, [path, pathname])
 
   const redirectUrl = () => {
@@ -121,12 +121,16 @@ const Sidebar = () => {
     }))
   }, [isCollapseSidebar, setAppState])
 
-  const [menuExpand, setMenuExpand] = useState<string>()
+  const [menuExpand, setMenuExpand] = useState<Set<string>>(new Set())
 
   const onExpandMenu = useCallback((e: MouseEvent<HTMLLIElement>) => {
     e.stopPropagation()
-    const path = e.currentTarget.getAttribute('data-item')
-    setMenuExpand((prev) => (path === prev ? undefined : path || undefined))
+    const path = e.currentTarget.getAttribute('data-item') || ''
+    setMenuExpand((prev) => {
+      if (prev.has(path)) prev.delete(path)
+      else prev.add(path)
+      return new Set(prev)
+    })
   }, [])
 
   return (
@@ -137,7 +141,7 @@ const Sidebar = () => {
           <>
             {map(ROUTES_SIDEBAR, (route: IRouter) =>
               route.children ? (
-                <SidebarGroup key={route.name} menuItem={route} userRoles={userRoles} onExpandMenu={onExpandMenu} menuExpand={menuExpand} />
+                <SidebarGroup key={route.name} menuItem={route} userRoles={userRoles} onExpandMenu={onExpandMenu} menuExpand={Array.from(menuExpand)} />
               ) : (
                 <SidebarItem key={route.name} menuItem={route} userRoles={userRoles} />
               ),

@@ -91,7 +91,7 @@ const SeasonV: FC = () => {
   ]
 
   return (
-    <div className='m-5 rounded-xl bg-white p-6 shadow-lg'>
+    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
       {isAdmin && (
         <div className='mb-4 flex justify-end'>
           <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>

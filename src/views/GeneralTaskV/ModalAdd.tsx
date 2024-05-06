@@ -118,8 +118,8 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       form.setFieldsValue({
         ...open.item,
         attachments: open.item.attachments ? open.item.attachments.map((item) => item.id) : [],
-        start_at: undefined,
-        end_at: undefined,
+        date_start_at: dayjs(open.item.start_at, 'YYYY-MM-DD'),
+        date_end_at: open.item.end_at ? dayjs(open.item.end_at, 'YYYY-MM-DD') : undefined,
       })
     else form.resetFields()
   }, [open])

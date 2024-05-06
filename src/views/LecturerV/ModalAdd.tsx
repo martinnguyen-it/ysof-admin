@@ -80,7 +80,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
             },
           ]}
         >
-          <Input placeholder='Chức danh' />
+          <Input placeholder='Cha, thầy, nhóm,...' />
         </Form.Item>
         <Form.Item label='Tên thánh' name='holy_name'>
           <Input placeholder='Martin' />

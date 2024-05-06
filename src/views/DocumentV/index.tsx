@@ -215,7 +215,7 @@ const DocumentV: FC = () => {
   }
 
   return (
-    <div className='m-5 rounded-xl bg-white p-6 shadow-lg'>
+    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
       <div className='mb-4 flex flex-wrap gap-3'>
         <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
         <Select

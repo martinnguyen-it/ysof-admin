@@ -1,4 +1,5 @@
 import { ApartmentOutlined, DashboardOutlined, FileTextOutlined, ProjectOutlined, SolutionOutlined, UserOutlined } from '@ant-design/icons'
+import { LessonIcon } from '@components/assets/svg'
 import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
 import { IRouter } from '@domain/app'
 
@@ -69,6 +70,17 @@ export const ROUTES_SIDEBAR: IRouter[] = [
       {
         path: '/student/transactions',
         name: 'Danh sách học viên',
+      },
+    ],
+  },
+  {
+    name: 'Chủ đề',
+    icon: LessonIcon,
+    path: '/chu-de',
+    children: [
+      {
+        path: '/chu-de/danh-sach-chu-de',
+        name: 'Danh sách chủ đề',
       },
     ],
   },

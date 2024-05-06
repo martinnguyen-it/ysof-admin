@@ -73,7 +73,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
             {open.item?.attachments && size(open.item.attachments) > 0 && (
               <Card>
                 <p className='mb-1 text-base font-medium'>Tài liệu đính kèm:</p>
-                <p className='flex flex-wrap gap-2'>
+                <div className='flex flex-wrap gap-2'>
                   {open.item.attachments.map((item) => (
                     <Tooltip key={item.id} placement='bottom' title='Nhấn vào đây để xem file'>
                       <Card size='small' className='!w-fit'>
@@ -86,12 +86,12 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                       </Card>
                     </Tooltip>
                   ))}
-                </p>
+                </div>
               </Card>
             )}
             <Card>
               <p className='text-base font-medium'>Mô tả:</p>
-              <div dangerouslySetInnerHTML={{ __html: open.item.description }} />
+              <p dangerouslySetInnerHTML={{ __html: open.item.description }} />
             </Card>
           </div>
         </Modal>

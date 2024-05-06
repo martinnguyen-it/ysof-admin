@@ -151,12 +151,12 @@ const LecturerV: FC = () => {
   }
 
   return (
-    <div className='m-5 rounded-xl bg-white p-6 shadow-lg'>
+    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
       <div className='mb-4 flex flex-wrap gap-3'>
         <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
       </div>
 
-      {userInfo && (userInfo.roles.includes(EAdminRole.ADMIN) || userInfo.current_season === currentSeason?.season) && (
+      {userInfo && ((userInfo.current_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
         <div className='mb-4 flex justify-end'>
           <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
             Thêm

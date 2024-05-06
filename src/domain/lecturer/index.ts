@@ -19,11 +19,11 @@ export interface IListLecturerInResponse {
 }
 
 export interface ICreateLecturer {
-  title: 'string'
-  holy_name?: 'string'
-  full_name: 'string'
-  information?: 'string'
-  contact?: 'string'
+  title: string
+  holy_name?: string
+  full_name: string
+  information?: string
+  contact?: string
 }
 
 export interface IUpdateLecturer extends Partial<ICreateLecturer> {}
