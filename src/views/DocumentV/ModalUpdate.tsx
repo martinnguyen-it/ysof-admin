@@ -74,7 +74,7 @@ const ModalUpdate: FC<IProps> = ({ open, setOpen, setReloadData }) => {
 
   return (
     <Modal title={'Sửa'} open={!!open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel} cancelText='Hủy' okText={'Sửa'}>
-      <Form layout='vertical' form={form} name='form-season' initialValues={open}>
+      <Form layout='vertical' form={form} name='form-update-doc' initialValues={open}>
         <Form.Item name='name' label='Tên'>
           <Input placeholder='Tên tài liệu' />
         </Form.Item>

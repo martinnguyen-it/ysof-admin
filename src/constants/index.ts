@@ -38,7 +38,7 @@ export const API_LIST = {
   subject: '/api/v1/subjects',
   evaluation: '/api/v1/subjects/evaluations',
   evaluationQuestion: '/api/v1/subjects/evaluation-questions',
-  studentByAdmin: '/api/v1/students',
+  student: '/api/v1/students',
 }
 
 export const ROUTES_SIDEBAR: IRouter[] = [
@@ -65,10 +65,10 @@ export const ROUTES_SIDEBAR: IRouter[] = [
   {
     name: 'Học viên',
     icon: UserOutlined,
-    path: '/student',
+    path: '/hoc-vien',
     children: [
       {
-        path: '/student/transactions',
+        path: '/hoc-vien/danh-sach-hoc-vien',
         name: 'Danh sách học viên',
       },
     ],

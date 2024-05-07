@@ -38,3 +38,9 @@ export interface IPaginationAPI {
   page_index: number
   total_pages: number
 }
+
+export enum EAccountStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  DELETED = 'deleted',
+}

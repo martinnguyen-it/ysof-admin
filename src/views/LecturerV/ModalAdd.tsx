@@ -69,7 +69,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       cancelText='Hủy'
       okText={open.item ? 'Sửa' : 'Thêm'}
     >
-      <Form layout='vertical' form={form} name='form-season'>
+      <Form layout='vertical' form={form} name='form-add-lecturer'>
         <Form.Item
           name='title'
           label='Chức danh'

@@ -1,6 +1,6 @@
 import { WarningFilled } from '@ant-design/icons'
 import { IOpenForm } from '@domain/common'
-import { deleteSubject } from '@src/services/subject'
+import { deleteStudent } from '@src/services/student'
 import { Button, Modal } from 'antd'
 import { isEmpty } from 'lodash'
 import React, { FC, useState } from 'react'
@@ -17,7 +17,7 @@ const ModalDelete: FC<IProps> = ({ open, setOpen, setReloadData }) => {
 
   const handleOk = async () => {
     setConfirmLoading(true)
-    const res = await deleteSubject(open?.item || '')
+    const res = await deleteStudent(open?.item || '')
     if (!isEmpty(res)) {
       toast.success('Xóa thành công')
       setOpen({ active: false })
@@ -45,7 +45,7 @@ const ModalDelete: FC<IProps> = ({ open, setOpen, setReloadData }) => {
         </Button>,
       ]}
     >
-      Bạn muốn xóa công việc này ?
+      Bạn muốn xóa giảng viên này ?
     </Modal>
   )
 }

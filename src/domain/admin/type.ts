@@ -1,3 +1,5 @@
+import { EAccountStatus } from '@domain/common'
+
 export interface IAdmin {
   created_at: Date
   updated_at: Date
@@ -40,12 +42,6 @@ export const EAdminRoleDetail: { [key in EAdminRole]: string } = {
   [EAdminRole.BKL]: 'Ban kỷ luật',
   [EAdminRole.BHV]: 'Ban học vụ',
   [EAdminRole.BHD]: 'Ban hoạt động',
-}
-
-export enum EAccountStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  DELETED = 'deleted',
 }
 
 export interface IAdminShort {

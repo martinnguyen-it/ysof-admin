@@ -37,7 +37,7 @@ const SidebarGroup = ({
   return (
     <>
       {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) ? (
-        <Tooltip placement='rightBottom' title={name}>
+        <Tooltip placement='rightBottom' title={name} open={isCollapseSidebar}>
           <li
             className={`group relative flex w-full items-center text-base font-normal ${
               isExpandGroup && isVisitedSubPage ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-black/60 hover:bg-[#E6F4FF] hover:text-[#1677ff] '
@@ -85,7 +85,7 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
   return (
     <>
       {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) ? (
-        <Tooltip placement='rightBottom' title={name}>
+        <Tooltip placement='rightBottom' title={name} open={isCollapseSidebar}>
           <li
             className={`group flex w-full items-center text-base font-normal text-black ${
               isActive && !isCollapseSidebar ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-gray-400 hover:bg-[#E6F4FF]'

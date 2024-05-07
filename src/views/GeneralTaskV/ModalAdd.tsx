@@ -158,7 +158,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       okText={open.item ? 'Sửa' : 'Thêm'}
       width={'80%'}
     >
-      <Form layout='vertical' form={form} name='form-season'>
+      <Form layout='vertical' form={form} name='form-add-general-task'>
         <Form.Item
           name='title'
           label='Tiêu đề'

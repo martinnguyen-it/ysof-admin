@@ -30,7 +30,7 @@ root.render(
         }}
       >
         <App />
-        <ToastContainer autoClose={1500} />
+        <ToastContainer autoClose={3000} />
       </ConfigProvider>
     </RecoilRoot>
   </React.StrictMode>,
