@@ -37,33 +37,35 @@ const SidebarGroup = ({
   return (
     <>
       {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) ? (
-        <Tooltip placement='rightBottom' title={name} open={isCollapseSidebar}>
-          <li
-            className={`group relative flex w-full items-center text-base font-normal ${
-              isExpandGroup && isVisitedSubPage ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-black/60 hover:bg-[#E6F4FF] hover:text-[#1677ff] '
-            }`}
-            onClick={onExpandMenu}
-            data-item={path}
-          >
-            <div className={`just flex min-h-[48px] w-full items-center justify-between px-4 py-3 text-base`}>
-              <div className='flex items-center'>
-                <div className='w-5' title={name}>
-                  {menuItem.icon && <menuItem.icon />}
-                </div>
+        <>
+          <Tooltip placement='rightBottom' title={name}>
+            <li
+              className={`group relative flex w-full items-center text-base font-normal ${
+                isExpandGroup && isVisitedSubPage ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-black/60 hover:bg-[#E6F4FF] hover:text-[#1677ff] '
+              }`}
+              onClick={onExpandMenu}
+              data-item={path}
+            >
+              <div className={`just flex min-h-[48px] w-full items-center justify-between px-4 py-3 text-base`}>
+                <div className='flex items-center'>
+                  <div className='w-5' title={name}>
+                    {menuItem.icon && <menuItem.icon />}
+                  </div>
 
-                <span className={`text-md ml-3 whitespace-nowrap`}>{!isCollapseSidebar ? name : null}</span>
+                  <span className={`text-md ml-3 whitespace-nowrap`}>{!isCollapseSidebar ? name : null}</span>
+                </div>
+                {!isCollapseSidebar ? (
+                  <span>
+                    <CaretUpOutlined className={`${isExpandGroup ? 'rotate-180 duration-700' : 'rotate-0 duration-700'}`} />
+                  </span>
+                ) : null}
               </div>
-              {!isCollapseSidebar ? (
-                <span>
-                  <CaretUpOutlined className={`${isExpandGroup ? 'rotate-180 duration-700' : 'rotate-0 duration-700'}`} />
-                </span>
-              ) : null}
-            </div>
-          </li>
+            </li>
+          </Tooltip>
           {isExpandGroup && !isCollapseSidebar && (
             <ul>{size(children) > 0 && map(children, (item: IRouter) => <SidebarItem key={item.name} menuItem={item} userRoles={userRoles} />)}</ul>
           )}
-        </Tooltip>
+        </>
       ) : null}
     </>
   )
@@ -85,7 +87,7 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
   return (
     <>
       {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) ? (
-        <Tooltip placement='rightBottom' title={name} open={isCollapseSidebar}>
+        <Tooltip placement='rightBottom' title={name}>
           <li
             className={`group flex w-full items-center text-base font-normal text-black ${
               isActive && !isCollapseSidebar ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-gray-400 hover:bg-[#E6F4FF]'

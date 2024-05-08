@@ -27,7 +27,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
             <Card>
               <span className='mr-2 text-base font-medium'>Tiêu đề:</span>
               <span>
-                {open.item.code} - {open.item.title} (<span className='italic'>{open.item.start_at}</span>)
+                {open.item.code} - {open.item.title} (<span className='italic'>{dayjs(open.item.start_at).format('DD-MM-YYYY')}</span>)
               </span>
             </Card>
             <Card>
