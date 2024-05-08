@@ -1,4 +1,4 @@
-import { IAdmin } from '../admin/type'
+import { IAdminInResponse } from '../admin/type'
 
 export interface ILoginRequest {
   email: string
@@ -7,5 +7,5 @@ export interface ILoginRequest {
 
 export interface ILoginResponse {
   access_token: string
-  user: IAdmin
+  user: IAdminInResponse
 }

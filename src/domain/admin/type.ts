@@ -1,6 +1,6 @@
-import { EAccountStatus } from '@domain/common'
+import { EAccountStatus, IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
 
-export interface IAdmin {
+export interface IAdminInResponse {
   created_at: Date
   updated_at: Date
   email: string
@@ -22,6 +22,33 @@ export interface IAddressAdmin {
   current: string
   original: string
   diocese: string
+}
+
+export interface IListAdminInResponse {
+  pagination: IPaginationAPI
+  data: IAdminInResponse[]
+}
+
+export interface ICreateAdmin {
+  email: string
+  roles: EAdminRole[]
+  full_name: string
+  holy_name: string
+  phone_number?: string[]
+  address?: IAddressAdmin
+  date_of_birth?: string
+  facebook?: string
+}
+
+export interface IUpdateAdmin extends Partial<ICreateAdmin> {
+  status?: EAccountStatus
+}
+
+export interface IUpdateMe extends Partial<Omit<ICreateAdmin, 'roles'>> {}
+
+export interface IParamsGetListAdmin extends IPaginationAPIParams, ISort {
+  search?: string
+  season?: number
 }
 
 export enum EAdminRole {

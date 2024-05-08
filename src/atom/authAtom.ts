@@ -1,4 +1,4 @@
-import { IAdmin } from '@domain/admin/type'
+import { IAdminInResponse } from '@domain/admin/type'
 import { atom } from 'recoil'
 import { recoilPersist } from 'recoil-persist'
 
@@ -10,7 +10,7 @@ export const accessTokenState = atom<string>({
   effects_UNSTABLE: [persistAtom],
 })
 
-export const userInfoState = atom<IAdmin>({
+export const userInfoState = atom<IAdminInResponse>({
   key: 'userInfo',
   default: undefined,
 })

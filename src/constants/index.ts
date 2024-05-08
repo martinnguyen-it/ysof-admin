@@ -1,5 +1,5 @@
 import { ApartmentOutlined, DashboardOutlined, FileTextOutlined, ProjectOutlined, SolutionOutlined, UserOutlined } from '@ant-design/icons'
-import { LessonIcon } from '@components/assets/svg'
+import { AdminIcon, LessonIcon } from '@components/assets/svg'
 import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
 import { IRouter } from '@domain/app'
 
@@ -30,7 +30,8 @@ export const API_LIST = {
   auth: {
     login: '/api/v1/admin/auth/login',
   },
-  getMe: '/api/v1/admins/me',
+  me: '/api/v1/admins/me',
+  admin: '/api/v1/admins',
   season: '/api/v1/seasons',
   document: '/api/v1/documents',
   generalTask: '/api/v1/general-tasks',
@@ -88,6 +89,11 @@ export const ROUTES_SIDEBAR: IRouter[] = [
     name: 'Giảng viên',
     path: '/giang-vien',
     icon: SolutionOutlined,
+  },
+  {
+    name: 'Ban tổ chức',
+    path: '/ban-to-chuc',
+    icon: AdminIcon,
   },
 ]
 
