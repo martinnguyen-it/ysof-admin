@@ -1,5 +1,5 @@
 import { ApartmentOutlined, DashboardOutlined, FileTextOutlined, ProjectOutlined, SolutionOutlined, UserOutlined } from '@ant-design/icons'
-import { AdminIcon, LessonIcon } from '@components/assets/svg'
+import { AdminIcon, LessonIcon, RegisterIcon } from '@components/assets/svg'
 import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
 import { IRouter } from '@domain/app'
 
@@ -40,6 +40,7 @@ export const API_LIST = {
   evaluation: '/api/v1/subjects/evaluations',
   evaluationQuestion: '/api/v1/subjects/evaluation-questions',
   student: '/api/v1/students',
+  manageForm: '/api/v1/manage-form',
 }
 
 export const ROUTES_SIDEBAR: IRouter[] = [
@@ -94,6 +95,12 @@ export const ROUTES_SIDEBAR: IRouter[] = [
     name: 'Ban tổ chức',
     path: '/ban-to-chuc',
     icon: AdminIcon,
+  },
+  {
+    name: 'Đăng ký môn học',
+    icon: RegisterIcon,
+    path: '/dang-ky-hoc',
+    role: [EAdminRole.BKL, EAdminRole.BHV],
   },
 ]
 

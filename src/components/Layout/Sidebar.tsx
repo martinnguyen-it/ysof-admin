@@ -7,7 +7,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
 import { ROUTES_SIDEBAR } from '@constants/index'
 import { EAdminRole } from '@domain/admin/type'
-import { hasMatch } from '@src/utils'
+import { hasMatch, isSuperAdmin } from '@src/utils'
 import { CaretUpOutlined, DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons'
 import { Tooltip } from 'antd'
 
@@ -86,7 +86,7 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
 
   return (
     <>
-      {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) ? (
+      {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) || isSuperAdmin(true) ? (
         <Tooltip placement='rightBottom' title={name}>
           <li
             className={`group flex w-full items-center text-base font-normal text-black ${

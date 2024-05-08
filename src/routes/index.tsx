@@ -11,6 +11,7 @@ import LecturerV from '@views/LecturerV'
 import SubjectV from '@views/SubjectV'
 import StudentV from '@views/StudentV'
 import AdminV from '@views/AdminV'
+import SubjectRegistrationV from '@views/SubjectRegistrationV'
 // import { withLoading } from '@src/hocs/withLoading.hoc'
 
 // const DashboardPage = withLoading(DashboardV)
@@ -67,6 +68,12 @@ export const routes: IRoute[] = [
   {
     path: '/ban-to-chuc',
     element: <AdminV />,
+    requiredLogin: true,
+    Layout: Layout,
+  },
+  {
+    path: '/dang-ky-hoc',
+    element: <SubjectRegistrationV />,
     requiredLogin: true,
     Layout: Layout,
   },
