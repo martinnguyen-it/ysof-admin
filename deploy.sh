@@ -17,13 +17,13 @@ fi
 echo "Deploying $2 branch to $1"
 git fetch origin && git checkout $2 && git merge origin/$2
 
-echo "Overwriting .env with .env-$1"
+echo "Overwriting .env with .env.$1"
 
 if [ "$1" = "production" ]; then
   echo 'Update environment for production'
   nano .env
 else
-  cp ".env-$1" .env
+  cp ".env.$1" .env
 fi
 
 echo "Rebuild docker"
