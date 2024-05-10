@@ -37,6 +37,7 @@ export interface IUpdateSubject extends Partial<ICreateSubject> {}
 export interface IParamsGetListSubject extends ISort {
   search?: string
   subdivision?: string
+  season?: number
   status?: ESubjectStatus
 }
 

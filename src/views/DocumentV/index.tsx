@@ -17,7 +17,7 @@ import { OPTIONS_ROLE, PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants
 import ModalAdd from './ModalAdd'
 import ModalDelete from './ModalDelete'
 import { EDocumentTypeDetail, OPTIONS_DOCUMENT_LABEL, OPTIONS_DOCUMENT_TYPE } from '@constants/document'
-import { currentSeasonState } from '@atom/seasonAtom'
+import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
 import ModalUpdate from './ModalUpdate'
 
@@ -64,17 +64,18 @@ const DocumentV: FC = () => {
     setTableQueries(initPaging)
   }, [search])
 
+  const season = useRecoilValue(selectSeasonState)
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const res = await getListDocuments({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy })
+      const res = await getListDocuments({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy, season })
       if (!isEmpty(res)) {
         setTableData(res.data)
         setPaging({ current: res.pagination.page_index, total: res.pagination.total })
       }
       setIsLoading(false)
     })()
-  }, [reloadData, tableQueries, search, roles, type, label, sort, sortBy])
+  }, [reloadData, tableQueries, search, roles, type, label, sort, sortBy, season])
 
   const columns: ColumnsType<IDocumentInResponse> = [
     {

@@ -11,7 +11,7 @@ import { isArray, isEmpty } from 'lodash'
 import dayjs from 'dayjs'
 import { OPTIONS_ROLE, PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
 import ModalDelete from './ModalDelete'
-import { currentSeasonState } from '@atom/seasonAtom'
+import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
 import { getListGeneralTasks } from '@src/services/generalTask'
 import { EGeneralTaskType, IGeneralTaskInResponse } from '@domain/generalTask'
@@ -62,17 +62,18 @@ const GeneralTaskV: FC = () => {
     setTableQueries(initPaging)
   }, [search])
 
+  const season = useRecoilValue(selectSeasonState)
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const res = await getListGeneralTasks({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy })
+      const res = await getListGeneralTasks({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy, season })
       if (!isEmpty(res)) {
         setTableData(res.data)
         setPaging({ current: res.pagination.page_index, total: res.pagination.total })
       }
       setIsLoading(false)
     })()
-  }, [reloadData, tableQueries, search, roles, type, label, sort, sortBy])
+  }, [reloadData, tableQueries, search, roles, type, label, sort, sortBy, season])
 
   const columns: ColumnsType<IGeneralTaskInResponse> = [
     {

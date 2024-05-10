@@ -10,7 +10,7 @@ import { userInfoState } from '@atom/authAtom'
 import { isArray, isEmpty } from 'lodash'
 import dayjs from 'dayjs'
 import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
-import { currentSeasonState } from '@atom/seasonAtom'
+import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
 import { EAdminRole, IAdminInResponse } from '@domain/admin/type'
 import { getListAdmins } from '@src/services/admin'
@@ -56,17 +56,18 @@ const AdminV: FC = () => {
     setTableQueries(initPaging)
   }, [search])
 
+  const season = useRecoilValue(selectSeasonState)
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const res = await getListAdmins({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy })
+      const res = await getListAdmins({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy, season })
       if (!isEmpty(res)) {
         setTableData(res.data)
         setPaging({ current: res.pagination.page_index, total: res.pagination.total })
       }
       setIsLoading(false)
     })()
-  }, [tableQueries, search, sort, sortBy])
+  }, [tableQueries, search, sort, sortBy, season])
 
   const columns: ColumnsType<IAdminInResponse> = [
     {

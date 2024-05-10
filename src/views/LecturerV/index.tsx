@@ -11,7 +11,7 @@ import { isArray, isEmpty } from 'lodash'
 import dayjs from 'dayjs'
 import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
 import ModalDelete from './ModalDelete'
-import { currentSeasonState } from '@atom/seasonAtom'
+import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
 import { EAdminRole } from '@domain/admin/type'
 import { ILecturerInResponse } from '@domain/lecturer'
@@ -58,6 +58,7 @@ const LecturerV: FC = () => {
     setTableQueries(initPaging)
   }, [search])
 
+  const season = useRecoilValue(selectSeasonState)
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
@@ -68,7 +69,7 @@ const LecturerV: FC = () => {
       }
       setIsLoading(false)
     })()
-  }, [reloadData, tableQueries, search, sort, sortBy])
+  }, [reloadData, tableQueries, search, sort, sortBy, season])
 
   const columns: ColumnsType<ILecturerInResponse> = [
     {

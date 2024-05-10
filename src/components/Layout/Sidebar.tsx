@@ -1,7 +1,7 @@
 import { appState } from '@atom/appAtom'
 import { IAppState, IRouter } from '@domain/app'
 import { map, size } from 'lodash'
-import { MouseEvent, useCallback, useMemo, useState } from 'react'
+import { MouseEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
@@ -9,7 +9,10 @@ import { ROUTES_SIDEBAR } from '@constants/index'
 import { EAdminRole } from '@domain/admin/type'
 import { hasMatch, isSuperAdmin } from '@src/utils'
 import { CaretUpOutlined, DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons'
-import { Tooltip } from 'antd'
+import { Select, Tooltip } from 'antd'
+import { ISeasonResponse } from '@domain/season'
+import { getListSeasons } from '@src/services/season'
+import { selectSeasonState } from '@atom/seasonAtom'
 
 const SidebarGroup = ({
   menuItem,
@@ -113,6 +116,7 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
 
 const Sidebar = () => {
   const userInfo = useRecoilValue(userInfoState)
+  const [selectSeason, setSelectSeason] = useRecoilState(selectSeasonState)
   const userRoles = userInfo?.roles
 
   const [{ isCollapseSidebar }, setAppState] = useRecoilState(appState)
@@ -135,10 +139,36 @@ const Sidebar = () => {
     })
   }, [])
 
+  const [listSeason, setListSeason] = useState<ISeasonResponse[]>([])
+
+  useEffect(() => {
+    ;(async () => {
+      const data = await getListSeasons({ sort_by: 'season' })
+      setListSeason(data || [])
+    })()
+  }, [userInfo])
+
+  const optionSeasons = useMemo(() => {
+    if (userInfo) {
+      if (isSuperAdmin(true)) {
+        return listSeason.map((item) => ({ value: item.season, label: item.season }))
+      }
+      return listSeason.filter((item) => item.season <= userInfo.current_season).map((item) => ({ value: item.season, label: item.season }))
+    }
+  }, [listSeason, userInfo])
+
+  const handleChangeSeason = (val: string) => {
+    setSelectSeason(Number(val))
+  }
+
   return (
     <div className='fixed z-10 h-full bg-white shadow-lg transition-all duration-200 ease-out'>
       <div className={`${isCollapseSidebar ? 'w-14' : 'w-60'}`}>
         <div className='flex h-12 items-center justify-center text-xl font-semibold text-black'>{!isCollapseSidebar ? 'YSOF' : null}</div>
+        <div className='my-3 flex h-12 items-center justify-center gap-2'>
+          <span className='font-bold'>MÙA</span>
+          <Select value={(selectSeason && String(selectSeason)) || ''} style={{ width: 120 }} onChange={handleChangeSeason} options={optionSeasons} />
+        </div>
         <ul className='max-h-[calc(100vh-146px)] overflow-auto border-gray-200'>
           <>
             {map(ROUTES_SIDEBAR, (route: IRouter) =>

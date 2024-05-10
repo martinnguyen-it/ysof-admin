@@ -17,6 +17,7 @@ import { useDebounce } from '@src/hooks/useDebounce'
 import dayjs from 'dayjs'
 import 'quill/dist/quill.snow.css' // Add css for snow theme
 import { IOpenFormWithMode } from '@domain/common'
+import { selectSeasonState } from '@atom/seasonAtom'
 
 interface IProps {
   open: IOpenFormWithMode<IGeneralTaskInResponse>
@@ -54,16 +55,17 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
 
   const searchDebounce = useDebounce(searchDocuments, 300)
 
+  const season = useRecoilValue(selectSeasonState)
   useEffect(() => {
     ;(async () => {
       setLoadingGetDocuments(true)
-      const res = await getListDocuments({ search: searchDebounce })
+      const res = await getListDocuments({ search: searchDebounce, season })
       if (!isEmpty(res)) {
         setDocuments(res.data)
       }
       setLoadingGetDocuments(false)
     })()
-  }, [searchDebounce])
+  }, [searchDebounce, season])
 
   const handleOk = async () => {
     setConfirmLoading(true)

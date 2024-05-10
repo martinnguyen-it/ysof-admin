@@ -10,7 +10,7 @@ import { userInfoState } from '@atom/authAtom'
 import { isArray, isEmpty } from 'lodash'
 import dayjs from 'dayjs'
 import ModalDelete from './ModalDelete'
-import { currentSeasonState } from '@atom/seasonAtom'
+import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
 import { hasMatch, isSuperAdmin } from '@src/utils'
 import { EAdminRole } from '@domain/admin/type'
 import { ESubjectStatus, ISubjectInResponse } from '@domain/subject'
@@ -50,16 +50,17 @@ const SubjectV: FC = () => {
     setOpenDel({ active: true, item: e.currentTarget.id })
   }
 
+  const season = useRecoilValue(selectSeasonState)
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const data = await getListSubjects({ search, subdivision, status, sort, sort_by: sortBy })
+      const data = await getListSubjects({ search, subdivision, status, sort, sort_by: sortBy, season })
       if (!isEmpty(data) || isArray(data)) {
         setTableData(data)
       }
       setIsLoading(false)
     })()
-  }, [reloadData, subdivision, search, status, sort, sortBy])
+  }, [reloadData, subdivision, search, status, sort, sortBy, season])
 
   const columns: ColumnsType<ISubjectInResponse> = [
     {
