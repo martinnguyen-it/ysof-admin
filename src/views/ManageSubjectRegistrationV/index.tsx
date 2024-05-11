@@ -12,7 +12,7 @@ import { getManageForm, updateManageForm } from '@src/services/manageForm'
 import { toast } from 'react-toastify'
 import { EManageFormStatusDetail } from '@constants/manageForm'
 
-const SubjectRegistrationV: FC = () => {
+const ManageSubjectRegistrationV: FC = () => {
   const [listSubject, setListSubject] = useState<ISubjectInResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
@@ -160,4 +160,4 @@ ký nào của học viên.`)
   )
 }
 
-export default SubjectRegistrationV
+export default ManageSubjectRegistrationV

@@ -9,4 +9,5 @@ export interface IRouter {
   children?: IRouter[]
   icon?: React.FC<any> | React.FunctionComponent<any>
   role?: string[]
+  requireCurrent?: boolean
 }

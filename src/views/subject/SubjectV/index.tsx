@@ -65,6 +65,7 @@ const SubjectV: FC = () => {
   const columns: ColumnsType<ISubjectInResponse> = [
     {
       title: 'STT',
+      align: 'center',
       dataIndex: 'index',
       key: 'index',
       width: '60px',
@@ -73,6 +74,7 @@ const SubjectV: FC = () => {
     {
       title: 'Mã chủ đề',
       dataIndex: 'code',
+      align: 'center',
       sorter: true,
       width: '120px',
       key: 'code',

@@ -12,7 +12,7 @@ import { CaretUpOutlined, DoubleLeftOutlined, DoubleRightOutlined } from '@ant-d
 import { Select, Tooltip } from 'antd'
 import { ISeasonResponse } from '@domain/season'
 import { getListSeasons } from '@src/services/season'
-import { selectSeasonState } from '@atom/seasonAtom'
+import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
 
 const SidebarGroup = ({
   menuItem,
@@ -27,7 +27,9 @@ const SidebarGroup = ({
 }) => {
   const { isCollapseSidebar } = useRecoilValue(appState)
   const { pathname } = useLocation()
-  const { name, children, path } = menuItem
+  const { name, children, path, requireCurrent } = menuItem
+  const selectSeason = useRecoilValue(selectSeasonState)
+  const currentSeason = useRecoilValue(currentSeasonState)
 
   const isExpandGroup = useMemo(() => {
     return menuExpand && menuExpand.includes(path)
@@ -39,12 +41,12 @@ const SidebarGroup = ({
 
   return (
     <>
-      {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) ? (
+      {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles) && requireCurrent && selectSeason === currentSeason?.season) ? (
         <>
           <Tooltip placement='rightBottom' title={name}>
             <li
               className={`group relative flex w-full items-center text-base font-normal ${
-                isExpandGroup && isVisitedSubPage ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-black/60 hover:bg-[#E6F4FF] hover:text-[#1677ff] '
+                isVisitedSubPage ? 'bg-[#E6F4FF] text-[#1677ff]' : 'text-black/60 hover:bg-[#E6F4FF] hover:text-[#1677ff] '
               }`}
               onClick={onExpandMenu}
               data-item={path}
@@ -75,9 +77,11 @@ const SidebarGroup = ({
 }
 
 const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: EAdminRole[] }) => {
-  const { path, name } = menuItem
+  const { path, name, requireCurrent } = menuItem
   const [{ isCollapseSidebar }, setAppState] = useRecoilState(appState)
   const { pathname } = useLocation()
+  const selectSeason = useRecoilValue(selectSeasonState)
+  const currentSeason = useRecoilValue(currentSeasonState)
 
   const isActive = useMemo(() => {
     return pathname === path
@@ -89,7 +93,8 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
 
   return (
     <>
-      {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) || isSuperAdmin(true) ? (
+      {(!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) || isSuperAdmin(true)) &&
+      !(requireCurrent && selectSeason !== currentSeason?.season) ? (
         <Tooltip placement='rightBottom' title={name}>
           <li
             className={`group flex w-full items-center text-base font-normal text-black ${

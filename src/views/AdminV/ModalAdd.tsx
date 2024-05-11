@@ -25,7 +25,6 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
-      console.log('🚀 ~ handleOk ~ data:', data)
       delete data.date_of_birth_temp
       if (open.mode === 'update') {
         if (open?.item) {

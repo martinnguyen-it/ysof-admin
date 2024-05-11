@@ -8,10 +8,11 @@ import Layout from '@components/Layout'
 import DocumentV from '@views/DocumentV'
 import GeneralTaskV from '@views/GeneralTaskV'
 import LecturerV from '@views/LecturerV'
-import SubjectV from '@views/SubjectV'
+import SubjectV from '@views/subject/SubjectV'
 import StudentV from '@views/StudentV'
 import AdminV from '@views/AdminV'
-import SubjectRegistrationV from '@views/SubjectRegistrationV'
+import SubjectRegistrationV from '@views/ManageSubjectRegistrationV'
+import ListSubjectRegistrationV from '@views/subject/ListSubjectRegistrationV'
 // import { withLoading } from '@src/hocs/withLoading.hoc'
 
 // const DashboardPage = withLoading(DashboardV)
@@ -60,6 +61,12 @@ export const routes: IRoute[] = [
     Layout: Layout,
   },
   {
+    path: '/chu-de/dang-ky-mon',
+    element: <ListSubjectRegistrationV />,
+    requiredLogin: true,
+    Layout: Layout,
+  },
+  {
     path: '/hoc-vien/danh-sach-hoc-vien',
     element: <StudentV />,
     requiredLogin: true,
@@ -72,7 +79,7 @@ export const routes: IRoute[] = [
     Layout: Layout,
   },
   {
-    path: '/dang-ky-hoc',
+    path: '/dang-ky-mon',
     element: <SubjectRegistrationV />,
     requiredLogin: true,
     Layout: Layout,

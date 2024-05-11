@@ -191,7 +191,7 @@ const StudentV: FC = () => {
     setSearch(val)
   }
   const onChangeGroup = (val: string) => {
-    setGroup(Number(val))
+    setGroup(val ? Number(val) : undefined)
   }
 
   const handleTableChange: TableProps<IStudentInResponse>['onChange'] = (_pagination, _filters, sorter) => {
@@ -216,7 +216,7 @@ const StudentV: FC = () => {
           className='w-60'
           placeholder='Nhóm'
           size='large'
-          onSearch={onChangeGroup}
+          onChange={onChangeGroup}
           showSearch
           allowClear
         />
