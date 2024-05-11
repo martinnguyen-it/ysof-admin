@@ -41,7 +41,7 @@ const SidebarGroup = ({
 
   return (
     <>
-      {!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles) && requireCurrent && selectSeason === currentSeason?.season) ? (
+      {(!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles))) && !(requireCurrent && selectSeason !== currentSeason?.season) ? (
         <>
           <Tooltip placement='rightBottom' title={name}>
             <li
@@ -93,7 +93,9 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
 
   return (
     <>
-      {(!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) || isSuperAdmin(true)) &&
+      {(!menuItem.role ||
+        (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) ||
+        (!(size(menuItem?.role) && menuItem.role.includes(EAdminRole.ADMIN)) && isSuperAdmin(true))) &&
       !(requireCurrent && selectSeason !== currentSeason?.season) ? (
         <Tooltip placement='rightBottom' title={name}>
           <li

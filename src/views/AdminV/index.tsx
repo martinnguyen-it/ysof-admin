@@ -12,7 +12,7 @@ import dayjs from 'dayjs'
 import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
 import { selectSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
-import { IAdminInResponse } from '@domain/admin/type'
+import { EAdminRole, EAdminRoleDetail, IAdminInResponse } from '@domain/admin/type'
 import { getListAdmins } from '@src/services/admin'
 import ModalAdd from './ModalAdd'
 // import ModalAdd from './ModalAdd'
@@ -87,6 +87,12 @@ const AdminV: FC = () => {
           {record.holy_name} {record.full_name}
         </>
       ),
+    },
+    {
+      title: 'Thuộc ban',
+      dataIndex: 'roles',
+      key: 'roles',
+      render: (text: EAdminRole[]) => text.map((item) => EAdminRoleDetail[item]).join(', '),
     },
     {
       title: 'Ngày sinh',

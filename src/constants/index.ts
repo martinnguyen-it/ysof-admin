@@ -43,6 +43,7 @@ export const API_LIST = {
   evaluationQuestion: '/api/v1/subjects/evaluation-questions',
   student: '/api/v1/students',
   manageForm: '/api/v1/manage-form',
+  auditLog: '/api/v1/audit-logs',
 }
 
 export const ROUTES_SIDEBAR: IRouter[] = [
@@ -117,6 +118,13 @@ export const ROUTES_SIDEBAR: IRouter[] = [
         requireCurrent: true,
       },
     ],
+  },
+  {
+    name: 'Nhật ký chỉnh sửa',
+    path: '/nhat-ky-chinh-sua',
+    icon: AdminIcon,
+    requireCurrent: true,
+    role: [EAdminRole.ADMIN],
   },
 ]
 
