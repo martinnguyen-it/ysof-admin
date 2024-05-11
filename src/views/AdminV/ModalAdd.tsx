@@ -1,38 +1,43 @@
-import { Form, Input, Modal } from 'antd'
+import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
 import { isEmpty } from 'lodash'
 import React, { Dispatch, DispatchWithoutAction, FC, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { IOpenFormWithMode } from '@domain/common'
-import { ILecturerInResponse } from '@domain/lecturer'
-import { createLecturer, updateLecturer } from '@src/services/lecturer'
+import { EAdminRole, IAdminInResponse } from '@domain/admin/type'
+import { createAdmin, updateAdmin } from '@src/services/admin'
+import { OPTIONS_ROLE } from '@constants/index'
+import dayjs from 'dayjs'
 
 interface IProps {
-  open: IOpenFormWithMode<ILecturerInResponse>
-  setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<ILecturerInResponse>>>
+  open: IOpenFormWithMode<IAdminInResponse>
+  setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<IAdminInResponse>>>
   setReloadData: DispatchWithoutAction
 }
 
 const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
   const [form] = Form.useForm()
   const [confirmLoading, setConfirmLoading] = useState(false)
+  const [dateOfBirth, setDateOfBirth] = useState<string>()
 
   const handleOk = async () => {
     setConfirmLoading(true)
-    let res: ILecturerInResponse
+    let res: IAdminInResponse
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
-      delete data.date_start_at
-      delete data.date_end_at
-      if (open?.item) {
-        res = await updateLecturer(open.item.id, data)
-        if (!isEmpty(res)) {
-          toast.success('Sửa thành công')
-          setOpen({ active: false, mode: 'add' })
-          setReloadData()
+      console.log('🚀 ~ handleOk ~ data:', data)
+      delete data.date_of_birth_temp
+      if (open.mode === 'update') {
+        if (open?.item) {
+          res = await updateAdmin(open.item.id, { ...data, date_of_birth: dateOfBirth || undefined })
+          if (!isEmpty(res)) {
+            toast.success('Sửa thành công')
+            setOpen({ active: false, mode: 'add' })
+            setReloadData()
+          }
         }
       } else {
-        res = await createLecturer(data)
+        res = await createAdmin({ ...data, date_of_birth: dateOfBirth || undefined })
         if (!isEmpty(res)) {
           toast.success('Thêm thành công')
           setOpen({ active: false, mode: 'add' })
@@ -53,11 +58,17 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
     if (open?.item)
       form.setFieldsValue({
         ...open.item,
-        start_at: undefined,
-        end_at: undefined,
+        date_of_birth: undefined,
+        date_of_birth_temp: open.item.date_of_birth ? dayjs(open.item.date_of_birth, 'YYYY-MM-DD') : undefined,
       })
     else form.resetFields()
   }, [open])
+
+  const optionsRole = OPTIONS_ROLE.filter((item) => item.value != EAdminRole.ADMIN)
+
+  const onChangeDateOfBirth: DatePickerProps['onChange'] = (_, dateString) => {
+    setDateOfBirth(dayjs(dateString as unknown as string, 'DD/MM/YYYY').format('YYYY-MM-DD'))
+  }
 
   return (
     <Modal
@@ -69,20 +80,17 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       cancelText='Hủy'
       okText={open.item ? 'Sửa' : 'Thêm'}
     >
-      <Form layout='vertical' form={form} name='form-add-lecturer'>
+      <Form layout='vertical' form={form} name='form-add-admin'>
         <Form.Item
-          name='title'
-          label='Chức danh'
+          label='Tên thánh'
+          name='holy_name'
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp chức danh',
+              message: 'Vui lòng nhâp tên thánh',
             },
           ]}
         >
-          <Input placeholder='Cha, thầy, nhóm,...' />
-        </Form.Item>
-        <Form.Item label='Tên thánh' name='holy_name'>
           <Input placeholder='Martin' />
         </Form.Item>
         <Form.Item
@@ -97,11 +105,51 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
         >
           <Input placeholder='Nhập họ và tên' />
         </Form.Item>
-        <Form.Item label='Thông tin cơ bản (Lưu ý: Học viên sẽ thấy phần này)' name='information'>
-          <Input.TextArea rows={3} placeholder='Tốt nghiệp, nơi đang phục vụ,...' />
+        <Form.Item
+          label='Email'
+          name='email'
+          rules={[
+            {
+              required: true,
+              message: 'Vui lòng nhâp email',
+            },
+            {
+              type: 'email',
+              message: 'Email không đúng định dạng',
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
-        <Form.Item label='Thông tin liên hệ' name='contact'>
-          <Input.TextArea rows={3} placeholder='Email, số điện thoại,...' />
+        <Form.Item
+          name='roles'
+          label='Thuộc ban'
+          rules={[
+            {
+              required: true,
+              message: 'Vui lòng chọn ban',
+            },
+          ]}
+        >
+          <Select allowClear mode='multiple' placeholder='Chọn ban' options={optionsRole} />
+        </Form.Item>
+        <Form.Item name='phone_number' label='Số điện thoại'>
+          <Select allowClear mode='tags' placeholder='Có thể nhập nhiều số' showSearch />
+        </Form.Item>
+        <Form.Item name={['address', 'original']} label='Quê quán'>
+          <Input />
+        </Form.Item>
+        <Form.Item name={['address', 'current']} label='Nơi ở hiện tại'>
+          <Input />
+        </Form.Item>
+        <Form.Item name={['address', 'diocese']} label='Giáo phận'>
+          <Input />
+        </Form.Item>
+        <Form.Item name='date_of_birth_temp' label='Ngày sinh'>
+          <DatePicker format={'DD/MM/YYYY'} onChange={onChangeDateOfBirth} />
+        </Form.Item>
+        <Form.Item name='facebook' label='Facebook'>
+          <Input />
         </Form.Item>
       </Form>
     </Modal>

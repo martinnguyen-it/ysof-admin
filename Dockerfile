@@ -6,7 +6,7 @@ RUN mkdir -p /usr/app/
 WORKDIR /usr/app
 
 COPY package*.json yarn.lock /usr/app/
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 COPY . .
 RUN yarn run build

@@ -1,30 +1,30 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { ESort, IOpenForm, IOpenFormWithMode } from '@domain/common'
+import { ESort, IOpenFormWithMode } from '@domain/common'
 import { Button, Flex, Input, Pagination } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
-import { FC, MouseEvent, useEffect, useState } from 'react'
+import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
 import { isArray, isEmpty } from 'lodash'
 import dayjs from 'dayjs'
-import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
-import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
+import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
+import { selectSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
-import { EAdminRole, IAdminInResponse } from '@domain/admin/type'
+import { IAdminInResponse } from '@domain/admin/type'
 import { getListAdmins } from '@src/services/admin'
+import ModalAdd from './ModalAdd'
 // import ModalAdd from './ModalAdd'
 // import ModalView from './ModalView'
 
 const AdminV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
-  const currentSeason = useRecoilValue(currentSeasonState)
   const [openForm, setOpenForm] = useState<IOpenFormWithMode<IAdminInResponse>>({ active: false, mode: 'add' })
   const [tableData, setTableData] = useState<IAdminInResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
   // const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
-  // const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
+  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
 
   const initPaging = {
     current: 1,
@@ -44,7 +44,7 @@ const AdminV: FC = () => {
   const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     const item = tableData.find((val) => val.id === e.currentTarget.id)
-    setOpenForm({ active: true, mode: 'add', item })
+    setOpenForm({ active: true, mode: 'update', item })
   }
 
   // const onClickDelete = (e: MouseEvent<HTMLButtonElement>) => {
@@ -67,7 +67,7 @@ const AdminV: FC = () => {
       }
       setIsLoading(false)
     })()
-  }, [tableQueries, search, sort, sortBy, season])
+  }, [reloadData, tableQueries, search, sort, sortBy, season])
 
   const columns: ColumnsType<IAdminInResponse> = [
     {
@@ -148,7 +148,7 @@ const AdminV: FC = () => {
           </Flex>
         )
       },
-      hidden: !userInfo || isSuperAdmin(true),
+      hidden: !(userInfo && isSuperAdmin(true)),
     },
   ]
 
@@ -219,8 +219,8 @@ const AdminV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-      {/* {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
-      {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />} */}
+      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
+      {/* {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />} */}
       {/* {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />} */}
     </div>
   )
