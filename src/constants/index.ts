@@ -86,11 +86,6 @@ export const ROUTES_SIDEBAR: IRouter[] = [
         path: '/chu-de/danh-sach-chu-de',
         name: 'Danh sách chủ đề',
       },
-      {
-        path: '/chu-de/dang-ky-mon',
-        name: 'Kết quả đăng ký',
-        requireCurrent: true,
-      },
     ],
   },
   {
@@ -102,13 +97,26 @@ export const ROUTES_SIDEBAR: IRouter[] = [
     name: 'Ban tổ chức',
     path: '/ban-to-chuc',
     icon: AdminIcon,
+    requireCurrent: true,
   },
   {
     name: 'Đăng ký môn học',
     icon: RegisterIcon,
     path: '/dang-ky-mon',
     requireCurrent: true,
-    role: [EAdminRole.BKL, EAdminRole.BHV],
+    children: [
+      {
+        path: '/dang-ky-mon/quan-ly-form',
+        name: 'Quản lý form',
+        requireCurrent: true,
+        role: [EAdminRole.BKL, EAdminRole.BHV],
+      },
+      {
+        path: '/dang-ky-mon/ket-qua-dang-ky',
+        name: 'Kết quả đăng ký',
+        requireCurrent: true,
+      },
+    ],
   },
 ]
 

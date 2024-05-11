@@ -61,12 +61,7 @@ export const routes: IRoute[] = [
     requiredLogin: true,
     Layout: Layout,
   },
-  {
-    path: '/chu-de/dang-ky-mon',
-    element: <ListSubjectRegistrationV />,
-    requiredLogin: true,
-    Layout: Layout,
-  },
+
   {
     path: '/hoc-vien/danh-sach-hoc-vien',
     element: <StudentV />,
@@ -80,8 +75,14 @@ export const routes: IRoute[] = [
     Layout: Layout,
   },
   {
-    path: '/dang-ky-mon',
+    path: '/dang-ky-mon/quan-ly-form',
     element: <SubjectRegistrationV />,
+    requiredLogin: true,
+    Layout: Layout,
+  },
+  {
+    path: '/dang-ky-mon/ket-qua-dang-ky',
+    element: <ListSubjectRegistrationV />,
     requiredLogin: true,
     Layout: Layout,
   },
