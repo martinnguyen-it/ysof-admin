@@ -13,6 +13,7 @@ import StudentV from '@views/StudentV'
 import AdminV from '@views/AdminV'
 import SubjectRegistrationV from '@views/ManageSubjectRegistrationV'
 import ListSubjectRegistrationV from '@views/subject/ListSubjectRegistrationV'
+import ProfileV from '@views/ProfileV'
 // import { withLoading } from '@src/hocs/withLoading.hoc'
 
 // const DashboardPage = withLoading(DashboardV)
@@ -81,6 +82,12 @@ export const routes: IRoute[] = [
   {
     path: '/dang-ky-mon',
     element: <SubjectRegistrationV />,
+    requiredLogin: true,
+    Layout: Layout,
+  },
+  {
+    path: '/tai-khoan',
+    element: <ProfileV />,
     requiredLogin: true,
     Layout: Layout,
   },

@@ -32,9 +32,14 @@ const Header: FC = () => {
     {
       key: '1',
       label: (
-        <>
+        <Link
+          to={'/tai-khoan'}
+          onClick={() => {
+            setAppState((prev) => ({ ...prev, menuActive: 'Tài khoản' }))
+          }}
+        >
           <Avatar src={userInfo?.avatar || '/images/avatar.png'} size={28} /> {userInfo?.full_name || ''}
-        </>
+        </Link>
       ),
     },
     {

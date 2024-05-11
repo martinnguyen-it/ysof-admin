@@ -29,6 +29,7 @@ export const DEFAULT_GET_LIST_QUERY = {
 export const API_LIST = {
   auth: {
     login: '/api/v1/admin/auth/login',
+    changePassword: '/api/v1/admin/auth/change-password',
   },
   me: '/api/v1/admins/me',
   admin: '/api/v1/admins',
