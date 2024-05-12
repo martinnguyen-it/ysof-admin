@@ -171,10 +171,26 @@ const Sidebar = () => {
   return (
     <div className='fixed z-10 h-full bg-white shadow-lg transition-all duration-200 ease-out'>
       <div className={`${isCollapseSidebar ? 'w-14' : 'w-60'}`}>
-        <div className='flex h-12 items-center justify-center text-xl font-semibold text-black'>{!isCollapseSidebar ? 'YSOF' : null}</div>
-        <div className='my-3 flex h-12 items-center justify-center gap-2'>
-          <span className='font-bold'>MÙA</span>
-          <Select value={(selectSeason && String(selectSeason)) || ''} style={{ width: 120 }} onChange={handleChangeSeason} options={optionSeasons} />
+        <div className='flex h-12 items-center justify-center text-xl font-semibold text-black'>
+          <Link
+            onClick={() => {
+              setAppState((prev) => ({ ...prev, menuActive: '' }))
+            }}
+            to='/'
+            className='flex items-center gap-2'
+          >
+            <img alt='' className='size-8 rounded-md' src='/logo128.png' /> {!isCollapseSidebar ? 'YSOF' : null}
+          </Link>
+        </div>
+        <div className='flex h-12 items-center justify-center gap-4'>
+          {!isCollapseSidebar ? <span className='font-bold'>MÙA</span> : null}
+          <Select
+            value={(selectSeason && String(selectSeason)) || ''}
+            style={{ width: 50, textAlign: 'center' }}
+            onChange={handleChangeSeason}
+            options={optionSeasons}
+            suffixIcon={null}
+          />
         </div>
         <ul className='max-h-[calc(100vh-146px)] overflow-auto border-gray-200'>
           <>
