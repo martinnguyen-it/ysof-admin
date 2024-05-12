@@ -5,7 +5,7 @@ import LoginForm from '@src/components/auth/login-form'
 import { APILogin } from '@src/services/auth'
 import { isEmpty } from 'lodash'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 const LoginV = () => {
@@ -13,17 +13,19 @@ const LoginV = () => {
 
   const setInfoUser = useSetRecoilState(userInfoState)
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const backURL = new URLSearchParams(location.search).get('back_url')
 
   const onLogin = async (val: ILoginRequest) => {
     const data = await APILogin(val)
     if (!isEmpty(data)) {
       setAccessToken(data.access_token)
       setInfoUser(data.user)
-      navigate('/')
     }
   }
   useEffect(() => {
-    if (accessToken != '') navigate('/')
+    if (accessToken != '') navigate(backURL || '/')
   }, [accessToken])
 
   return (
