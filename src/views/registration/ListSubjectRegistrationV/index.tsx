@@ -11,7 +11,7 @@ import { getListSubjects } from '@src/services/subject'
 import { ISubjectInResponse } from '@domain/subject'
 import dayjs from 'dayjs'
 
-const StudentV: FC = () => {
+const ListSubjectRegistrationV: FC = () => {
   const [tableData, setTableData] = useState<ISubjectRegistrationInResponse[]>([])
   const [listSubject, setListSubject] = useState<ISubjectInResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -169,4 +169,4 @@ const StudentV: FC = () => {
   )
 }
 
-export default StudentV
+export default ListSubjectRegistrationV

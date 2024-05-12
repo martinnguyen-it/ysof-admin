@@ -11,10 +11,11 @@ import LecturerV from '@views/LecturerV'
 import SubjectV from '@views/SubjectV'
 import StudentV from '@views/StudentV'
 import AdminV from '@views/AdminV'
-import SubjectRegistrationV from '@views/registration/ManageSubjectRegistrationV'
 import ListSubjectRegistrationV from '@views/registration/ListSubjectRegistrationV'
 import ProfileV from '@views/ProfileV'
 import AuditLogV from '@views/AuditLogV'
+import ManageSubjectRegistrationV from '@views/registration/ManageSubjectRegistrationV'
+import SendEmailNotificationSubjectV from '@views/SendEmailNotificationSubjectV'
 // import { withLoading } from '@src/hocs/withLoading.hoc'
 
 // const DashboardPage = withLoading(DashboardV)
@@ -62,7 +63,13 @@ export const routes: IRoute[] = [
     requiredLogin: true,
     Layout: Layout,
   },
-
+  {
+    path: '/chu-de/gui-email',
+    element: <SendEmailNotificationSubjectV />,
+    requiredLogin: true,
+    requiredCurrent: true,
+    Layout: Layout,
+  },
   {
     path: '/hoc-vien/danh-sach-hoc-vien',
     element: <StudentV />,
@@ -77,14 +84,16 @@ export const routes: IRoute[] = [
   },
   {
     path: '/dang-ky-mon/quan-ly-form',
-    element: <SubjectRegistrationV />,
+    element: <ManageSubjectRegistrationV />,
     requiredLogin: true,
+    requiredCurrent: true,
     Layout: Layout,
   },
   {
     path: '/dang-ky-mon/ket-qua-dang-ky',
     element: <ListSubjectRegistrationV />,
     requiredLogin: true,
+    requiredCurrent: true,
     Layout: Layout,
   },
   {
@@ -97,6 +106,7 @@ export const routes: IRoute[] = [
     path: '/nhat-ky-chinh-sua',
     element: <AuditLogV />,
     requiredLogin: true,
+    requiredCurrent: true,
     Layout: Layout,
   },
   {

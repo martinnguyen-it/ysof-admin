@@ -17,6 +17,27 @@ export const getSubjectDetail = async (id: string): Promise<ISubjectInResponse> 
   return response?.data
 }
 
+export const getSubjectNextMostRecent = async (): Promise<ISubjectInResponse & { message?: string }> => {
+  const response = await get({
+    url: API_LIST.subject + '/next-most-recent',
+  })
+  return response?.data
+}
+
+export const getSubjectLastSentStudentRecent = async (): Promise<ISubjectInResponse & { message?: string }> => {
+  const response = await get({
+    url: API_LIST.subject + '/last-sent-student',
+  })
+  return response?.data
+}
+
+export const subjectSendNotification = async (subjectId: string) => {
+  const response = await post({
+    url: API_LIST.subjectSendNotification + '/' + subjectId,
+  })
+  return response?.data
+}
+
 export const createSubject = async (data: ICreateSubject): Promise<ISubjectInResponse> => {
   const response = await post({
     url: API_LIST.subject,

@@ -156,9 +156,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
       cancelText='Hủy'
+      className='sm:!w-[70vw] lg:!w-[60vw]'
       okText={open.item ? 'Sửa' : 'Thêm'}
     >
-      <Form layout='vertical' form={form} name='form-subject'>
+      <Form layout='vertical' form={form} name='form-subject' className='grid grid-cols-1 gap-x-3 sm:grid-cols-2'>
         {(userInfo.roles.includes(EAdminRole.BHV) || isSuperAdmin(true)) && (
           <>
             <Form.Item
@@ -259,7 +260,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
             <Form.Item name={['zoom', 'meeting_id']} label='ID'>
               <Input placeholder='ID' />
             </Form.Item>
-            <Form.Item name={['zoom', 'passcode']} label='Mật khẩu'>
+            <Form.Item name={['zoom', 'pass_code']} label='Mật khẩu'>
               <Input placeholder='Mật khẩu' />
             </Form.Item>
           </>

@@ -1,5 +1,5 @@
-import { ApartmentOutlined, DashboardOutlined, FileTextOutlined, ProjectOutlined, SolutionOutlined, UserOutlined } from '@ant-design/icons'
-import { AdminIcon, LessonIcon, RegisterIcon } from '@components/assets/svg'
+import { ApartmentOutlined, DashboardOutlined, FileTextOutlined, HistoryOutlined, ProjectOutlined, SolutionOutlined, UserOutlined } from '@ant-design/icons'
+import { AdminIcon, LessonIcon, RegisterIcon, SubjectEvaluationIcon } from '@components/assets/svg'
 import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
 import { IRouter } from '@domain/app'
 
@@ -39,6 +39,7 @@ export const API_LIST = {
   lecturer: '/api/v1/lecturers',
   subject: '/api/v1/subjects',
   subjectRegistration: '/api/v1/subjects/registration',
+  subjectSendNotification: '/api/v1/subjects/send-notification',
   evaluation: '/api/v1/subjects/evaluations',
   evaluationQuestion: '/api/v1/subjects/evaluation-questions',
   student: '/api/v1/students',
@@ -87,6 +88,31 @@ export const ROUTES_SIDEBAR: IRouter[] = [
         path: '/chu-de/danh-sach-chu-de',
         name: 'Danh sách chủ đề',
       },
+      {
+        path: '/chu-de/gui-email',
+        requiredCurrent: true,
+        name: 'Gửi email thông báo',
+        role: [EAdminRole.BHV],
+      },
+    ],
+  },
+  {
+    name: 'Đăng ký môn học',
+    icon: RegisterIcon,
+    path: '/dang-ky-mon',
+    requiredCurrent: true,
+    children: [
+      {
+        path: '/dang-ky-mon/quan-ly-form',
+        name: 'Quản lý form',
+        requiredCurrent: true,
+        role: [EAdminRole.BKL, EAdminRole.BHV],
+      },
+      {
+        path: '/dang-ky-mon/ket-qua-dang-ky',
+        name: 'Kết quả đăng ký',
+        requiredCurrent: true,
+      },
     ],
   },
   {
@@ -98,32 +124,13 @@ export const ROUTES_SIDEBAR: IRouter[] = [
     name: 'Ban tổ chức',
     path: '/ban-to-chuc',
     icon: AdminIcon,
-    requireCurrent: true,
-  },
-  {
-    name: 'Đăng ký môn học',
-    icon: RegisterIcon,
-    path: '/dang-ky-mon',
-    requireCurrent: true,
-    children: [
-      {
-        path: '/dang-ky-mon/quan-ly-form',
-        name: 'Quản lý form',
-        requireCurrent: true,
-        role: [EAdminRole.BKL, EAdminRole.BHV],
-      },
-      {
-        path: '/dang-ky-mon/ket-qua-dang-ky',
-        name: 'Kết quả đăng ký',
-        requireCurrent: true,
-      },
-    ],
+    requiredCurrent: true,
   },
   {
     name: 'Nhật ký chỉnh sửa',
     path: '/nhat-ky-chinh-sua',
-    icon: AdminIcon,
-    requireCurrent: true,
+    icon: HistoryOutlined,
+    requiredCurrent: true,
     role: [EAdminRole.ADMIN],
   },
 ]

@@ -86,10 +86,20 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
   }
 
   return (
-    <Modal title={'Thêm'} open={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel} cancelText='Hủy' okText={'Thêm'}>
+    <Modal
+      title={'Thêm'}
+      open={open}
+      onOk={handleOk}
+      confirmLoading={confirmLoading}
+      onCancel={handleCancel}
+      cancelText='Hủy'
+      okText={'Thêm'}
+      className='sm:!w-[70vw] lg:!w-[60vw]'
+    >
       <Form
         layout='vertical'
         form={form}
+        className='grid grid-cols-1 gap-x-3 sm:grid-cols-2'
         name='form-season'
         initialValues={{
           role: optionsRole[0].value,
@@ -119,9 +129,6 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
           ]}
         >
           <Select placeholder='Chọn loại tài liệu' options={OPTIONS_DOCUMENT_TYPE} />
-        </Form.Item>
-        <Form.Item label='Mô tả' name='description'>
-          <Input.TextArea rows={3} placeholder='Nhập mô tả' />
         </Form.Item>
         <Form.Item
           name='role'
@@ -179,6 +186,9 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
             </Upload>
           </Form.Item>
         )}
+        <Form.Item className='sm:col-span-2' label='Mô tả' name='description'>
+          <Input.TextArea rows={3} placeholder='Nhập mô tả' />
+        </Form.Item>
       </Form>
     </Modal>
   )

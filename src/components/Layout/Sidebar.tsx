@@ -27,7 +27,7 @@ const SidebarGroup = ({
 }) => {
   const { isCollapseSidebar } = useRecoilValue(appState)
   const { pathname } = useLocation()
-  const { name, children, path, requireCurrent } = menuItem
+  const { name, children, path, requiredCurrent } = menuItem
   const selectSeason = useRecoilValue(selectSeasonState)
   const currentSeason = useRecoilValue(currentSeasonState)
 
@@ -41,7 +41,7 @@ const SidebarGroup = ({
 
   return (
     <>
-      {(!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles))) && !(requireCurrent && selectSeason !== currentSeason?.season) ? (
+      {(!menuItem.role || (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles))) && !(requiredCurrent && selectSeason !== currentSeason?.season) ? (
         <>
           <Tooltip placement='rightBottom' title={name}>
             <li
@@ -77,7 +77,7 @@ const SidebarGroup = ({
 }
 
 const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: EAdminRole[] }) => {
-  const { path, name, requireCurrent } = menuItem
+  const { path, name, requiredCurrent } = menuItem
   const [{ isCollapseSidebar }, setAppState] = useRecoilState(appState)
   const { pathname } = useLocation()
   const selectSeason = useRecoilValue(selectSeasonState)
@@ -96,7 +96,7 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
       {(!menuItem.role ||
         (menuItem.role && userRoles && hasMatch(menuItem.role, userRoles)) ||
         (!(size(menuItem?.role) && menuItem.role.includes(EAdminRole.ADMIN)) && isSuperAdmin(true))) &&
-      !(requireCurrent && selectSeason !== currentSeason?.season) ? (
+      !(requiredCurrent && selectSeason !== currentSeason?.season) ? (
         <Tooltip placement='rightBottom' title={name}>
           <li
             className={`group flex w-full items-center text-base font-normal text-black ${

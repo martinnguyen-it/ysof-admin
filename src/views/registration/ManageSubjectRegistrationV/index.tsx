@@ -59,8 +59,8 @@ ký nào của học viên.`)
     }
     const res = await updateManageForm(payload)
     if (!isEmpty(res)) {
-      if (infoForm?.data?.content === value) toast.success('Sửa thành công')
-      else toast.success('Mở form thành công')
+      if (infoForm?.data?.content === value) toast.success('Mở form thành công')
+      else toast.success('Sửa thành công')
       setReloadData()
     }
     setIsLoadingSubmit(false)

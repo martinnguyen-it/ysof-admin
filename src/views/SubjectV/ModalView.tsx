@@ -43,8 +43,8 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
               {!isEmpty(open.item.zoom) ? (
                 <>
                   {open.item.zoom?.link && <p>- Link: {open.item.zoom?.link}</p>}
-                  {open.item.zoom?.meeting_id && <p>- ID: {open.item.zoom?.meeting_id}</p>}
-                  {open.item.zoom?.meeting_id && <p>- Passcode: {open.item.zoom?.pass_code}</p>}
+                  {open.item.zoom?.meeting_id ? <p>- ID: {open.item.zoom?.meeting_id}</p> : null}
+                  {open.item.zoom?.meeting_id ? <p>- pass_code: {open.item.zoom?.pass_code}</p> : null}
                 </>
               ) : (
                 <>Chưa có thông tin</>

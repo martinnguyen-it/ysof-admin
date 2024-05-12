@@ -233,7 +233,7 @@ const SubjectV: FC = () => {
         />
       </div>
 
-      {userInfo && ((userInfo.current_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
+      {userInfo && ((userInfo.current_season === currentSeason?.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
         <div className='mb-4 flex justify-end'>
           <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
             Thêm

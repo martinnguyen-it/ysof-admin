@@ -76,10 +76,11 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       onOk={handleOk}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
+      className='sm:!w-[70vw] lg:!w-[60vw]'
       cancelText='Hủy'
       okText={open.item ? 'Sửa' : 'Thêm'}
     >
-      <Form layout='vertical' form={form} name='form-add-admin'>
+      <Form layout='vertical' form={form} name='form-add-admin' className='grid grid-cols-1 gap-x-3 sm:grid-cols-2'>
         <Form.Item
           label='Tên thánh'
           name='holy_name'
