@@ -222,31 +222,6 @@ const SendEmailNotificationSubjectV: FC = () => {
                 <TableStudent subjectId={recentNextSubject.id} />
               </div>
             ) : null}
-            {/* {((currentSubject && currentSubject.status === ESubjectStatus.COMPLETED) || !(infoForm?.data && infoForm?.data?.subject_id)) && recentSubject ? (
-              <>
-                <div className='px-2 leading-8'>
-                  <p>
-                    Chủ đề tiếp theo:{' '}
-                    <span className='font-medium'>
-                      {recentSubject.code} {recentSubject.title}
-                    </span>
-                  </p>
-                  <p>
-                    Giảng Viên: {recentSubject.lecturer?.title ? recentSubject.lecturer.title + ' ' : ''}
-                    {recentSubject.lecturer?.holy_name ? recentSubject.lecturer.holy_name + ' ' : ''}
-                    {recentSubject.lecturer.full_name}
-                  </p>
-                  <p>Ngày học: {dayjs(recentSubject.start_at).format('DD/MM/YYYY')}</p>
-                  <p>Hạn nộp: 23h59 - Thứ hai, ngày {dayjs(recentSubject.start_at).add(2, 'day').format('DD/MM/YYYY')}</p>
-                </div>
-
-                <div className='flex justify-end gap-3'>
-                  <Button disabled={isLoadingClose || infoForm?.status === EManageFormStatus.ACTIVE} loading={isLoadingClose} className='mt-2' onClick={onSubmit} type='primary'>
-                    Mở form
-                  </Button>
-                </div>
-              </>
-            ) : null} */}
           </div>
         </>
       )}

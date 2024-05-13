@@ -16,6 +16,8 @@ import ProfileV from '@views/ProfileV'
 import AuditLogV from '@views/AuditLogV'
 import ManageSubjectRegistrationV from '@views/registration/ManageSubjectRegistrationV'
 import SendEmailNotificationSubjectV from '@views/SendEmailNotificationSubjectV'
+import ManageSubjectEvaluationV from '@views/subjectEvaluation/ManageSubjectEvaluationV'
+import ListSubjectEvaluationV from '@views/subjectEvaluation/ListSubjectEvaluationV'
 // import { withLoading } from '@src/hocs/withLoading.hoc'
 
 // const DashboardPage = withLoading(DashboardV)
@@ -80,6 +82,20 @@ export const routes: IRoute[] = [
     path: '/ban-to-chuc',
     element: <AdminV />,
     requiredLogin: true,
+    Layout: Layout,
+  },
+  {
+    path: '/luong-gia/quan-ly-form',
+    element: <ManageSubjectEvaluationV />,
+    requiredLogin: true,
+    requiredCurrent: true,
+    Layout: Layout,
+  },
+  {
+    path: '/luong-gia/ket-qua',
+    element: <ListSubjectEvaluationV />,
+    requiredLogin: true,
+    requiredCurrent: true,
     Layout: Layout,
   },
   {

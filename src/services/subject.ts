@@ -38,6 +38,13 @@ export const subjectSendNotification = async (subjectId: string) => {
   return response?.data
 }
 
+export const subjectSendEvaluation = async (subjectId: string) => {
+  const response = await post({
+    url: API_LIST.subjectSendEvaluation + '/' + subjectId,
+  })
+  return response?.data
+}
+
 export const createSubject = async (data: ICreateSubject): Promise<ISubjectInResponse> => {
   const response = await post({
     url: API_LIST.subject,

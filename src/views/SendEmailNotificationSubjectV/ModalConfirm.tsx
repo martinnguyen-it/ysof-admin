@@ -18,13 +18,16 @@ const ModalConfirm: FC<IProps> = ({ open, setOpen, setReloadData, subject }) => 
 
   const onSubmit = async () => {
     setConfirmLoading(true)
-    await updateSubject(subject.id, open.item)
-    const resSendNotification = await subjectSendNotification(subject.id)
-    if (!isObject(resSendNotification) && resSendNotification) {
-      toast.success('Gửi thành công')
-      setReloadData()
-      setOpen({ active: false, item: undefined })
+    const resUpdate = await updateSubject(subject.id, open.item)
+    if (!isEmpty(resUpdate)) {
+      const resSendNotification = await subjectSendNotification(subject.id)
+      if (!isObject(resSendNotification) && resSendNotification) {
+        toast.success('Gửi thành công')
+        setReloadData()
+        setOpen({ active: false, item: undefined })
+      }
     }
+
     setConfirmLoading(false)
   }
   const handleCancel = () => {
