@@ -111,7 +111,7 @@ const SidebarItem = ({ menuItem, userRoles }: { menuItem: IRouter; userRoles?: E
               <div className='w-5' title={name}>
                 {menuItem.icon && <menuItem.icon />}
               </div>
-              {isActive && !isCollapseSidebar ? <div className='absolute right-0 h-full w-[2px] bg-[#5776bf]' /> : null}
+              {isActive && !isCollapseSidebar ? <div className='absolute right-0 h-full w-[4px] bg-[#5776bf]' /> : null}
               {!isCollapseSidebar ? <span className={`text-md ml-3 whitespace-nowrap ${isActive ? 'text-[#1677ff]' : ''}`}>{name}</span> : null}
             </Link>
           </li>

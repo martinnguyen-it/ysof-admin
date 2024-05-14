@@ -18,6 +18,7 @@ import ManageSubjectRegistrationV from '@views/registration/ManageSubjectRegistr
 import SendEmailNotificationSubjectV from '@views/SendEmailNotificationSubjectV'
 import ManageSubjectEvaluationV from '@views/subjectEvaluation/ManageSubjectEvaluationV'
 import ListSubjectEvaluationV from '@views/subjectEvaluation/ListSubjectEvaluationV'
+import SubjectAbsentV from '@views/SubjectAbsentV'
 // import { withLoading } from '@src/hocs/withLoading.hoc'
 
 // const DashboardPage = withLoading(DashboardV)
@@ -68,6 +69,13 @@ export const routes: IRoute[] = [
   {
     path: '/chu-de/gui-email',
     element: <SendEmailNotificationSubjectV />,
+    requiredLogin: true,
+    requiredCurrent: true,
+    Layout: Layout,
+  },
+  {
+    path: '/chu-de/nghi-phep',
+    element: <SubjectAbsentV />,
     requiredLogin: true,
     requiredCurrent: true,
     Layout: Layout,

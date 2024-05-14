@@ -139,9 +139,9 @@ const ListSubjectEvaluationV: FC = () => {
         key: 'satisfied',
       },
     ]
-    EVALUATION_QUALITY.forEach((item) => {
+    EVALUATION_QUALITY.forEach((item, idx) => {
       columns.push({
-        title: '6. ' + EVALUATION_NAME.get('quality') + ` [${item.label}]`,
+        title: `6.${idx + 1}. ` + EVALUATION_NAME.get('quality') + ` [${item.label}]`,
         dataIndex: ['quality', item.key],
         sorter: true,
         key: item.key,
