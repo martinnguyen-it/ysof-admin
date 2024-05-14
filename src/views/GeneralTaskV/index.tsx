@@ -7,7 +7,7 @@ import type { TableProps } from 'antd'
 import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
-import { isArray, isEmpty } from 'lodash'
+import { isArray, isEmpty, isObject } from 'lodash'
 import dayjs from 'dayjs'
 import { OPTIONS_ROLE, PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
 import ModalDelete from './ModalDelete'
@@ -218,9 +218,13 @@ const GeneralTaskV: FC = () => {
           mode='multiple'
           size='large'
           placeholder='Lọc theo ban'
+          filterOption={(input, option) =>
+            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+          }
           onChange={onChangeRole}
           value={roles}
           options={OPTIONS_ROLE}
+          showSearch
           allowClear
           maxTagCount='responsive'
         />
@@ -239,9 +243,13 @@ const GeneralTaskV: FC = () => {
           mode='multiple'
           size='large'
           placeholder='Lọc theo nhãn'
+          filterOption={(input, option) =>
+            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+          }
           onChange={onChangeLabel}
           value={label}
           options={OPTIONS_GENERAL_TASK_LABEL}
+          showSearch
           allowClear
           maxTagCount='responsive'
         />

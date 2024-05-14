@@ -8,7 +8,7 @@ import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
 import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
-import { isArray, isEmpty } from 'lodash'
+import { isArray, isEmpty, isObject } from 'lodash'
 import { getListDocuments } from '@src/services/document'
 import { EDocumentType, IDocumentInResponse } from '@domain/document'
 import { Link } from 'react-router-dom'
@@ -224,8 +224,12 @@ const DocumentV: FC = () => {
           mode='multiple'
           size='large'
           placeholder='Lọc theo ban'
+          filterOption={(input, option) =>
+            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+          }
           onChange={onChangeRole}
           value={roles}
+          showSearch
           options={OPTIONS_ROLE}
           allowClear
           maxTagCount='responsive'
@@ -234,11 +238,15 @@ const DocumentV: FC = () => {
         <Select
           className='w-60'
           mode='multiple'
+          filterOption={(input, option) =>
+            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+          }
           size='large'
           placeholder='Lọc theo nhãn'
           onChange={onChangeLabel}
           value={label}
           options={OPTIONS_DOCUMENT_LABEL}
+          showSearch
           allowClear
           maxTagCount='responsive'
         />

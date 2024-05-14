@@ -5,7 +5,7 @@ import { EAdminRoleDetail } from '@domain/admin/type'
 import { IDocumentInResponse } from '@domain/document'
 import { isSuperAdmin } from '@src/utils'
 import { Button, Form, Input, Modal, Select, Upload } from 'antd'
-import { isEmpty } from 'lodash'
+import { isEmpty, isObject } from 'lodash'
 import React, { FC, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
@@ -85,10 +85,25 @@ const ModalUpdate: FC<IProps> = ({ open, setOpen, setReloadData }) => {
           <Input.TextArea rows={3} placeholder='Nhập mô tả' />
         </Form.Item>
         <Form.Item name='role' label='Quản lý'>
-          <Select placeholder='Chọn ban' options={optionsRole} />
+          <Select
+            placeholder='Chọn ban'
+            options={optionsRole}
+            showSearch
+            filterOption={(input, option) =>
+              isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            }
+          />
         </Form.Item>
         <Form.Item name='label' label='Nhãn tài liệu'>
-          <Select placeholder='Chọn nhãn tài liệu' options={OPTIONS_DOCUMENT_LABEL} mode='multiple' allowClear />
+          <Select
+            filterOption={(input, option) =>
+              isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            }
+            placeholder='Chọn nhãn tài liệu'
+            options={OPTIONS_DOCUMENT_LABEL}
+            mode='multiple'
+            allowClear
+          />
         </Form.Item>
         {!(open?.mimeType && ['application/vnd.google-apps.document', 'application/vnd.google-apps.spreadsheet'].includes(open.mimeType)) && (
           <Form.Item name='file' label='Sửa file'>

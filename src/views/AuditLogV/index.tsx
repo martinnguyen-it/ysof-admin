@@ -5,7 +5,7 @@ import type { TableProps } from 'antd'
 
 import { FC, useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
-import { isArray, isEmpty } from 'lodash'
+import { isArray, isEmpty, isObject } from 'lodash'
 import dayjs from 'dayjs'
 import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
 import { selectSeasonState } from '@atom/seasonAtom'
@@ -132,6 +132,9 @@ const AuditLogV: FC = () => {
           size='large'
           placeholder='Lọc theo endpoint'
           onChange={onChangeEndpoint}
+          filterOption={(input, option) =>
+            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+          }
           value={endpoint}
           options={OPTIONS_AUDIT_LOG_ENDPOINT}
           allowClear

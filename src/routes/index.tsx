@@ -76,6 +76,7 @@ export const routes: IRoute[] = [
     path: '/hoc-vien/danh-sach-hoc-vien',
     element: <StudentV />,
     requiredLogin: true,
+    requiredCurrent: true,
     Layout: Layout,
   },
   {

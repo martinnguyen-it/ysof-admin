@@ -6,7 +6,7 @@ import { IDocumentInResponse } from '@domain/document'
 import { createDocumentGoogle, createDocumentWithFile } from '@src/services/document'
 import { isSuperAdmin } from '@src/utils'
 import { Button, Form, Input, Modal, Select, Upload } from 'antd'
-import { isEmpty } from 'lodash'
+import { isEmpty, isObject } from 'lodash'
 import React, { FC, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
@@ -140,10 +140,25 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
             },
           ]}
         >
-          <Select placeholder='Chọn ban' options={optionsRole} />
+          <Select
+            showSearch
+            filterOption={(input, option) =>
+              isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            }
+            placeholder='Chọn ban'
+            options={optionsRole}
+          />
         </Form.Item>
         <Form.Item name='label' label='Nhãn tài liệu'>
-          <Select placeholder='Chọn nhãn tài liệu' options={OPTIONS_DOCUMENT_LABEL} mode='multiple' allowClear />
+          <Select
+            placeholder='Chọn nhãn tài liệu'
+            options={OPTIONS_DOCUMENT_LABEL}
+            filterOption={(input, option) =>
+              isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            }
+            mode='multiple'
+            allowClear
+          />
         </Form.Item>
         <Form.Item
           name='mode'

@@ -3,7 +3,7 @@ import { OPTIONS_ROLE } from '@constants/index'
 import { EAdminRoleDetail } from '@domain/admin/type'
 import { isSuperAdmin } from '@src/utils'
 import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
-import { isEmpty } from 'lodash'
+import { isEmpty, isObject } from 'lodash'
 import React, { Dispatch, DispatchWithoutAction, FC, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
@@ -195,10 +195,25 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
             },
           ]}
         >
-          <Select placeholder='Chọn ban' options={optionsRole} />
+          <Select
+            placeholder='Chọn ban'
+            options={optionsRole}
+            showSearch
+            filterOption={(input, option) =>
+              isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            }
+          />
         </Form.Item>
         <Form.Item name='label' label='Nhãn công việc'>
-          <Select placeholder='Chọn nhãn công việc' options={OPTIONS_GENERAL_TASK_LABEL} mode='multiple' allowClear />
+          <Select
+            filterOption={(input, option) =>
+              isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            }
+            placeholder='Chọn nhãn công việc'
+            options={OPTIONS_GENERAL_TASK_LABEL}
+            mode='multiple'
+            allowClear
+          />
         </Form.Item>
         <div className='flex gap-5'>
           <Form.Item
@@ -237,7 +252,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
         <div className='ant-form-item css-dev-only-do-not-override-qn5m80'>
           <div className='ant-row ant-form-item-row css-dev-only-do-not-override-qn5m80'>
             <div className='ant-col ant-form-item-label css-dev-only-do-not-override-qn5m80'>
-              <label htmlFor='form-season_role' className='ant-form-item-required' title='Quản lý'>
+              <label htmlFor='form-season_role' className='ant-form-item-required'>
                 Mô tả
               </label>
             </div>

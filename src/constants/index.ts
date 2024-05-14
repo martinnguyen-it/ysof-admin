@@ -73,6 +73,7 @@ export const ROUTES_SIDEBAR: IRouter[] = [
   {
     name: 'Học viên',
     icon: UserOutlined,
+    requiredCurrent: true,
     path: '/hoc-vien',
     children: [
       {

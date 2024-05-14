@@ -29,6 +29,8 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
   const [form] = Form.useForm()
   const [fields, setFields] = useState<(IEvaluationQuestionItem & { id: string })[]>([{ id: new Date().toISOString(), title: '', type: EEvaluationQuestionType.TEXT }])
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
+  const [_isLoadingUpdateQuestion, setIsLoadingUpdateQuestion] = useState(false)
+  const [enableUpdateQuestion, _setEnableUpdateQuestion] = useState(false)
 
   useEffect(() => {
     if (questions) {
@@ -55,14 +57,34 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
     })
   }
 
-  const handleSubmitSend = async () => {
-    setIsLoadingSubmit(true)
+  const handleCreateQuestion = async (sendRequest?: boolean) => {
+    if (!sendRequest) setIsLoadingUpdateQuestion(true)
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
       const sortedKeys = Object.keys(data).sort()
       const result = sortedKeys.map((key) => data[key])
       const resCreateQuestion = await createSubjectEvaluation(subject.id, { questions: result })
+      if (resCreateQuestion) return true
+    } catch (error) {
+      return false
+    }
+  }
+
+  // const handleUpdateQuestion = async () => {
+  //   setIsLoadingUpdateQuestion(true)
+  //   const resCreateQuestion = await handleCreateQuestion(true)
+  //   if (resCreateQuestion) {
+  //     toast.success('Sửa thành công')
+  //     setEnableUpdateQuestion(false)
+  //   }
+  //   setIsLoadingUpdateQuestion(false)
+  // }
+
+  const handleSubmitSend = async () => {
+    setIsLoadingSubmit(true)
+    try {
+      const resCreateQuestion = await handleCreateQuestion(true)
       if (resCreateQuestion) {
         const resSendEvaluation = await subjectSendEvaluation(subject.id)
         if (!isObject(resSendEvaluation) && resSendEvaluation) {
@@ -127,11 +149,14 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
       <Divider />
       <div className='mb-4 flex justify-center text-2xl font-bold'>CÂU HỎI LƯỢNG GIÁ</div>
 
-      <Form form={form} layout='vertical' disabled={subject.status !== ESubjectStatus.SENT_STUDENT}>
+      <Form form={form} layout='vertical' disabled={!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_STUDENT}>
         {fields.map((field, idx) => (
           <div key={field.id}>
             <div className='font-bold'>
-              Câu hỏi {idx + 1} {fields.length > 1 && <MinusCircleOutlined onClick={() => handleRemoveField(field.id)} />}
+              Câu hỏi {idx + 1}{' '}
+              {fields.length > 1 && !(!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_STUDENT) && (
+                <MinusCircleOutlined onClick={() => handleRemoveField(field.id)} />
+              )}
             </div>
             <Form.Item name={[field.id, 'title']} label='Câu hỏi' rules={[{ required: true, message: 'Vui lòng điền câu hỏi' }]}>
               <Input.TextArea
@@ -172,6 +197,23 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
       </Form>
 
       <div className='flex justify-end gap-3'>
+        {/* {!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_STUDENT ? (
+          <Button
+            className='mt-2 bg-yellow-400 hover:!bg-yellow-400/80'
+            onClick={() => {
+              setEnableUpdateQuestion(true)
+            }}
+            type='primary'
+          >
+            Mở sửa câu hỏi
+          </Button>
+        ) : enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_STUDENT ? (
+          <Button className='mt-2 bg-green-500 hover:!bg-green-500/80' loading={isLoadingUpdateQuestion} onClick={handleUpdateQuestion} type='primary'>
+            Sửa câu hỏi
+          </Button>
+        ) : (
+          <div></div>
+        )} */}
         {infoForm?.status === EManageFormStatus.ACTIVE && (
           <Button className='mt-2 bg-red-500 hover:!bg-red-500/80' onClick={onOpenClose} type='primary'>
             Tạm đóng form

@@ -7,7 +7,7 @@ import type { TableProps } from 'antd'
 import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
-import { isArray, isEmpty } from 'lodash'
+import { isArray, isEmpty, isObject } from 'lodash'
 import dayjs from 'dayjs'
 import ModalDelete from './ModalDelete'
 import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
@@ -215,10 +215,14 @@ const SubjectV: FC = () => {
           className='w-60'
           size='large'
           placeholder='Lọc theo phân môn'
+          filterOption={(input, option) =>
+            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+          }
           onChange={onChangSubdivision}
           value={subdivision}
           options={OPTIONS_SUBDIVISION}
           allowClear
+          showSearch
           maxTagCount='responsive'
         />
         <Select

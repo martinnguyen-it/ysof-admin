@@ -1,9 +1,9 @@
-import { IEvaluationQuestionPayload, IEvaluationQuestionResponse } from '@domain/subjectEvaluationQuestion'
 import { get, post } from './HTTPService'
 import { API_CONFIG, API_LIST } from '@constants/index'
 import { getRecoil } from 'recoil-nexus'
 import { accessTokenState } from '@atom/authAtom'
 import axios from 'axios'
+import { IEvaluationQuestionPayload, IEvaluationQuestionResponse } from '@domain/subjectEvaluationQuestion'
 
 export const getSubjectEvaluationQuestions = async (subjectId: string): Promise<IEvaluationQuestionResponse> => {
   const response = await get({
