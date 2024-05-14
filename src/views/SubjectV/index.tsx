@@ -29,7 +29,7 @@ const SubjectV: FC = () => {
   const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
 
   const [search, setSearch] = useState('')
-  const [status, setStatus] = useState<ESubjectStatus>()
+  const [status, setStatus] = useState<ESubjectStatus[]>()
   const [subdivision, setSubdivision] = useState<string>()
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
@@ -193,7 +193,7 @@ const SubjectV: FC = () => {
   const onChangSubdivision = (val: string) => {
     setSubdivision(val)
   }
-  const onChangeStatus = (val: ESubjectStatus) => {
+  const onChangeStatus = (val: ESubjectStatus[]) => {
     setStatus(val)
   }
 
@@ -226,11 +226,12 @@ const SubjectV: FC = () => {
           maxTagCount='responsive'
         />
         <Select
-          className='w-60'
+          className='w-72'
           size='large'
           placeholder='Lọc theo trạng thái'
           onChange={onChangeStatus}
           value={status}
+          mode='tags'
           options={OPTIONS_SUBJECT_STATUS}
           allowClear
           maxTagCount='responsive'

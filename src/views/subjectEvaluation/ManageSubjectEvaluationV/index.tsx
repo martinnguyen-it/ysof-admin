@@ -10,7 +10,7 @@ import { EManageFormStatusDetail } from '@constants/manageForm'
 import ModalClose from './ModalClose'
 import InfoSubjectEvaluation from './InfoSubjectEvaluation'
 import { getSubjectEvaluationQuestionsNotHandler } from '@src/services/subjectEvaluationQuestion'
-import { IEvaluationQuestionItem } from '@domain/subjectEvaluationQuestion'
+import { IEvaluationQuestionItem } from '@domain/subject/subjectEvaluationQuestion'
 
 const ManageSubjectEvaluationV: FC = () => {
   const [isLoading, setIsLoading] = useState(false)

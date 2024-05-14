@@ -1,4 +1,4 @@
-import { ICreateSubject, ISubjectInResponse, IParamsGetListSubject, IUpdateSubject } from '@domain/subject'
+import { ICreateSubject, ISubjectInResponse, IParamsGetListSubject, IUpdateSubject, ISubjectShortInResponse } from '@domain/subject'
 import { del, get, put, post } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
@@ -27,6 +27,14 @@ export const getSubjectNextMostRecent = async (): Promise<ISubjectInResponse & {
 export const getSubjectLastSentStudentRecent = async (): Promise<ISubjectInResponse & { message?: string }> => {
   const response = await get({
     url: API_LIST.subject + '/last-sent-student',
+  })
+  return response?.data
+}
+
+export const getSubjectShort = async (params?: IParamsGetListSubject): Promise<ISubjectShortInResponse[]> => {
+  const response = await get({
+    url: API_LIST.subject + '/list-short',
+    data: params,
   })
   return response?.data
 }

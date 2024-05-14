@@ -39,6 +39,7 @@ export const API_LIST = {
   lecturer: '/api/v1/lecturers',
   subject: '/api/v1/subjects',
   subjectRegistration: '/api/v1/subjects/registration',
+  subjectEvaluation: '/api/v1/subjects/evaluations',
   subjectEvaluationQuestions: '/api/v1/subjects/evaluation-questions',
   subjectSendNotification: '/api/v1/subjects/send-notification',
   subjectSendEvaluation: '/api/v1/subjects/send-evaluation',

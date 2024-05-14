@@ -1,4 +1,4 @@
-import { EEvaluationQuestionType } from '@domain/subjectEvaluationQuestion'
+import { EEvaluationQuestionType } from '@domain/subject/subjectEvaluationQuestion'
 import { startCase } from 'lodash'
 
 export const OPTIONS_EVALUATION_QUESTION_TYPES = Object.values(EEvaluationQuestionType).map((val) => ({

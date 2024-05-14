@@ -1,20 +1,25 @@
 import { ESort } from '@domain/common'
-import { Input, Select } from 'antd'
+import { Input, Pagination, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
 import { FC, useEffect, useMemo, useState } from 'react'
-import { isArray, isEmpty, size } from 'lodash'
-import { getListSubjectRegistrations } from '@src/services/subjectRegistration'
-import { ISubjectRegistrationInResponse } from '@domain/subject/subjectRegistration'
-import { getListSubjects } from '@src/services/subject'
-import { ISubjectInResponse } from '@domain/subject'
-import dayjs from 'dayjs'
+import { isArray, isEmpty, isObject, size } from 'lodash'
+import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
+import { ESubjectStatus, ISubjectShortInResponse } from '@domain/subject'
+import { getSubjectShort } from '@src/services/subject'
+import { getListSubjectEvaluation } from '@src/services/subjectEvaluation'
+import { ISubjectEvaluationInResponse } from '@domain/subject/subjectEvaluation'
+import { toast } from 'react-toastify'
+import { EVALUATION_NAME, EVALUATION_QUALITY } from '@constants/subjectEvaluation'
+import { IEvaluationQuestionItem } from '@domain/subject/subjectEvaluationQuestion'
+import { getSubjectEvaluationQuestions } from '@src/services/subjectEvaluationQuestion'
+// import ModalView from './ModalView'
 
 const ListSubjectEvaluationV: FC = () => {
-  const [tableData, setTableData] = useState<ISubjectRegistrationInResponse[]>([])
-  const [listSubject, setListSubject] = useState<ISubjectInResponse[]>([])
+  const [tableData, setTableData] = useState<ISubjectEvaluationInResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [subjectSentEvaluation, setSubjectSentEvaluation] = useState<ISubjectShortInResponse[]>()
 
   const initPaging = {
     current: 1,
@@ -26,6 +31,8 @@ const ListSubjectEvaluationV: FC = () => {
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
   const [group, setGroup] = useState<number>()
+  const [selectSubject, setSelectSubject] = useState<string>()
+  const [questions, setQuestions] = useState<IEvaluationQuestionItem[]>()
 
   useEffect(() => {
     setTableQueries(initPaging)
@@ -34,49 +41,66 @@ const ListSubjectEvaluationV: FC = () => {
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
-      const res = await getListSubjectRegistrations({
-        page_index: tableQueries.current,
-        page_size: tableQueries.pageSize,
-        search: search || undefined,
-        sort,
-        sort_by: sortBy,
-        group,
-      })
-      if (!isEmpty(res)) {
-        setTableData(res.data)
-        setPaging({ current: res.pagination.page_index, total: res.pagination.total })
-      }
-      const data = await getListSubjects()
-      if (!isEmpty(data) || isArray(data)) {
-        setListSubject(data)
+      const resSubject = await getSubjectShort({ sort: ESort.DESC, sort_by: 'start_at', status: [ESubjectStatus.COMPLETED, ESubjectStatus.SENT_EVALUATION] })
+      if (size(resSubject) > 0) {
+        setSubjectSentEvaluation(resSubject)
+        setSelectSubject(resSubject[0].id)
+      } else {
+        toast.warn('Chưa có môn học nào có lượng giá')
       }
       setIsLoading(false)
     })()
-  }, [tableQueries, search, sort, sortBy, group])
+  }, [])
 
-  const columns = useMemo(() => {
-    const columns: ColumnsType<ISubjectRegistrationInResponse> = [
+  useEffect(() => {
+    if (selectSubject) {
+      ;(async () => {
+        setIsLoading(true)
+        const res = await getListSubjectEvaluation({
+          subject_id: selectSubject,
+          page_index: tableQueries.current,
+          page_size: tableQueries.pageSize,
+          search: search || undefined,
+          sort,
+          sort_by: sortBy,
+          group,
+        })
+        if (!isEmpty(res)) {
+          setTableData(res.data)
+          setPaging({ current: res.pagination.page_index, total: res.pagination.total })
+        }
+        const resQuestion = await getSubjectEvaluationQuestions(selectSubject)
+        if (resQuestion) {
+          setQuestions(resQuestion.questions)
+        }
+        setIsLoading(false)
+      })()
+    }
+  }, [selectSubject, search, sort, sortBy, group])
+
+  const columns: ColumnsType<ISubjectEvaluationInResponse> = useMemo(() => {
+    const columns: ColumnsType<ISubjectEvaluationInResponse> = [
       {
         title: 'MSHV',
         dataIndex: ['student', 'numerical_order'],
         align: 'center',
         key: 'numerical_order',
-        sorter: true,
+        width: '80px',
         render: (text) => String(text).padStart(3, '0'),
       },
       {
         title: 'Nhóm',
         dataIndex: ['student', 'group'],
-        align: 'center',
         key: 'group',
-        sorter: true,
+        align: 'center',
+        width: '80px',
       },
       {
         title: 'Họ tên',
         dataIndex: ['student', 'full_name'],
         key: 'full_name',
-        sorter: true,
-        render: (_, record: ISubjectRegistrationInResponse) => (
+        width: '200px',
+        render: (_, record) => (
           <>
             {record.student.holy_name} {record.student.full_name}
           </>
@@ -86,53 +110,89 @@ const ListSubjectEvaluationV: FC = () => {
         title: 'Email',
         dataIndex: ['student', 'email'],
         key: 'email',
-        sorter: true,
+        width: '200px',
       },
       {
-        title: 'Tổng',
-        align: 'center',
-        dataIndex: 'total',
-        key: 'total',
+        title: '1. ' + EVALUATION_NAME.get('feedback_admin'),
+        dataIndex: 'feedback_admin',
+        key: 'feedback_admin',
+      },
+      {
+        title: '2. ' + EVALUATION_NAME.get('most_resonated'),
+        dataIndex: 'most_resonated',
+        key: 'most_resonated',
+      },
+      {
+        title: '3. ' + EVALUATION_NAME.get('invited'),
+        dataIndex: 'invited',
+        key: 'invited',
+      },
+      {
+        title: '4. ' + EVALUATION_NAME.get('feedback_lecturer'),
+        dataIndex: 'feedback_lecturer',
+        key: 'feedback_lecturer',
+      },
+      {
+        title: '5. ' + EVALUATION_NAME.get('satisfied'),
+        dataIndex: 'satisfied',
+        sorter: true,
+        key: 'satisfied',
       },
     ]
-    if (size(listSubject) > 0) {
-      listSubject.forEach((item) => {
+    EVALUATION_QUALITY.forEach((item) => {
+      columns.push({
+        title: '6. ' + EVALUATION_NAME.get('quality') + ` [${item.label}]`,
+        dataIndex: ['quality', item.key],
+        sorter: true,
+        key: item.key,
+      })
+    })
+
+    let index = 7
+    if (isArray(questions)) {
+      questions.forEach((item, idx) => {
         columns.push({
-          title: (
-            <>
-              {item.code} - {item.title} (<span className='italic'>{dayjs(item.start_at).format('DD-MM-YYYY')}</span>)
-            </>
-          ),
-          dataIndex: item.code,
-          key: item.code,
-          width: '200px',
-          align: 'center',
-          render: (_, record: ISubjectRegistrationInResponse) => {
-            return <>{record.subject_registrations.includes(item.id) ? 'x' : ''}</>
-          },
+          title: `${index++}. ` + item.title,
+          dataIndex: ['answers', idx],
+          key: 'answers' + idx,
+          render: (item) => (isArray(item) ? item.join(', ') : item),
         })
       })
     }
 
     return columns
-  }, [listSubject])
+  }, [questions])
+
+  const onChangePagination = (pageIndex: number, pageSize: number) => {
+    setTableQueries({ current: pageIndex, pageSize })
+  }
 
   const onSearch = (val: string) => {
     setSearch(val)
+  }
+  const onChangeSelectSubject = (val: string) => {
+    setSelectSubject(val)
   }
   const onChangeGroup = (val: string) => {
     setGroup(val ? Number(val) : undefined)
   }
 
-  const handleTableChange: TableProps<ISubjectRegistrationInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<ISubjectEvaluationInResponse>['onChange'] = (_pagination, _filters, sorter) => {
     if (!isArray(sorter) && sorter?.order) {
+      const field = sorter.field && (isArray(sorter.field) ? sorter.field.join('.') : sorter.field)
       setSort(sorter.order as ESort)
-      setSortBy(sorter.field as string)
+      setSortBy(field as string)
     } else {
       setSort(undefined)
       setSortBy(undefined)
     }
   }
+
+  const subjectOptions = useMemo(() => {
+    if (isArray(subjectSentEvaluation)) {
+      return subjectSentEvaluation.map((item) => ({ value: item.id, label: item.code + ' ' + item.title }))
+    }
+  }, [subjectSentEvaluation])
 
   return (
     <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
@@ -150,21 +210,53 @@ const ListSubjectEvaluationV: FC = () => {
           showSearch
           allowClear
         />
+        <Select
+          placeholder='Môn học'
+          options={subjectOptions}
+          size='large'
+          className='w-60'
+          value={selectSubject}
+          onChange={onChangeSelectSubject}
+          filterOption={(input, option) =>
+            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+          }
+          showSearch
+          allowClear
+        />
       </div>
 
-      <div className='mb-4 flex items-center justify-between font-semibold'>{paging.total} học viên</div>
+      <div className='flex items-center justify-between'>
+        <Pagination
+          className='mb-4'
+          total={paging.total}
+          showTotal={(total, range) => (
+            <span className='font-medium'>
+              {range[0]}-{range[1]} của {total}
+            </span>
+          )}
+          pageSize={tableQueries.pageSize}
+          current={tableQueries.current}
+          pageSizeOptions={PAGE_SIZE_OPTIONS_DEFAULT}
+          onChange={onChangePagination}
+          locale={{ items_per_page: '/ trang', jump_to: 'Tới trang', page: '' }}
+          showQuickJumper
+          showSizeChanger
+        />
+      </div>
       <Table
         showSorterTooltip={{ target: 'sorter-icon' }}
         onChange={handleTableChange}
         columns={columns}
         className='text-wrap'
-        rowKey={(record) => record.student.id}
+        rowKey='id'
         pagination={false}
         dataSource={tableData}
         loading={isLoading}
-        scroll={{ x: 2000 }}
+        scroll={{ x: 3500 }}
         bordered
       />
+
+      {/* {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />} */}
     </div>
   )
 }

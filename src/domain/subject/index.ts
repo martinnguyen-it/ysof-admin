@@ -20,6 +20,12 @@ export interface ISubjectInResponse {
   attachments: IDocumentInResponse[]
 }
 
+export interface ISubjectShortInResponse {
+  title: string
+  code: string
+  id: string
+}
+
 export interface ICreateSubject {
   title: string
   start_at: string
@@ -38,7 +44,7 @@ export interface IParamsGetListSubject extends ISort {
   search?: string
   subdivision?: string
   season?: number
-  status?: ESubjectStatus
+  status?: ESubjectStatus[]
 }
 
 export interface IZoomInfo {

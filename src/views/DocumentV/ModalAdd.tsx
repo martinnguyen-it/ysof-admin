@@ -157,6 +157,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
               isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
             }
             mode='multiple'
+            showSearch
             allowClear
           />
         </Form.Item>
