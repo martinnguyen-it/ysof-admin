@@ -11,3 +11,10 @@ export interface ISubjectAbsentInResponse {
   note?: string
   status?: boolean
 }
+
+export interface ICreateSubjectAbsent {
+  reason?: string
+  note?: string
+}
+
+export interface IUpdateSubjectAbsent extends ICreateSubjectAbsent {}

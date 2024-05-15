@@ -1,21 +1,47 @@
-import { ESort } from '@domain/common'
-import { Select } from 'antd'
+import { ESort, IOpenForm } from '@domain/common'
+import { Button, Flex, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, MouseEvent, useEffect, useMemo, useReducer, useState } from 'react'
 import { isArray, isObject, size } from 'lodash'
 import { ESubjectStatus, ISubjectShortInResponse } from '@domain/subject'
 import { getSubjectShort } from '@src/services/subject'
 import { toast } from 'react-toastify'
 import { getListSubjectAbsents } from '@src/services/subjectAbsent'
 import { ISubjectAbsentInResponse } from '@domain/subject/subjectAbsent'
-// import ModalView from './ModalView'
+import { useRecoilValue } from 'recoil'
+import { userInfoState } from '@atom/authAtom'
+import { EAdminRole } from '@domain/admin/type'
+import { isSuperAdmin } from '@src/utils'
+import ModalDelete from './ModalDelete'
+import { currentSeasonState } from '@atom/seasonAtom'
+import { FileAddOutlined } from '@ant-design/icons'
+import ModalAdd from './ModalAdd'
 
 const SubjectAbsentV: FC = () => {
   const [tableData, setTableData] = useState<ISubjectAbsentInResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [subjectSentStudent, setSubjectSentStudent] = useState<ISubjectShortInResponse[]>()
   const [selectSubject, setSelectSubject] = useState<string>()
+  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
+  const [openForm, setOpenForm] = useState<Required<IOpenForm<ISubjectAbsentInResponse | string>>>({ active: false, item: '' })
+  const [openDel, setOpenDel] = useState<IOpenForm<{ studentId: string; subjectId: string }>>({ active: false })
+  const userInfo = useRecoilValue(userInfoState)
+  const currentSeason = useRecoilValue(currentSeasonState)
+
+  const onClickAdd = () => {
+    setOpenForm({ active: true, item: selectSubject || '' })
+  }
+
+  const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
+    const item = tableData.find((val) => val.id === e.currentTarget.id)
+    if (item) setOpenForm({ active: true, item: item })
+  }
+
+  const onClickDelete = (e: MouseEvent<HTMLButtonElement>) => {
+    const item = tableData.find((val) => val.id === e.currentTarget.id)
+    if (item) setOpenDel({ active: true, item: { studentId: item.student.id, subjectId: item.subject.id } })
+  }
 
   useEffect(() => {
     ;(async () => {
@@ -46,7 +72,7 @@ const SubjectAbsentV: FC = () => {
         setIsLoading(false)
       })()
     }
-  }, [selectSubject])
+  }, [selectSubject, reloadData])
 
   const columns: ColumnsType<ISubjectAbsentInResponse> = [
     {
@@ -91,6 +117,25 @@ const SubjectAbsentV: FC = () => {
       dataIndex: 'note',
       key: 'note',
     },
+    {
+      title: 'Hành động',
+      key: 'actions',
+      dataIndex: 'actions',
+      fixed: 'right',
+      render: (_, data) => {
+        return (
+          <Flex gap='small' wrap='wrap'>
+            <Button color='' type='primary' id={data.id} onClick={onClickUpdate} className='!bg-yellow-400 hover:opacity-80'>
+              Sửa
+            </Button>
+            <Button type='primary' id={data.id} onClick={onClickDelete} danger>
+              Xóa
+            </Button>
+          </Flex>
+        )
+      },
+      hidden: !userInfo || !(userInfo.roles.includes(EAdminRole.BKL) || isSuperAdmin(true)),
+    },
   ]
   const onChangeSelectSubject = (val: string) => {
     setSelectSubject(val)
@@ -118,7 +163,14 @@ const SubjectAbsentV: FC = () => {
           allowClear
         />
       </div>
-      <p className='my-3 font-semibold'>Tổng: {size(tableData) || 0}</p>
+      <div className='mb-4 flex justify-between'>
+        <p className='my-3 font-semibold'>Tổng: {size(tableData) || 0}</p>{' '}
+        {userInfo && ((userInfo.current_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
+          <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
+            Thêm
+          </Button>
+        )}
+      </div>
       <Table
         showSorterTooltip={{ target: 'sorter-icon' }}
         columns={columns}
@@ -131,7 +183,8 @@ const SubjectAbsentV: FC = () => {
         bordered
       />
 
-      {/* {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />} */}
+      {openForm.active && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
+      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
     </div>
   )
 }
