@@ -45,7 +45,7 @@ const ModalDelete: FC<IProps> = ({ open, setOpen, setReloadData }) => {
         </Button>,
       ]}
     >
-      Bạn muốn xóa công việc này ?
+      Bạn muốn xóa môn học này ?
     </Modal>
   )
 }

@@ -52,7 +52,7 @@ ký nào của học viên.`)
     setIsLoadingSubmit(true)
     const payload: IManageFormInPayload = {
       type: EManageFormType.SUBJECT_REGISTRATION,
-      status: infoForm?.data?.content === value ? EManageFormStatus.ACTIVE : undefined,
+      status: EManageFormStatus.ACTIVE,
       data: {
         content: value,
       },

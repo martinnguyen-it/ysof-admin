@@ -1,3 +1,4 @@
+import { currentSeasonState } from '@atom/seasonAtom'
 import { IOpenForm } from '@domain/common'
 import { ISeasonResponse } from '@domain/season'
 import { createSeason, updateSeason } from '@src/services/season'
@@ -5,6 +6,7 @@ import { Form, Input, Modal } from 'antd'
 import { isEmpty } from 'lodash'
 import React, { FC, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { useSetRecoilState } from 'recoil'
 
 interface IProps {
   open: IOpenForm<ISeasonResponse>
@@ -15,6 +17,7 @@ interface IProps {
 const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
   const [form] = Form.useForm()
   const [confirmLoading, setConfirmLoading] = useState(false)
+  const setCurrentSeason = useSetRecoilState(currentSeasonState)
 
   const handleOk = async () => {
     setConfirmLoading(true)
@@ -32,6 +35,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       } else {
         res = await createSeason(data)
         if (!isEmpty(res)) {
+          setCurrentSeason(res)
           toast.success('Thêm thành công')
           setOpen({ active: false })
           setReloadData()
