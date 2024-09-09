@@ -5,7 +5,7 @@ import { handleClearAuthorization } from '@src/services/HTTPService'
 import { Avatar, Breadcrumb, Dropdown, MenuProps } from 'antd'
 import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
 import { FC, useEffect, useMemo } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 const Header: FC = () => {
@@ -13,9 +13,11 @@ const Header: FC = () => {
   const [{ menuActive, isCollapseSidebar }, setAppState] = useRecoilState(appState)
 
   const { pathname } = useLocation()
+  const navigate = useNavigate()
 
   const handleSignOut = async () => {
     handleClearAuthorization(true)
+    navigate('/')
   }
 
   useEffect(() => {

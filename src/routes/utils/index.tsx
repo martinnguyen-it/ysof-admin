@@ -59,7 +59,7 @@ const RequiredLoginRoute = (props: { children: React.ReactNode; requiredCurrent?
   }, [props, currentSeason, selectSeason])
 
   if (!accessToken) {
-    return <Navigate to={`/auth/login?back_url=${location.pathname}`} replace />
+    return <Navigate to={`/auth/login${location.pathname !== '/' ? `?back_url=${location.pathname}` : ''}`} replace />
   }
   return <>{props.children}</>
 }
