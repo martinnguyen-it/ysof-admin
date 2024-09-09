@@ -11,6 +11,7 @@ import ModalClose from './ModalClose'
 import InfoSubjectEvaluation from './InfoSubjectEvaluation'
 import { getSubjectEvaluationQuestionsNotHandler } from '@src/services/subjectEvaluationQuestion'
 import { IEvaluationQuestionItem } from '@domain/subject/subjectEvaluationQuestion'
+import { v4 as uuidv4 } from 'uuid'
 
 const ManageSubjectEvaluationV: FC = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -45,7 +46,7 @@ const ManageSubjectEvaluationV: FC = () => {
       ;(async () => {
         const data = await getSubjectEvaluationQuestionsNotHandler(currentSubject.id)
         if (data) {
-          setQuestions(data.questions.map((item) => ({ ...item, id: new Date().toISOString() })))
+          setQuestions(data.questions.map((item) => ({ ...item, id: uuidv4() })))
         }
       })()
     }

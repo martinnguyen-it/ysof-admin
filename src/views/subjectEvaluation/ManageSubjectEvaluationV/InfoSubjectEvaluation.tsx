@@ -12,6 +12,7 @@ import dayjs from 'dayjs'
 import { findIndex, isEmpty, isObject } from 'lodash'
 import { DispatchWithoutAction, FC, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { v4 as uuidv4 } from 'uuid'
 
 interface IProps {
   subject: ISubjectInResponse
@@ -27,10 +28,10 @@ interface IProps {
 
 const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, setReloadData, questions }) => {
   const [form] = Form.useForm()
-  const [fields, setFields] = useState<(IEvaluationQuestionItem & { id: string })[]>([{ id: new Date().toISOString(), title: '', type: EEvaluationQuestionType.TEXT }])
+  const [fields, setFields] = useState<(IEvaluationQuestionItem & { id: string })[]>([{ id: uuidv4(), title: '', type: EEvaluationQuestionType.TEXT }])
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
-  const [_isLoadingUpdateQuestion, setIsLoadingUpdateQuestion] = useState(false)
-  const [enableUpdateQuestion, _setEnableUpdateQuestion] = useState(false)
+  const [isLoadingUpdateQuestion, setIsLoadingUpdateQuestion] = useState(false)
+  const [enableUpdateQuestion, setEnableUpdateQuestion] = useState(false)
 
   useEffect(() => {
     if (questions) {
@@ -44,7 +45,7 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
   }, [questions])
 
   const handleAddField = () => {
-    const newField = { id: new Date().toISOString(), title: '', type: EEvaluationQuestionType.TEXT }
+    const newField = { id: uuidv4(), title: '', type: EEvaluationQuestionType.TEXT }
     setFields([...fields, newField])
   }
 
@@ -71,15 +72,15 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
     }
   }
 
-  // const handleUpdateQuestion = async () => {
-  //   setIsLoadingUpdateQuestion(true)
-  //   const resCreateQuestion = await handleCreateQuestion(true)
-  //   if (resCreateQuestion) {
-  //     toast.success('Sửa thành công')
-  //     setEnableUpdateQuestion(false)
-  //   }
-  //   setIsLoadingUpdateQuestion(false)
-  // }
+  const handleUpdateQuestion = async () => {
+    setIsLoadingUpdateQuestion(true)
+    const resCreateQuestion = await handleCreateQuestion(true)
+    if (resCreateQuestion) {
+      toast.success('Sửa thành công')
+      setEnableUpdateQuestion(false)
+    }
+    setIsLoadingUpdateQuestion(false)
+  }
 
   const handleSubmitSend = async () => {
     setIsLoadingSubmit(true)
@@ -197,7 +198,7 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
       </Form>
 
       <div className='flex justify-end gap-3'>
-        {/* {!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_STUDENT ? (
+        {!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_STUDENT ? (
           <Button
             className='mt-2 bg-yellow-400 hover:!bg-yellow-400/80'
             onClick={() => {
@@ -213,7 +214,7 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
           </Button>
         ) : (
           <div></div>
-        )} */}
+        )}
         {infoForm?.status === EManageFormStatus.ACTIVE && (
           <Button className='mt-2 bg-red-500 hover:!bg-red-500/80' onClick={onOpenClose} type='primary'>
             Tạm đóng form
