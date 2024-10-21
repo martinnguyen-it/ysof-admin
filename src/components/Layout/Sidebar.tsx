@@ -160,7 +160,7 @@ const Sidebar = () => {
       if (isSuperAdmin(true)) {
         return listSeason.map((item) => ({ value: item.season, label: item.season }))
       }
-      return listSeason.filter((item) => item.season <= userInfo.current_season).map((item) => ({ value: item.season, label: item.season }))
+      return listSeason.filter((item) => item.season <= userInfo.latest_season).map((item) => ({ value: item.season, label: item.season }))
     }
   }, [listSeason, userInfo])
 

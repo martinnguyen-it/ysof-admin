@@ -12,7 +12,7 @@ export interface IAdminInResponse {
   address?: IAddressAdmin
   date_of_birth?: string
   facebook?: string
-  current_season: number
+  latest_season: number
   seasons: number[]
   avatar?: string
   id: string

@@ -165,7 +165,7 @@ const SubjectAbsentV: FC = () => {
       </div>
       <div className='mb-4 flex justify-between'>
         <p className='my-3 font-semibold'>Tổng: {size(tableData) || 0}</p>{' '}
-        {userInfo && ((userInfo.current_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
+        {userInfo && ((userInfo.latest_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
           <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
             Thêm
           </Button>

@@ -13,7 +13,7 @@ function App() {
   useEffect(() => {
     if (userInfo && !selectSeason) {
       if (userInfo.roles.includes(EAdminRole.ADMIN)) setSelectSeason(currentSeason?.season)
-      else setSelectSeason(userInfo.current_season)
+      else setSelectSeason(userInfo.latest_season)
     }
   }, [userInfo, currentSeason])
 

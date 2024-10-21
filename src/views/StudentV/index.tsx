@@ -179,7 +179,7 @@ const StudentV: FC = () => {
           </Flex>
         )
       },
-      hidden: !userInfo || !((userInfo.roles.includes(EAdminRole.BKL) && userInfo.current_season != currentSeason.season) || isSuperAdmin(true)),
+      hidden: !userInfo || !((userInfo.roles.includes(EAdminRole.BKL) && userInfo.latest_season != currentSeason.season) || isSuperAdmin(true)),
     },
   ]
 
@@ -239,7 +239,7 @@ const StudentV: FC = () => {
           showQuickJumper
           showSizeChanger
         />
-        {userInfo && ((userInfo.current_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BKL)) || isSuperAdmin(true)) && (
+        {userInfo && ((userInfo.latest_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BKL)) || isSuperAdmin(true)) && (
           <div className='mb-4 flex justify-end gap-3'>
             <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
               Thêm

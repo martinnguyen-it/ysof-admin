@@ -157,7 +157,7 @@ const LecturerV: FC = () => {
         <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
       </div>
 
-      {userInfo && ((userInfo.current_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
+      {userInfo && ((userInfo.latest_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
         <div className='mb-4 flex justify-end'>
           <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
             Thêm

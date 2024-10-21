@@ -255,7 +255,7 @@ const GeneralTaskV: FC = () => {
         />
       </div>
 
-      {userInfo && (userInfo.roles.includes(EAdminRole.ADMIN) || userInfo.current_season === currentSeason?.season) && (
+      {userInfo && (userInfo.roles.includes(EAdminRole.ADMIN) || userInfo.latest_season === currentSeason?.season) && (
         <div className='mb-4 flex justify-end'>
           <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
             Thêm

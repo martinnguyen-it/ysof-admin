@@ -19,7 +19,7 @@ export interface IStudentInResponse {
   note?: string
   id: string
   status: EAccountStatus
-  current_season: number
+  latest_season: number
 }
 export interface IListStudentInResponse {
   pagination: IPaginationAPI
