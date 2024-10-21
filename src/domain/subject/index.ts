@@ -55,7 +55,8 @@ export interface IZoomInfo {
 
 export enum ESubjectStatus {
   INIT = 'init',
-  SENT_STUDENT = 'sent_student',
+  SENT_NOTIFICATION = 'sent_notification',
   SENT_EVALUATION = 'sent_evaluation',
+  CLOSE_EVALUATION = 'close_evaluation',
   COMPLETED = 'completed',
 }

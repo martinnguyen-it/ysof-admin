@@ -2,8 +2,9 @@ import { ESubjectStatus } from '@domain/subject'
 
 export const ESubjectStatusDetail: { [key in ESubjectStatus]: string } = {
   [ESubjectStatus.INIT]: 'Khởi tạo',
-  [ESubjectStatus.SENT_STUDENT]: 'Đã gửi email thông báo học',
+  [ESubjectStatus.SENT_NOTIFICATION]: 'Đã gửi email thông báo học',
   [ESubjectStatus.SENT_EVALUATION]: 'Đã gửi form lượng giá',
+  [ESubjectStatus.CLOSE_EVALUATION]: 'Đã đóng form lượng giá',
   [ESubjectStatus.COMPLETED]: 'Đã hoàn thành',
 }
 

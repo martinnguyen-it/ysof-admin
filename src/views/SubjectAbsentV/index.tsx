@@ -49,7 +49,7 @@ const SubjectAbsentV: FC = () => {
       const resSubject = await getSubjectShort({
         sort: ESort.DESC,
         sort_by: 'start_at',
-        status: [ESubjectStatus.COMPLETED, ESubjectStatus.SENT_EVALUATION, ESubjectStatus.SENT_STUDENT],
+        status: [ESubjectStatus.COMPLETED, ESubjectStatus.SENT_EVALUATION, ESubjectStatus.SENT_NOTIFICATION],
       })
       if (size(resSubject) > 0) {
         setSubjectSentStudent(resSubject)

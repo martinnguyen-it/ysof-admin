@@ -122,7 +122,7 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
             className={`rounded-md px-2 py-1 ${
               subject.status === ESubjectStatus.INIT
                 ? 'bg-green-100 text-green-700'
-                : subject.status === ESubjectStatus.SENT_STUDENT
+                : subject.status === ESubjectStatus.SENT_NOTIFICATION
                 ? 'bg-blue-100 text-blue-700'
                 : subject.status === ESubjectStatus.SENT_EVALUATION
                 ? 'text-bg-teal-700 bg-teal-100'
@@ -150,12 +150,12 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
       <Divider />
       <div className='mb-4 flex justify-center text-2xl font-bold'>CÂU HỎI LƯỢNG GIÁ</div>
 
-      <Form form={form} layout='vertical' disabled={!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_STUDENT}>
+      <Form form={form} layout='vertical' disabled={!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_NOTIFICATION}>
         {fields.map((field, idx) => (
           <div key={field.id}>
             <div className='font-bold'>
               Câu hỏi {idx + 1}{' '}
-              {fields.length > 1 && !(!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_STUDENT) && (
+              {fields.length > 1 && !(!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_NOTIFICATION) && (
                 <MinusCircleOutlined onClick={() => handleRemoveField(field.id)} />
               )}
             </div>
@@ -198,7 +198,7 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
       </Form>
 
       <div className='flex justify-end gap-3'>
-        {!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_STUDENT ? (
+        {!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_NOTIFICATION ? (
           <Button
             className='mt-2 bg-yellow-400 hover:!bg-yellow-400/80'
             onClick={() => {
@@ -208,7 +208,7 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
           >
             Mở sửa câu hỏi
           </Button>
-        ) : enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_STUDENT ? (
+        ) : enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_NOTIFICATION ? (
           <Button className='mt-2 bg-green-500 hover:!bg-green-500/80' loading={isLoadingUpdateQuestion} onClick={handleUpdateQuestion} type='primary'>
             Sửa câu hỏi
           </Button>
@@ -220,7 +220,7 @@ const InfoSubjectEvaluation: FC<IProps> = ({ subject, infoForm, onOpenClose, set
             Tạm đóng form
           </Button>
         )}
-        {subject.status === ESubjectStatus.SENT_STUDENT ? (
+        {subject.status === ESubjectStatus.SENT_NOTIFICATION ? (
           <Button disabled={infoForm?.status === EManageFormStatus.ACTIVE} loading={isLoadingSubmit} className='mt-2' onClick={handleSubmitSend} type='primary'>
             Gửi email lượng giá
           </Button>
