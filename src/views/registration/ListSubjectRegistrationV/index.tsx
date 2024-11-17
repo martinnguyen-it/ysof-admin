@@ -46,13 +46,18 @@ const ListSubjectRegistrationV: FC = () => {
         setTableData(res.data)
         setPaging({ current: res.pagination.page_index, total: res.pagination.total })
       }
+      setIsLoading(false)
+    })()
+  }, [tableQueries, search, sort, sortBy, group])
+
+  useEffect(() => {
+    ;(async () => {
       const data = await getListSubjects()
       if (!isEmpty(data) || isArray(data)) {
         setListSubject(data)
       }
-      setIsLoading(false)
     })()
-  }, [tableQueries, search, sort, sortBy, group])
+  }, [])
 
   const columns = useMemo(() => {
     const columns: ColumnsType<ISubjectRegistrationInResponse> = [
@@ -108,7 +113,14 @@ const ListSubjectRegistrationV: FC = () => {
           width: '200px',
           align: 'center',
           render: (_, record: ISubjectRegistrationInResponse) => {
-            return <>{record.subject_registrations.includes(item.id) ? 'x' : ''}</>
+            const check = record.subject_registrations.includes(item.id)
+            return <>{check ? 'x' : ''}</>
+          },
+          onCell: (record: ISubjectRegistrationInResponse) => {
+            const check = record.subject_registrations.includes(item.id)
+            return {
+              className: check ? '' : '!bg-blue-100/30',
+            }
           },
         })
       })
