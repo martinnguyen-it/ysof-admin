@@ -51,13 +51,16 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
   }
 
   useEffect(() => {
-    if (open?.item)
+    if (open?.item) {
+      const lenSeasons = open.item.seasons_info.length
       form.setFieldsValue({
         ...open.item,
         date_of_birth: undefined,
         date_of_birth_temp: open.item.date_of_birth ? dayjs(open.item.date_of_birth, 'YYYY-MM-DD') : undefined,
+        numerical_order: open.item.seasons_info[lenSeasons - 1].numerical_order,
+        group: open.item.seasons_info[lenSeasons - 1].group,
       })
-    else form.resetFields()
+    } else form.resetFields()
   }, [open])
 
   const onChangeDateOfBirth: DatePickerProps['onChange'] = (_, dateString) => {

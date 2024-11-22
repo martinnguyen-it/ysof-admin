@@ -1,4 +1,5 @@
 import { IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
+import { IStudentSeason } from '@domain/student'
 
 export interface IQualityEvaluation {
   focused_right_topic: EQualityValue
@@ -44,8 +45,7 @@ export interface ISubjectInEvaluation {
 
 export interface IStudentInEvaluation {
   id: string
-  group: number
-  numerical_order: number
+  seasons_info: IStudentSeason[]
   holy_name: string
   full_name: string
   email: string

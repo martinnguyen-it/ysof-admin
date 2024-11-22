@@ -1,10 +1,15 @@
 import { EAccountStatus, IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
 
+export interface IStudentSeason {
+  numerical_order: number
+  group: number
+  season: number
+}
+
 export interface IStudentInResponse {
   created_at: Date
   updated_at: Date
-  numerical_order: number
-  group: number
+  seasons_info: IStudentSeason[]
   holy_name: string
   full_name: string
   email: string
@@ -19,7 +24,6 @@ export interface IStudentInResponse {
   note?: string
   id: string
   status: EAccountStatus
-  latest_season: number
 }
 export interface IListStudentInResponse {
   pagination: IPaginationAPI
@@ -48,9 +52,18 @@ export interface IImportStudentFromSpreadSheetsRequest {
   sheet_name: string
 }
 
+export interface IErrorInImportStudentFromSpreadSheet {
+  row: number
+  detail: string
+}
+
+export interface IAttentionInImportStudentFromSpreadSheet extends IErrorInImportStudentFromSpreadSheet {}
+
 export interface IImportStudentFromSpreadSheetsResponse {
-  inserted_ids: string[]
-  errors: any[]
+  inserteds: string[]
+  errors: IErrorInImportStudentFromSpreadSheet[]
+  attentions: IAttentionInImportStudentFromSpreadSheet[]
+  updated: string[]
 }
 
 export interface IResetPasswordResponse {

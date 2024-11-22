@@ -25,7 +25,7 @@ const FormImport: FC<IProps> = ({ form }) => {
         </div>
         <div>
           <span className='mr-2 font-medium'>B4:</span>
-          Xóa dòng tiếng Việt số 2
+          Xóa dòng tiếng Việt số 1
         </div>
         <div>
           <span className='mr-2 font-medium'>B5:</span>

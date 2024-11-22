@@ -30,13 +30,14 @@ const TableStudent: FC<IProps> = ({ subjectId }) => {
       dataIndex: 'numerical_order',
       align: 'center',
       key: 'numerical_order',
-      render: (text) => String(text).padStart(3, '0'),
+      render: (_, record: IStudentInSubject) => String(record.seasons_info[record.seasons_info.length - 1].numerical_order).padStart(3, '0'),
     },
     {
       title: 'Nhóm',
       dataIndex: 'group',
       align: 'center',
       key: 'group',
+      render: (_, record: IStudentInSubject) => record.seasons_info[record.seasons_info.length - 1].group,
     },
     {
       title: 'Họ tên',

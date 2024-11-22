@@ -1,8 +1,8 @@
 import { IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
+import { IStudentSeason } from '@domain/student'
 
 export interface IStudentInSubject {
-  numerical_order: number
-  group: number
+  seasons_info: IStudentSeason[]
   holy_name: string
   full_name: string
   email: string

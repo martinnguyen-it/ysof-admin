@@ -81,7 +81,7 @@ const SubjectAbsentV: FC = () => {
       align: 'center',
       key: 'numerical_order',
       width: '80px',
-      render: (text) => String(text).padStart(3, '0'),
+      render: (_, record: ISubjectAbsentInResponse) => String(record.student.seasons_info[record.student.seasons_info.length - 1].numerical_order).padStart(3, '0'),
     },
     {
       title: 'Nhóm',
@@ -89,6 +89,7 @@ const SubjectAbsentV: FC = () => {
       key: 'group',
       align: 'center',
       width: '80px',
+      render: (_, record: ISubjectAbsentInResponse) => record.student.seasons_info[record.student.seasons_info.length - 1].group,
     },
     {
       title: 'Họ tên',

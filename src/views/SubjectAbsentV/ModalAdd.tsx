@@ -84,7 +84,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
         value: item.id,
         label: (
           <>
-            {item.numerical_order} {item.holy_name} {item.full_name}
+            {item.seasons_info[item.seasons_info.length - 1].numerical_order} {item.holy_name} {item.full_name}
           </>
         ),
       })),

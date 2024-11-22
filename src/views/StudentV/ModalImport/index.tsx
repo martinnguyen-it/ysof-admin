@@ -24,7 +24,7 @@ const ModalImport: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       const data = form.getFieldsValue()
       const res = await importStudent(data)
       if (!isEmpty(res)) {
-        toast.success('Import thành công')
+        toast.success('Xử lý thành công')
         setResponse(res)
         setReloadData()
       }
@@ -59,10 +59,10 @@ const ModalImport: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       {response ? (
         <div className='flex flex-col gap-2'>
           <Card>
-            <span className='mr-2 text-base font-medium'>Số học viên đã nhập: {size(response.inserted_ids)}</span>
+            <span className='mr-2 text-base font-medium text-blue-500'>Số học viên đã nhập: {size(response.inserteds)}</span>
           </Card>
           <Card>
-            <p className='mr-2 text-base font-medium'>Số trường lỗi: {size(response.errors)}</p>
+            <p className='mr-2 text-base font-medium text-red-500'>Số trường lỗi: {size(response.errors)}</p>
             {size(response.errors) > 0
               ? response.errors.map((item) => (
                   <div key={item.row}>
@@ -72,6 +72,29 @@ const ModalImport: FC<IProps> = ({ open, setOpen, setReloadData }) => {
                 ))
               : null}
           </Card>
+          <Card>
+            <p className='mr-2 text-base font-medium text-green-600'>Số học viên đã cập nhật: {size(response.updated)}</p>
+            {size(response.updated) > 0
+              ? response.updated.map((email, idx) => (
+                  <div key={idx}>
+                    <span className='mr-2'>- {email}</span>
+                  </div>
+                ))
+              : null}
+          </Card>
+          {size(response.attentions) ? (
+            <Card>
+              <p className='mr-2 text-base font-medium text-yellow-500'>Dữ liệu cần chú ý: {size(response.attentions)}</p>
+              {size(response.attentions) > 0
+                ? response.attentions.map((item) => (
+                    <div key={item.row}>
+                      <span className='mr-2 font-medium'>- Hàng {item.row}:</span>
+                      <span style={{ whiteSpace: 'pre-line' }}>{item.detail}</span>
+                    </div>
+                  ))
+                : null}
+            </Card>
+          ) : null}
         </div>
       ) : (
         <FormImport form={form} />

@@ -67,7 +67,7 @@ const ListSubjectRegistrationV: FC = () => {
         align: 'center',
         key: 'numerical_order',
         sorter: true,
-        render: (text) => String(text).padStart(3, '0'),
+        render: (_, record: ISubjectRegistrationInResponse) => String(record.student.seasons_info[record.student.seasons_info.length - 1].numerical_order).padStart(3, '0'),
       },
       {
         title: 'Nhóm',
@@ -75,6 +75,7 @@ const ListSubjectRegistrationV: FC = () => {
         align: 'center',
         key: 'group',
         sorter: true,
+        render: (_, record: ISubjectRegistrationInResponse) => record.student.seasons_info[record.student.seasons_info.length - 1].group,
       },
       {
         title: 'Họ tên',
