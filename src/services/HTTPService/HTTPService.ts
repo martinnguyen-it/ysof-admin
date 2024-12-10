@@ -2,27 +2,11 @@ import axios, { AxiosHeaders } from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import moment from 'moment'
 import { toast } from 'react-toastify'
-import { serviceErrorHandler } from './error'
-import { HTTPStatusCode, UnauthorizedEvent } from './helpers'
-import { HTTPRequest, RequestParams } from './types'
+import { HTTPStatusCode } from './helpers'
 import { accessTokenState } from '@atom/authAtom'
 import { getRecoil, setRecoil } from 'recoil-nexus'
 import { API_CONFIG } from '@src/constants'
-
-export interface HTTPService {
-  post: HTTPRequest
-  get: HTTPRequest
-  del: HTTPRequest
-  put: HTTPRequest
-  patch: HTTPRequest
-  authGet: HTTPRequest
-  authPost: HTTPRequest
-  authDel: HTTPRequest
-  authPut: HTTPRequest
-  authPatch: HTTPRequest
-  isFailureResponse: (arg: Error) => arg is Error
-  unauthorizedEvent: UnauthorizedEvent
-}
+import qs from 'qs'
 
 /**
  * add user token to request header
@@ -39,6 +23,9 @@ interface JwtToken {
 const instance = axios.create({
   baseURL: API_CONFIG.HOST,
   timeout: Number(API_CONFIG.timeout),
+  paramsSerializer: (params) => {
+    return qs.stringify(params, { arrayFormat: 'repeat' })
+  },
 })
 
 instance.interceptors.request.use((request) => {
@@ -71,12 +58,16 @@ export const handleCheckTokenExpired = ({ accessToken, onLogout, onAuthenticated
 }
 
 instance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  (response) => {
+    if (response?.data) return response.data
+    return response
+  },
+  (error) => {
     try {
       const accessToken = getRecoil(accessTokenState)
       if (!isUnauthorizedError(error)) {
-        return Promise.reject(error)
+        const message = error?.response?.data?.detail || error?.response?.data?.message || error.message
+        return Promise.reject(new Error(message))
       }
       if (!accessToken) {
         handleClearAuthorization()
@@ -104,43 +95,7 @@ const isUnauthorizedError = (error: any) => {
   return status === HTTPStatusCode.UNAUTHORIZED
 }
 
-const post: HTTPRequest = serviceErrorHandler(async ({ url, data, options }: RequestParams) => {
-  const res = await instance.post(url, data, options)
-  return res
-})
-
-const get: HTTPRequest = serviceErrorHandler(async ({ url, data, options }: RequestParams) => {
-  let reqOptions = options
-  if (data) {
-    reqOptions = {
-      ...options,
-      params: data,
-      paramsSerializer: {
-        indexes: null,
-      },
-    }
-  }
-
-  const res = await instance.get(url, reqOptions)
-  return res
-})
-
-const del: HTTPRequest = serviceErrorHandler(async ({ url, options }: RequestParams) => {
-  const res = await instance.delete(url, options)
-
-  return res
-})
-
-const put: HTTPRequest = serviceErrorHandler(async ({ url, data, options }: RequestParams) => {
-  const res = await instance.put(url, data, options)
-
-  return res
-})
-const patch: HTTPRequest = serviceErrorHandler(async ({ url, data, options }) => {
-  const res = await instance.patch(url, data, options)
-
-  return res
-})
+const { delete: del, get, patch, post, put } = instance
 
 /**
  * API Failure Response type guard

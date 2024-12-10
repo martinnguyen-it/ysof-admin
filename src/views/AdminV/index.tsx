@@ -74,6 +74,7 @@ const AdminV: FC = () => {
       title: 'STT',
       dataIndex: 'index',
       key: 'index',
+      align: 'center',
       width: '60px',
       render: (_text, _record, index) => index + 1 + (paging.current - 1) * tableQueries.pageSize,
     },

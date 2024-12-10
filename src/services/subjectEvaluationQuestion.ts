@@ -1,35 +1,11 @@
 import { get, post } from './HTTPService'
-import { API_CONFIG, API_LIST } from '@constants/index'
-import { getRecoil } from 'recoil-nexus'
-import { accessTokenState } from '@atom/authAtom'
-import axios from 'axios'
+import { API_LIST } from '@constants/index'
 import { IEvaluationQuestionPayload, IEvaluationQuestionResponse } from '@domain/subject/subjectEvaluationQuestion'
 
-export const getSubjectEvaluationQuestions = async (subjectId: string): Promise<IEvaluationQuestionResponse> => {
-  const response = await get({
-    url: API_LIST.subjectEvaluationQuestions + '/' + subjectId,
-  })
-  return response?.data
-}
+export const getSubjectEvaluationQuestions = (subjectId: string): Promise<IEvaluationQuestionResponse> => get(API_LIST.subjectEvaluationQuestions + '/' + subjectId)
 
-export const getSubjectEvaluationQuestionsNotHandler = async (subjectId: string): Promise<IEvaluationQuestionResponse | undefined> => {
-  const accessToken = getRecoil(accessTokenState)
-  try {
-    const response = await axios({
-      method: 'get',
-      url: API_CONFIG.HOST + API_LIST.subjectEvaluationQuestions + '/' + subjectId,
-      headers: { Authorization: 'Bearer ' + accessToken },
-    })
-    return response?.data
-  } catch (error) {
-    return undefined
-  }
-}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getSubjectEvaluationQuestionsNotHandler = (subjectId: string): Promise<IEvaluationQuestionResponse | undefined> => Promise.resolve(undefined)
 
-export const createSubjectEvaluation = async (subjectId: string, data: IEvaluationQuestionPayload): Promise<IEvaluationQuestionResponse> => {
-  const response = await post({
-    url: API_LIST.subjectEvaluationQuestions + '/' + subjectId,
-    data,
-  })
-  return response?.data
-}
+export const createSubjectEvaluation = (subjectId: string, data: IEvaluationQuestionPayload): Promise<IEvaluationQuestionResponse> =>
+  post(API_LIST.subjectEvaluationQuestions + '/' + subjectId, data)

@@ -2,40 +2,12 @@ import { ICreateLecturer, ILecturerInResponse, IListLecturerInResponse, IParamsG
 import { del, get, put, post } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
-export const getListLecturers = async (params?: IParamsGetListLecturer): Promise<IListLecturerInResponse> => {
-  const response = await get({
-    url: API_LIST.lecturer,
-    data: params,
-  })
-  return response?.data
-}
+export const getListLecturers = (params?: IParamsGetListLecturer): Promise<IListLecturerInResponse> => get(API_LIST.lecturer, { params })
 
-export const getLecturerDetail = async (id: string): Promise<ILecturerInResponse> => {
-  const response = await get({
-    url: API_LIST.lecturer + '/' + id,
-  })
-  return response?.data
-}
+export const getLecturerDetail = (id: string): Promise<ILecturerInResponse> => get(API_LIST.lecturer + '/' + id)
 
-export const createLecturer = async (data: ICreateLecturer): Promise<ILecturerInResponse> => {
-  const response = await post({
-    url: API_LIST.lecturer,
-    data,
-  })
-  return response?.data
-}
+export const createLecturer = (data: ICreateLecturer): Promise<ILecturerInResponse> => post(API_LIST.lecturer, data)
 
-export const updateLecturer = async (id: string, data: IUpdateLecturer): Promise<ILecturerInResponse> => {
-  const response = await put({
-    url: API_LIST.lecturer + '/' + id,
-    data,
-  })
-  return response?.data
-}
+export const updateLecturer = (id: string, data: IUpdateLecturer): Promise<ILecturerInResponse> => put(API_LIST.lecturer + '/' + id, data)
 
-export const deleteLecturer = async (id: string): Promise<ILecturerInResponse> => {
-  const response = await del({
-    url: API_LIST.lecturer + '/' + id,
-  })
-  return response?.data
-}
+export const deleteLecturer = (id: string): Promise<ILecturerInResponse> => del(API_LIST.lecturer + '/' + id)

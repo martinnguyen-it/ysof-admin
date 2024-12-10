@@ -2,10 +2,4 @@ import { IManySubjectEvaluationInResponse, IParamsGetListSubjectEvaluation } fro
 import { get } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
-export const getListSubjectEvaluation = async (params: IParamsGetListSubjectEvaluation): Promise<IManySubjectEvaluationInResponse> => {
-  const response = await get({
-    url: API_LIST.subjectEvaluation,
-    data: params,
-  })
-  return response?.data
-}
+export const getListSubjectEvaluation = (params: IParamsGetListSubjectEvaluation): Promise<IManySubjectEvaluationInResponse> => get(API_LIST.subjectEvaluation, { params })

@@ -2,76 +2,22 @@ import { ICreateSubject, ISubjectInResponse, IParamsGetListSubject, IUpdateSubje
 import { del, get, put, post } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
-export const getListSubjects = async (params?: IParamsGetListSubject): Promise<ISubjectInResponse[]> => {
-  const response = await get({
-    url: API_LIST.subject,
-    data: params,
-  })
-  return response?.data
-}
+export const getListSubjects = (params?: IParamsGetListSubject): Promise<ISubjectInResponse[]> => get(API_LIST.subject, { params })
 
-export const getSubjectDetail = async (id: string): Promise<ISubjectInResponse> => {
-  const response = await get({
-    url: API_LIST.subject + '/' + id,
-  })
-  return response?.data
-}
+export const getSubjectDetail = (id: string): Promise<ISubjectInResponse> => get(API_LIST.subject + '/' + id)
 
-export const getSubjectNextMostRecent = async (): Promise<ISubjectInResponse & { message?: string }> => {
-  const response = await get({
-    url: API_LIST.subject + '/next-most-recent',
-  })
-  return response?.data
-}
+export const getSubjectNextMostRecent = (): Promise<ISubjectInResponse & { message?: string }> => get(API_LIST.subject + '/next-most-recent')
 
-export const getSubjectLastSentStudentRecent = async (): Promise<ISubjectInResponse & { message?: string }> => {
-  const response = await get({
-    url: API_LIST.subject + '/last-sent-student',
-  })
-  return response?.data
-}
+export const getSubjectLastSentStudentRecent = (): Promise<ISubjectInResponse & { message?: string }> => get(API_LIST.subject + '/last-sent-student')
 
-export const getSubjectShort = async (params?: IParamsGetListSubject): Promise<ISubjectShortInResponse[]> => {
-  const response = await get({
-    url: API_LIST.subject + '/list-short',
-    data: params,
-  })
-  return response?.data
-}
+export const getSubjectShort = (params?: IParamsGetListSubject): Promise<ISubjectShortInResponse[]> => get(API_LIST.subject + '/list-short', { params })
 
-export const subjectSendNotification = async (subjectId: string) => {
-  const response = await post({
-    url: API_LIST.subjectSendNotification + '/' + subjectId,
-  })
-  return response?.data
-}
+export const subjectSendNotification = (subjectId: string) => post(API_LIST.subjectSendNotification + '/' + subjectId)
 
-export const subjectSendEvaluation = async (subjectId: string) => {
-  const response = await post({
-    url: API_LIST.subjectSendEvaluation + '/' + subjectId,
-  })
-  return response?.data
-}
+export const subjectSendEvaluation = (subjectId: string) => post(API_LIST.subjectSendEvaluation + '/' + subjectId)
 
-export const createSubject = async (data: ICreateSubject): Promise<ISubjectInResponse> => {
-  const response = await post({
-    url: API_LIST.subject,
-    data,
-  })
-  return response?.data
-}
+export const createSubject = (data: ICreateSubject): Promise<ISubjectInResponse> => post(API_LIST.subject, data)
 
-export const updateSubject = async (id: string, data: IUpdateSubject): Promise<ISubjectInResponse> => {
-  const response = await put({
-    url: API_LIST.subject + '/' + id,
-    data,
-  })
-  return response?.data
-}
+export const updateSubject = (id: string, data: IUpdateSubject): Promise<ISubjectInResponse> => put(API_LIST.subject + '/' + id, data)
 
-export const deleteSubject = async (id: string): Promise<ISubjectInResponse> => {
-  const response = await del({
-    url: API_LIST.subject + '/' + id,
-  })
-  return response?.data
-}
+export const deleteSubject = (id: string): Promise<ISubjectInResponse> => del(API_LIST.subject + '/' + id)

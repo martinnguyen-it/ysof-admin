@@ -2,57 +2,28 @@ import { ICreateDocumentGoogle, ICreateDocumentWithFile, IDocumentInResponse, IL
 import { del, get, put, post } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
-export const getListDocuments = async (params?: IParamsGetListDocument): Promise<IListDocumentInResponse> => {
-  const response = await get({
-    url: API_LIST.document,
-    data: params,
-  })
-  return response?.data
-}
+export const getListDocuments = (params?: IParamsGetListDocument): Promise<IListDocumentInResponse> => get(API_LIST.document, { params })
 
-export const getDocumentDetail = async (id: string): Promise<IDocumentInResponse> => {
-  const response = await get({
-    url: API_LIST.document + '/' + id,
-  })
-  return response?.data
-}
+export const getDocumentDetail = (id: string): Promise<IDocumentInResponse> => get(API_LIST.document + '/' + id)
 
-export const createDocumentWithFile = async (data: ICreateDocumentWithFile): Promise<IDocumentInResponse> => {
+export const createDocumentWithFile = (data: ICreateDocumentWithFile): Promise<IDocumentInResponse> => {
   const formData = new FormData()
   formData.append('file', new Blob([data.file]))
   formData.append('payload', JSON.stringify(data.payload))
-  const response = await post({
-    url: API_LIST.document + '/file',
-    data: formData,
-  })
-  return response?.data
+
+  return post(API_LIST.document + '/file', formData)
 }
 
-export const createDocumentGoogle = async (data: ICreateDocumentGoogle): Promise<IDocumentInResponse> => {
-  const response = await post({
-    url: API_LIST.document + '/google',
-    data,
-  })
-  return response?.data
-}
+export const createDocumentGoogle = (data: ICreateDocumentGoogle): Promise<IDocumentInResponse> => post(API_LIST.document + '/google', data)
 
-export const updateDocument = async (id: string, data: IUpdateDocument): Promise<IDocumentInResponse> => {
+export const updateDocument = (id: string, data: IUpdateDocument): Promise<IDocumentInResponse> => {
   const formData = new FormData()
   if (data?.file) {
     formData.append('file', new Blob([data.file]))
   }
   formData.append('payload', JSON.stringify(data.payload))
 
-  const response = await put({
-    url: API_LIST.document + '/' + id,
-    data: formData,
-  })
-  return response?.data
+  return put(API_LIST.document + '/' + id, formData)
 }
 
-export const deleteDocument = async (id: string): Promise<IDocumentInResponse> => {
-  const response = await del({
-    url: API_LIST.document + '/' + id,
-  })
-  return response?.data
-}
+export const deleteDocument = (id: string): Promise<IDocumentInResponse> => del(API_LIST.document + '/' + id)

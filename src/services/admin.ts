@@ -2,55 +2,16 @@ import { IAdminInResponse, ICreateAdmin, IListAdminInResponse, IParamsGetListAdm
 import { del, get, post, put } from './HTTPService'
 import { API_LIST } from '@constants/index'
 
-export const getMe = async (): Promise<IAdminInResponse> => {
-  const response = await get({
-    url: API_LIST.me,
-  })
-  return response?.data
-}
+export const getMe = (): Promise<IAdminInResponse> => get(API_LIST.me)
 
-export const getListAdmins = async (params?: IParamsGetListAdmin): Promise<IListAdminInResponse> => {
-  const response = await get({
-    url: API_LIST.admin,
-    data: params,
-  })
-  return response?.data
-}
+export const getListAdmins = (params?: IParamsGetListAdmin): Promise<IListAdminInResponse> => get(API_LIST.admin, { params })
 
-export const getAdminDetail = async (id: string): Promise<IAdminInResponse> => {
-  const response = await get({
-    url: API_LIST.admin + '/' + id,
-  })
-  return response?.data
-}
+export const getAdminDetail = (id: string): Promise<IAdminInResponse> => get(API_LIST.admin + '/' + id)
 
-export const createAdmin = async (data: ICreateAdmin): Promise<IAdminInResponse> => {
-  const response = await post({
-    url: API_LIST.admin,
-    data,
-  })
-  return response?.data
-}
+export const createAdmin = (data: ICreateAdmin): Promise<IAdminInResponse> => post(API_LIST.admin, data)
 
-export const updateAdmin = async (id: string, data: IUpdateAdmin): Promise<IAdminInResponse> => {
-  const response = await put({
-    url: API_LIST.admin + '/' + id,
-    data,
-  })
-  return response?.data
-}
+export const updateAdmin = (id: string, data: IUpdateAdmin): Promise<IAdminInResponse> => put(API_LIST.admin + '/' + id, data)
 
-export const updateAdminMe = async (data: IUpdateMe): Promise<IAdminInResponse> => {
-  const response = await put({
-    url: API_LIST.me,
-    data,
-  })
-  return response?.data
-}
+export const updateAdminMe = (data: IUpdateMe): Promise<IAdminInResponse> => put(API_LIST.me, data)
 
-export const deleteAdmin = async (id: string): Promise<IAdminInResponse> => {
-  const response = await del({
-    url: API_LIST.admin + '/' + id,
-  })
-  return response?.data
-}
+export const deleteAdmin = (id: string): Promise<IAdminInResponse> => del(API_LIST.admin + '/' + id)
