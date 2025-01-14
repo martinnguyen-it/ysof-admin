@@ -1,36 +1,30 @@
 import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
-import { isEmpty } from 'lodash'
-import React, { Dispatch, DispatchWithoutAction, FC, useEffect, useMemo, useState } from 'react'
+import { isEmpty, size } from 'lodash'
+import React, { Dispatch, FC, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
-import { EDocumentType, IDocumentInResponse } from '@domain/document'
-import { getListDocuments } from '@src/services/document'
 import { useDebounce } from '@src/hooks/useDebounce'
 import { IOpenFormWithMode } from '@domain/common'
 import { ISubjectInResponse } from '@domain/subject'
-import { createSubject, updateSubject } from '@src/services/subject'
 import { currentSeasonState } from '@atom/seasonAtom'
 import { OPTIONS_SUBDIVISION } from '@constants/subject'
-import { ILecturerInResponse } from '@domain/lecturer'
-import { getListLecturers } from '@src/services/lecturer'
 import dayjs from 'dayjs'
 import { userInfoState } from '@atom/authAtom'
 import { EAdminRole } from '@domain/admin/type'
 import { isSuperAdmin } from '@src/utils'
+import { useGetListLecturers } from '@src/apis/lecturer/useQueryLecturer'
+import { useGetListDocuments } from '@src/apis/document/useQueryDocument'
+import { EDocumentType } from '@domain/document'
+import { useCreateSubject, useUpdateSubject } from '@src/apis/subject/useMutationSubject'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface IProps {
   open: IOpenFormWithMode<ISubjectInResponse>
   setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<ISubjectInResponse>>>
-  setReloadData: DispatchWithoutAction
 }
 
-const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
+const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
-  const [loadingGetDocuments, setLoadingGetDocuments] = useState(false)
-  const [loadingGetLecturers, setLoadingGetLecturers] = useState(false)
-  const [documents, setDocuments] = useState<IDocumentInResponse[]>([])
-  const [lecturers, setLecturers] = useState<ILecturerInResponse[]>([])
   const [searchDocuments, setSearchDocuments] = useState('')
   const [searchLecturers, setSearchLecturers] = useState('')
   const [startAt, setStartAt] = useState<string>()
@@ -40,84 +34,76 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
   const searchDocDebounce = useDebounce(searchDocuments, 300)
   const searchLecturerDebounce = useDebounce(searchLecturers, 300)
 
-  useEffect(() => {
-    ;(async () => {
-      setLoadingGetDocuments(true)
-      const res = await getListDocuments({ search: searchDocDebounce, season: currentSeason?.season, type: EDocumentType.STUDENT })
-      if (!isEmpty(res)) {
-        setDocuments(res.data)
-      }
-      setLoadingGetDocuments(false)
-    })()
-  }, [searchDocDebounce])
+  const { data: lecturers, isPending: loadingGetLecturers } = useGetListLecturers({ search: searchLecturerDebounce })
 
-  useEffect(() => {
-    ;(async () => {
-      setLoadingGetLecturers(true)
-      const res = await getListLecturers({ search: searchLecturerDebounce })
-      if (!isEmpty(res)) {
-        setLecturers(res.data)
-      }
-      setLoadingGetLecturers(false)
-    })()
-  }, [searchLecturerDebounce])
+  const { data: documents, isPending: loadingGetDocuments } = useGetListDocuments(
+    { search: searchDocDebounce, season: currentSeason?.season, type: EDocumentType.STUDENT },
+    {
+      enabled: !!currentSeason?.season,
+    },
+  )
+
+  const queryClient = useQueryClient()
+
+  const isUpdateForm = !isEmpty(open?.item)
+
+  const onSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['getListSubjects'] })
+    if (isUpdateForm) toast.success('Sửa thành công')
+    else toast.success('Thêm thành công')
+    setOpen({ active: false, mode: 'add' })
+  }
+
+  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateSubject(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateSubject(onSuccess)
 
   const handleOk = async () => {
-    setConfirmLoading(true)
-    let res: ISubjectInResponse
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
-      delete data.date_start_at
+      delete data.date_of_birth_temp
       if (open?.item) {
-        res = await updateSubject(open.item.id, { ...data, start_at: startAt })
-        if (!isEmpty(res)) {
-          toast.success('Sửa thành công')
-          setOpen({ active: false, mode: 'add' })
-          setReloadData()
-        }
+        mutateUpdate({
+          subjectId: open.item.id,
+          data: { ...data, start_at: startAt },
+        })
       } else {
-        res = await createSubject({ ...data, start_at: startAt })
-        if (!isEmpty(res)) {
-          toast.success('Thêm thành công')
-          setOpen({ active: false, mode: 'add' })
-          setReloadData()
-        }
+        mutateCreate({ ...data, start_at: startAt })
       }
-    } catch (error) {
-      setConfirmLoading(false)
-    }
-
-    setConfirmLoading(false)
+    } catch {}
   }
 
   const documentOptions = useMemo(
     () =>
-      documents.map((item) => ({
-        value: item.id,
-        label: (
-          <span className='flex items-center'>
-            <img className='mr-1 size-4 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}></img>
-            {item.name}
-          </span>
-        ),
-      })),
+      documents && size(documents?.data)
+        ? documents.data.map((item) => ({
+            value: item.id,
+            label: (
+              <span className='flex items-center'>
+                <img className='mr-1 size-4 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}></img>
+                {item.name}
+              </span>
+            ),
+          }))
+        : [],
     [documents],
   )
 
   const lecturerOptions = useMemo(
     () =>
-      lecturers.map((item) => ({
-        value: item.id,
-        label: (
-          <span className='flex items-center'>
-            <img className='mr-1 size-4 object-cover' src={item?.avatar || '/images/avatar.png'}></img>
-            {item?.title ? item.title + ' ' : ''}
-            {item?.holy_name ? item.holy_name + ' ' : ''}
-            {item.full_name}
-          </span>
-        ),
-      })),
+      lecturers && size(lecturers?.data)
+        ? lecturers.data.map((item) => ({
+            value: item.id,
+            label: (
+              <span className='flex items-center'>
+                <img className='mr-1 size-4 object-cover' src={item?.avatar || '/images/avatar.png'}></img>
+                {item?.title ? item.title + ' ' : ''}
+                {item?.holy_name ? item.holy_name + ' ' : ''}
+                {item.full_name}
+              </span>
+            ),
+          }))
+        : [],
     [lecturers],
   )
 
@@ -153,7 +139,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       title={open.item ? 'Sửa' : 'Thêm'}
       open={open.active}
       onOk={handleOk}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPendingUpdate || isPendingCreate}
       onCancel={handleCancel}
       cancelText='Hủy'
       className='sm:!w-[70vw] lg:!w-[60vw]'

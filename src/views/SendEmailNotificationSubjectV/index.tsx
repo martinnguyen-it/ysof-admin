@@ -1,62 +1,42 @@
 import { Button, Divider, Form, Input, Select, Spin } from 'antd'
 
-import { FC, useEffect, useMemo, useReducer, useState } from 'react'
-import { isEmpty } from 'lodash'
+import { FC, useEffect, useMemo, useState } from 'react'
+import { isEmpty, size } from 'lodash'
 import dayjs from 'dayjs'
-import { ESubjectStatus, ISubjectInResponse } from '@domain/subject'
-import { getSubjectLastSentStudentRecent, getSubjectNextMostRecent } from '@src/services/subject'
+import { ESubjectStatus } from '@domain/subject'
 import { useRecoilValue } from 'recoil'
 import { currentSeasonState } from '@atom/seasonAtom'
 import { ESubjectStatusDetail } from '@constants/subject'
 import { useDebounce } from '@src/hooks/useDebounce'
-import { EDocumentType, IDocumentInResponse } from '@domain/document'
-import { getListDocuments } from '@src/services/document'
+import { EDocumentType } from '@domain/document'
 import ModalConfirm from './ModalConfirm'
 import TableStudent from './TableStudent'
+import { useGetListDocuments } from '@src/apis/document/useQueryDocument'
+import { useGetSubjectLastSentStudentRecent, useGetSubjectNextMostRecent } from '@src/apis/subject/useQuerySubject'
 
 const SendEmailNotificationSubjectV: FC = () => {
   const [form] = Form.useForm()
-  const [isLoading, setIsLoading] = useState(false)
   const currentSeason = useRecoilValue(currentSeasonState)
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
-  const [recentNextSubject, setRecentNextSubject] = useState<ISubjectInResponse>()
-  const [recentLastSentStudent, setRecentLastSentStudent] = useState<ISubjectInResponse>()
   const [openConfirm, setOpenConfirm] = useState({ active: false, item: undefined })
   const [searchDocuments, setSearchDocuments] = useState('')
-  const [documents, setDocuments] = useState<IDocumentInResponse[]>([])
-  const [loadingGetDocuments, setLoadingGetDocuments] = useState(false)
 
   const searchDocDebounce = useDebounce(searchDocuments, 300)
 
-  useEffect(() => {
-    ;(async () => {
-      setLoadingGetDocuments(true)
-      const res = await getListDocuments({ search: searchDocDebounce, season: currentSeason?.season, type: EDocumentType.STUDENT })
-      if (!isEmpty(res)) {
-        setDocuments(res.data)
-      }
-      setLoadingGetDocuments(false)
-    })()
-  }, [searchDocDebounce])
+  const { data: documents, isLoading: loadingGetDocuments } = useGetListDocuments(
+    { search: searchDocDebounce, season: currentSeason?.season, type: EDocumentType.STUDENT },
+    {
+      enabled: !!currentSeason?.season,
+    },
+  )
+
+  const { data: recentLastSentStudent, isLoading: isLoadingLastSentRecent, isFetched } = useGetSubjectLastSentStudentRecent()
+  const { data: recentNextSubject, isLoading: isLoadingNextRecent } = useGetSubjectNextMostRecent(isFetched)
 
   useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const resNextRecentSubject = await getSubjectNextMostRecent()
-      if (!isEmpty(resNextRecentSubject)) {
-        if (!resNextRecentSubject?.message) {
-          setRecentNextSubject(resNextRecentSubject)
-          form.setFieldsValue({ ...resNextRecentSubject, attachments: resNextRecentSubject?.attachments ? resNextRecentSubject.attachments.map((item) => item.id) : [] })
-        }
-      }
-      const resLastRecentSubject = await getSubjectLastSentStudentRecent()
-      if (!isEmpty(resLastRecentSubject)) {
-        if (!resLastRecentSubject?.message) setRecentLastSentStudent(resLastRecentSubject)
-      }
-
-      setIsLoading(false)
-    })()
-  }, [reloadData])
+    if (!isEmpty(recentNextSubject)) {
+      form.setFieldsValue({ ...recentNextSubject, attachments: recentNextSubject?.attachments ? recentNextSubject.attachments.map((item) => item.id) : [] })
+    }
+  }, [recentNextSubject])
 
   const onOpenConfirm = async () => {
     try {
@@ -74,21 +54,23 @@ const SendEmailNotificationSubjectV: FC = () => {
 
   const documentOptions = useMemo(
     () =>
-      documents.map((item) => ({
-        value: item.id,
-        label: (
-          <span className='flex items-center'>
-            <img className='mr-1 size-4 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}></img>
-            {item.name}
-          </span>
-        ),
-      })),
+      documents && size(documents?.data)
+        ? documents.data.map((item) => ({
+            value: item.id,
+            label: (
+              <span className='flex items-center'>
+                <img className='mr-1 size-4 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}></img>
+                {item.name}
+              </span>
+            ),
+          }))
+        : [],
     [documents],
   )
 
   return (
     <div className='m-6 min-h-[calc(100vh-96px)]'>
-      {isLoading ? (
+      {isLoadingLastSentRecent || isLoadingNextRecent ? (
         <div className='mt-20 flex w-full justify-center'>
           <Spin size='large' />
         </div>
@@ -96,6 +78,7 @@ const SendEmailNotificationSubjectV: FC = () => {
         <>
           <div className='rounded-xl bg-white px-10 py-6 shadow-lg'>
             <div className='flex justify-center text-2xl font-bold'>THÔNG BÁO BUỔI HỌC</div>
+
             <div className='mb-4 mt-3'>
               {!recentLastSentStudent && !recentNextSubject ? (
                 <>Không có chủ đề hợp lệ</>
@@ -110,6 +93,7 @@ const SendEmailNotificationSubjectV: FC = () => {
                 </>
               )}
             </div>
+
             {recentLastSentStudent ? (
               <div className='px-2 leading-8'>
                 <p>
@@ -126,6 +110,7 @@ const SendEmailNotificationSubjectV: FC = () => {
                 <p>Ngày học: {dayjs(recentLastSentStudent.start_at).format('DD/MM/YYYY')}</p>
               </div>
             ) : null}
+
             {!recentLastSentStudent && recentNextSubject ? (
               <div>
                 <div className='px-2 leading-8'>
@@ -225,7 +210,7 @@ const SendEmailNotificationSubjectV: FC = () => {
           </div>
         </>
       )}
-      {recentNextSubject && <ModalConfirm open={openConfirm} setOpen={setOpenConfirm} subject={recentNextSubject} setReloadData={setReloadData} />}
+      {recentNextSubject && <ModalConfirm open={openConfirm} setOpen={setOpenConfirm} subject={recentNextSubject} />}
     </div>
   )
 }

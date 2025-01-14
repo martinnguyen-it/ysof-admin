@@ -1,45 +1,39 @@
 import { Button, Input, Spin } from 'antd'
 
-import { FC, useEffect, useReducer, useState } from 'react'
-import { isArray, isEmpty, size } from 'lodash'
+import { FC, useEffect, useState } from 'react'
+import { isEmpty, size } from 'lodash'
 import dayjs from 'dayjs'
-import { ISubjectInResponse } from '@domain/subject'
-import { getListSubjects } from '@src/services/subject'
 import { useRecoilValue } from 'recoil'
 import { currentSeasonState } from '@atom/seasonAtom'
-import { EManageFormStatus, EManageFormType, IManageFormInPayload, IManageFormInResponse } from '@domain/manageForm'
-import { getManageForm, updateManageForm } from '@src/services/manageForm'
+import { EManageFormStatus, EManageFormType, IManageFormInPayload } from '@domain/manageForm'
 import { toast } from 'react-toastify'
 import { EManageFormStatusDetail } from '@constants/manageForm'
+import { useGetListSubjects } from '@src/apis/subject/useQuerySubject'
+import { useGetManageForm } from '@src/apis/manageForm/useQueryManageForm'
+import { useUpdateManageForm } from '@src/apis/manageForm/useMutationManageForm'
+import { useQueryClient } from '@tanstack/react-query'
 
 const ManageSubjectRegistrationV: FC = () => {
-  const [listSubject, setListSubject] = useState<ISubjectInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const queryClient = useQueryClient()
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
   const [isLoadingClose, setIsLoadingClose] = useState(false)
   const currentSeason = useRecoilValue(currentSeasonState)
-  const [infoForm, setInfoForm] = useState<IManageFormInResponse>()
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
   const [value, setValue] = useState(`Bạn thân mến,
 YSOF thông báo đến bạn về việc đăng ký môn học của Trường Học Đức Tin Cho Người Trẻ - YSOF, niên khóa ${currentSeason?.academic_year || '202x-202x'}.
 Thời gian đăng ký: Từ khi ra thông báo tới 23:59 ngày xx/xx/202x. Sau thời gian trên, form đăng ký sẽ được khóa và Ban Tổ Chức sẽ không nhận thêm bất cứ lượt đăng
 ký nào của học viên.`)
 
+  const { data: listSubject, isLoading: isLoadingSubject } = useGetListSubjects()
+
+  const { data: infoForm, isLoading: isLoadingForm } = useGetManageForm(EManageFormType.SUBJECT_REGISTRATION)
+
   useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const resForm = await getManageForm(EManageFormType.SUBJECT_REGISTRATION)
-      const resSubjects = await getListSubjects()
-      if (!isEmpty(resForm)) {
-        setInfoForm(resForm)
-        if (resForm?.data && resForm.data?.content) setValue(resForm.data?.content)
-      }
-      if (!isEmpty(resSubjects) || isArray(resSubjects)) setListSubject(resSubjects)
+    if (infoForm?.data && infoForm.data?.content) {
+      setValue(infoForm.data?.content)
+    }
+  }, [infoForm])
 
-      setIsLoading(false)
-    })()
-  }, [reloadData])
-
+  const { mutateAsync } = useUpdateManageForm()
   const onSubmit = async () => {
     if (!value) {
       toast.error('Mô tả không được để trống')
@@ -57,12 +51,14 @@ ký nào của học viên.`)
         content: value,
       },
     }
-    const res = await updateManageForm(payload)
-    if (!isEmpty(res)) {
-      if (infoForm?.data?.content === value) toast.success('Mở form thành công')
-      else toast.success('Sửa thành công')
-      setReloadData()
-    }
+    try {
+      const res = await mutateAsync(payload)
+      if (!isEmpty(res)) {
+        if (infoForm?.data?.content === value) toast.success('Mở form thành công')
+        else toast.success('Sửa thành công')
+        queryClient.invalidateQueries({ queryKey: ['getManageForm'] })
+      }
+    } catch {}
     setIsLoadingSubmit(false)
   }
   const onClose = async () => {
@@ -71,17 +67,19 @@ ký nào của học viên.`)
       type: EManageFormType.SUBJECT_REGISTRATION,
       status: EManageFormStatus.CLOSED,
     }
-    const res = await updateManageForm(payload)
-    if (!isEmpty(res)) {
-      toast.success('Đóng form thành công')
-      setReloadData()
-    }
+    try {
+      const res = await mutateAsync(payload)
+      if (!isEmpty(res)) {
+        toast.success('Đóng form thành công')
+        queryClient.invalidateQueries({ queryKey: ['getManageForm'] })
+      }
+    } catch {}
     setIsLoadingClose(false)
   }
 
   return (
     <div className='mx-6 mt-6 min-h-[calc(100vh-96px)]'>
-      {isLoading ? (
+      {isLoadingForm || isLoadingSubject ? (
         <div className='mt-20 flex w-full justify-center'>
           <Spin size='large' />
         </div>
@@ -109,7 +107,7 @@ ký nào của học viên.`)
             <div className='mt-4 text-sm'>
               <Input.TextArea onChange={(e) => setValue(e.target.value)} rows={5} value={value} />
               <p className='px-2'>
-                Nếu gặp trở ngại với đường link đăng ký môn học, bạn hãy phản hồi với chúng tôi qua địa chỉ email YSOF:{' '}
+                Nếu gặp trở ngại trong quá trình đăng ký môn học, bạn hãy phản hồi với chúng tôi qua địa chỉ email YSOF:{' '}
                 <a className='text-blue-500' href='mailto:ysofsj@gmail.com'>
                   ysofsj@gmail.com
                 </a>
@@ -123,13 +121,13 @@ ký nào của học viên.`)
 
             <div className='flex justify-end gap-3'>
               {infoForm?.status === EManageFormStatus.ACTIVE && (
-                <Button disabled={isLoadingSubmit} loading={isLoadingSubmit} className='mt-2 bg-red-500 hover:!bg-red-500/80' onClick={onClose} type='primary'>
+                <Button disabled={isLoadingClose} loading={isLoadingClose} className='mt-2 bg-red-500 hover:!bg-red-500/80' onClick={onClose} type='primary'>
                   Đóng form
                 </Button>
               )}
               <Button
-                disabled={isLoadingClose || (infoForm?.data?.content === value && infoForm?.status === EManageFormStatus.ACTIVE)}
-                loading={isLoadingClose}
+                disabled={isLoadingSubmit || (infoForm?.data?.content === value && infoForm?.status === EManageFormStatus.ACTIVE)}
+                loading={isLoadingSubmit}
                 className='mt-2'
                 onClick={onSubmit}
                 type='primary'
@@ -142,7 +140,7 @@ ký nào của học viên.`)
             <div className='text-center text-lg font-medium'>Danh sách chủ đề</div>
             <div className='mt-5 flex justify-center'>
               <div className='flex max-w-5xl flex-col gap-2'>
-                {size(listSubject) > 0 ? (
+                {listSubject && size(listSubject) > 0 ? (
                   listSubject.map((item, idx) => (
                     <span key={item.id} className='break-words'>
                       <span className='font-medium'>{idx + 1}.</span> {dayjs(item.start_at).format('DD-MM-YYYY')} - {item.code} - {item.title}

@@ -4,18 +4,13 @@ import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
 import { FC, useEffect, useMemo, useState } from 'react'
-import { isArray, isEmpty, size } from 'lodash'
-import { getListSubjectRegistrations } from '@src/services/subjectRegistration'
+import { isArray, size } from 'lodash'
 import { ISubjectRegistrationInResponse } from '@domain/subject/subjectRegistration'
-import { getListSubjects } from '@src/services/subject'
-import { ISubjectInResponse } from '@domain/subject'
 import dayjs from 'dayjs'
+import { useGetListSubjects } from '@src/apis/subject/useQuerySubject'
+import { useGetListSubjectRegistrations } from '@src/apis/subjectRegistration/useQuerySubjectRegistration'
 
 const ListSubjectRegistrationV: FC = () => {
-  const [tableData, setTableData] = useState<ISubjectRegistrationInResponse[]>([])
-  const [listSubject, setListSubject] = useState<ISubjectInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
   const initPaging = {
     current: 1,
     pageSize: 20,
@@ -31,33 +26,22 @@ const ListSubjectRegistrationV: FC = () => {
     setTableQueries(initPaging)
   }, [search])
 
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const res = await getListSubjectRegistrations({
-        page_index: tableQueries.current,
-        page_size: tableQueries.pageSize,
-        search: search || undefined,
-        sort,
-        sort_by: sortBy,
-        group,
-      })
-      if (!isEmpty(res)) {
-        setTableData(res.data)
-        setPaging({ current: res.pagination.page_index, total: res.pagination.total })
-      }
-      setIsLoading(false)
-    })()
-  }, [tableQueries, search, sort, sortBy, group])
+  const { data, isLoading } = useGetListSubjectRegistrations({
+    page_index: tableQueries.current,
+    page_size: tableQueries.pageSize,
+    search: search || undefined,
+    sort,
+    sort_by: sortBy,
+    group,
+  })
 
   useEffect(() => {
-    ;(async () => {
-      const data = await getListSubjects()
-      if (!isEmpty(data) || isArray(data)) {
-        setListSubject(data)
-      }
-    })()
-  }, [])
+    if (data) {
+      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+    }
+  }, [data])
+
+  const { data: listSubject } = useGetListSubjects()
 
   const columns = useMemo(() => {
     const columns: ColumnsType<ISubjectRegistrationInResponse> = [
@@ -101,7 +85,7 @@ const ListSubjectRegistrationV: FC = () => {
         key: 'total',
       },
     ]
-    if (size(listSubject) > 0) {
+    if (listSubject && size(listSubject) > 0) {
       listSubject.forEach((item) => {
         columns.push({
           title: (
@@ -173,7 +157,7 @@ const ListSubjectRegistrationV: FC = () => {
         className='text-wrap'
         rowKey={(record) => record.student.id}
         pagination={false}
-        dataSource={tableData}
+        dataSource={data?.data}
         loading={isLoading}
         scroll={{ x: 2000 }}
         bordered

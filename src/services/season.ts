@@ -15,4 +15,4 @@ export const updateSeason = async (id: string, data: IUpdateSeason): Promise<ISe
 
 export const delSeasonById = async (id: string): Promise<ISeasonResponse> => del(API_LIST.season + '/' + id)
 
-export const markSeasonCurrent = async (id: string): Promise<ISeasonResponse> => del(API_LIST.season + `/${id}/current`)
+export const markSeasonCurrent = async (id: string): Promise<ISeasonResponse> => put(API_LIST.season + `/${id}/current`)

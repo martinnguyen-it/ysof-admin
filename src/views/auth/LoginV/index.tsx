@@ -1,9 +1,8 @@
 import { accessTokenState, userInfoState } from '@atom/authAtom'
-import { ILoginRequest } from '@domain/auth/type'
+import { ILoginRequest, ILoginResponse } from '@domain/auth/type'
+import { useLogin } from '@src/apis/auth/useLogin'
 import FormContainer from '@src/components/auth/form-container'
 import LoginForm from '@src/components/auth/login-form'
-import { APILogin } from '@src/services/auth'
-import { isEmpty } from 'lodash'
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useRecoilState, useSetRecoilState } from 'recoil'
@@ -17,12 +16,14 @@ const LoginV = () => {
 
   const backURL = new URLSearchParams(location.search).get('back_url')
 
+  const onSuccess = (data: ILoginResponse) => {
+    setAccessToken(data.access_token)
+    setInfoUser(data.user)
+  }
+
+  const { mutate } = useLogin(onSuccess)
   const onLogin = async (val: ILoginRequest) => {
-    const data = await APILogin(val)
-    if (!isEmpty(data)) {
-      setAccessToken(data.access_token)
-      setInfoUser(data.user)
-    }
+    mutate(val)
   }
   useEffect(() => {
     if (accessToken != '') navigate(backURL || '/')

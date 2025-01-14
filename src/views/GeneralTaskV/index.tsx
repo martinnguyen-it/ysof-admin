@@ -4,30 +4,27 @@ import { Avatar, Button, Flex, Input, Pagination, Select, Tooltip } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
-import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
+import { FC, MouseEvent, useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
-import { isArray, isEmpty, isObject } from 'lodash'
+import { isArray, isObject } from 'lodash'
 import dayjs from 'dayjs'
 import { OPTIONS_ROLE, PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
 import ModalDelete from './ModalDelete'
 import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
-import { getListGeneralTasks } from '@src/services/generalTask'
 import { EGeneralTaskType, IGeneralTaskInResponse } from '@domain/generalTask'
 import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
 import { EGeneralTaskTypeDetail, OPTIONS_GENERAL_TASK_LABEL, OPTIONS_GENERAL_TASK_TYPE } from '@constants/generalTask'
 import ModalAdd from './ModalAdd'
 import ModalView from './ModalView'
+import { useGetListGeneralTasks } from '@src/apis/generalTask/useQueryGeneralTask'
 
 const GeneralTaskV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
   const [openForm, setOpenForm] = useState<IOpenFormWithMode<IGeneralTaskInResponse>>({ active: false, mode: 'add' })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
-  const [tableData, setTableData] = useState<IGeneralTaskInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
 
   const initPaging = {
     current: 1,
@@ -49,7 +46,7 @@ const GeneralTaskV: FC = () => {
 
   const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    const item = tableData.find((val) => val.id === e.currentTarget.id)
+    const item = data?.data.find((val) => val.id === e.currentTarget.id)
     setOpenForm({ active: true, mode: 'add', item })
   }
 
@@ -63,17 +60,24 @@ const GeneralTaskV: FC = () => {
   }, [search])
 
   const season = useRecoilValue(selectSeasonState)
+
+  const { data, isLoading } = useGetListGeneralTasks({
+    page_index: tableQueries.current,
+    page_size: tableQueries.pageSize,
+    search,
+    roles,
+    type,
+    label,
+    sort,
+    sort_by: sortBy,
+    season,
+  })
+
   useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const res = await getListGeneralTasks({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy, season })
-      if (!isEmpty(res)) {
-        setTableData(res.data)
-        setPaging({ current: res.pagination.page_index, total: res.pagination.total })
-      }
-      setIsLoading(false)
-    })()
-  }, [reloadData, tableQueries, search, roles, type, label, sort, sortBy, season])
+    if (data) {
+      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+    }
+  }, [data])
 
   const columns: ColumnsType<IGeneralTaskInResponse> = [
     {
@@ -269,7 +273,7 @@ const GeneralTaskV: FC = () => {
         className='text-wrap'
         rowKey='id'
         pagination={false}
-        dataSource={tableData}
+        dataSource={data?.data || []}
         loading={isLoading}
         scroll={{ x: 1500 }}
         bordered
@@ -297,9 +301,9 @@ const GeneralTaskV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
+      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} />}
       {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />}
-      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
+      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
     </div>
   )
 }

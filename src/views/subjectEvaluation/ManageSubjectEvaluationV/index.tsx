@@ -1,60 +1,30 @@
-import { Spin } from 'antd'
+import { Divider, Spin } from 'antd'
 
-import { FC, useEffect, useReducer, useState } from 'react'
-import { isEmpty } from 'lodash'
-import { ISubjectInResponse } from '@domain/subject'
-import { getSubjectDetail } from '@src/services/subject'
-import { EManageFormStatus, EManageFormType, IManageFormInResponse } from '@domain/manageForm'
-import { getManageForm } from '@src/services/manageForm'
+import { FC, useState } from 'react'
+import { EManageFormStatus, EManageFormType } from '@domain/manageForm'
 import { EManageFormStatusDetail } from '@constants/manageForm'
 import ModalClose from './ModalClose'
 import InfoSubjectEvaluation from './InfoSubjectEvaluation'
-import { getSubjectEvaluationQuestionsNotHandler } from '@src/services/subjectEvaluationQuestion'
-import { IEvaluationQuestionItem } from '@domain/subject/subjectEvaluationQuestion'
-import { v4 as uuidv4 } from 'uuid'
+import { useGetManageForm } from '@src/apis/manageForm/useQueryManageForm'
+import { useGetSubjectDetail } from '@src/apis/subject/useQuerySubject'
+import FormSubjectEvaluationQuestion from './FormSubjectEvaluationQuestion'
 
 const ManageSubjectEvaluationV: FC = () => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [infoForm, setInfoForm] = useState<IManageFormInResponse>()
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
-  const [currentSubject, setCurrentSubject] = useState<ISubjectInResponse>()
   const [openClose, setOpenClose] = useState(false)
 
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const resForm = await getManageForm(EManageFormType.SUBJECT_EVALUATION)
-      if (!isEmpty(resForm)) {
-        setInfoForm(resForm)
-        if (resForm?.data && resForm.data?.subject_id) {
-          const resCurrentSubject = await getSubjectDetail(resForm.data.subject_id)
-          if (!isEmpty(resCurrentSubject)) setCurrentSubject(resCurrentSubject)
-        }
-      }
-      setIsLoading(false)
-    })()
-  }, [reloadData])
+  const { data: infoForm, isLoading: isLoadingForm, isFetched } = useGetManageForm(EManageFormType.SUBJECT_EVALUATION)
+  const { data: currentSubject, isLoading: isLoadingSubject } = useGetSubjectDetail({
+    id: infoForm?.data?.subject_id,
+    enabled: isFetched && !!infoForm?.data?.subject_id,
+  })
 
   const onOpenClose = () => {
     setOpenClose(true)
   }
 
-  const [questions, setQuestions] = useState<(IEvaluationQuestionItem & { id: string })[]>()
-
-  useEffect(() => {
-    if (currentSubject) {
-      ;(async () => {
-        const data = await getSubjectEvaluationQuestionsNotHandler(currentSubject.id)
-        if (data) {
-          setQuestions(data.questions.map((item) => ({ ...item, id: uuidv4() })))
-        }
-      })()
-    }
-  }, [reloadData, currentSubject])
-
   return (
     <div className='m-6 min-h-[calc(100vh-96px)]'>
-      {isLoading ? (
+      {isLoadingForm || isLoadingSubject ? (
         <div className='mt-20 flex w-full justify-center'>
           <Spin size='large' />
         </div>
@@ -79,12 +49,16 @@ const ManageSubjectEvaluationV: FC = () => {
               )}
             </div>
             {currentSubject ? (
-              <InfoSubjectEvaluation setReloadData={setReloadData} infoForm={infoForm} onOpenClose={onOpenClose} subject={currentSubject} questions={questions} />
+              <>
+                <InfoSubjectEvaluation subject={currentSubject} />
+                <Divider />
+                <FormSubjectEvaluationQuestion subject={currentSubject} infoForm={infoForm} onOpenClose={onOpenClose} />
+              </>
             ) : null}
           </div>
         </>
       )}
-      <ModalClose open={openClose} setOpen={setOpenClose} setReloadData={setReloadData} />
+      <ModalClose open={openClose} setOpen={setOpenClose} />
     </div>
   )
 }

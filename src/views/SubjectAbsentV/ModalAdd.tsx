@@ -1,70 +1,60 @@
-import { selectSeasonState } from '@atom/seasonAtom'
 import { IOpenForm } from '@domain/common'
-import { IStudentInResponse } from '@domain/student'
 import { ISubjectAbsentInResponse } from '@domain/subject/subjectAbsent'
+import { useGetListStudents } from '@src/apis/student/useQueryStudent'
+import { useCreateSubjectAbsents, useUpdateSubjectAbsents } from '@src/apis/subjectAbsent/useMutationSubjectAbsent'
 import { useDebounce } from '@src/hooks/useDebounce'
-import { getListStudents } from '@src/services/student'
-import { createSubjectAbsents, updateSubjectAbsents } from '@src/services/subjectAbsent'
+import { useQueryClient } from '@tanstack/react-query'
 import { Form, Input, Modal, Select } from 'antd'
 import { isEmpty, isObject } from 'lodash'
 import React, { FC, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
-import { useRecoilValue } from 'recoil'
 
 interface IProps {
   open: Required<IOpenForm<ISubjectAbsentInResponse | string>>
   setOpen: React.Dispatch<React.SetStateAction<Required<IOpenForm<ISubjectAbsentInResponse | string>>>>
-  setReloadData: React.DispatchWithoutAction
 }
 
-const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
+const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
   const [searchStudents, setSearchStudents] = useState('')
-  const [loadingGetStudents, setLoadingGetStudents] = useState(false)
-  const [students, setStudents] = useState<IStudentInResponse[]>([])
+
+  const queryClient = useQueryClient()
+
+  const isUpdateForm = !isEmpty(open?.item)
+
+  const onSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['getListSubjectAbsents'] })
+    if (isUpdateForm) toast.success('Sửa thành công')
+    else toast.success('Thêm thành công')
+    setOpen({ active: false, item: '' })
+  }
+
+  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateSubjectAbsents(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateSubjectAbsents(onSuccess)
 
   const handleOk = async () => {
-    setConfirmLoading(true)
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
-      let res: ISubjectAbsentInResponse
+      delete data.date_of_birth_temp
       if (isObject(open?.item)) {
-        res = await updateSubjectAbsents(open.item?.subject.id, open.item?.student.id, { reason: data?.reason, note: data?.note })
-        if (!isEmpty(res)) {
-          toast.success('Sửa thành công')
-          setOpen({ active: false, item: '' })
-          setReloadData()
-        }
+        mutateUpdate({
+          subjectId: open.item.subject.id,
+          studentId: open.item.student.id,
+          data: { reason: data?.reason, note: data?.note },
+        })
       } else {
-        res = await createSubjectAbsents(open.item, data.student, { reason: data?.reason, note: data?.note })
-        if (!isEmpty(res)) {
-          toast.success('Thêm thành công')
-          setOpen({ active: false, item: '' })
-          setReloadData()
-        }
+        mutateCreate({ subjectId: open.item, studentId: data.student, data: { reason: data?.reason, note: data?.note } })
       }
-    } catch (error) {
-      setConfirmLoading(false)
-    }
-
-    setConfirmLoading(false)
+    } catch {}
   }
 
   const searchDebounce = useDebounce(searchStudents, 300)
 
-  const season = useRecoilValue(selectSeasonState)
-  useEffect(() => {
-    ;(async () => {
-      setLoadingGetStudents(true)
-      const res = await getListStudents({ search: searchDebounce })
-      if (!isEmpty(res)) {
-        setStudents(res.data)
-      }
-      setLoadingGetStudents(false)
-    })()
-  }, [searchDebounce, season])
+  const { data, isLoading } = useGetListStudents({
+    search: searchDebounce,
+  })
+  const students = data?.data || []
 
   const handleCancel = () => {
     setOpen({ active: false, item: '' })
@@ -96,7 +86,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       title={open.item ? 'Sửa' : 'Thêm'}
       open={open.active}
       onOk={handleOk}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPendingCreate || isPendingUpdate}
       onCancel={handleCancel}
       cancelText='Hủy'
       okText={open.item ? 'Sửa' : 'Thêm'}
@@ -113,7 +103,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
             ]}
             label='Học viên'
           >
-            <Select placeholder='Chọn học viên' onSearch={onSearchStudent} filterOption={() => true} allowClear showSearch options={studentOptions} loading={loadingGetStudents} />
+            <Select placeholder='Chọn học viên' onSearch={onSearchStudent} filterOption={() => true} allowClear showSearch options={studentOptions} loading={isLoading} />
           </Form.Item>
         ) : null}
         <Form.Item label='Lý do' name='reason'>

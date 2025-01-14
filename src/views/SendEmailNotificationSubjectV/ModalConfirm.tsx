@@ -1,34 +1,39 @@
 import { WarningFilled } from '@ant-design/icons'
 import { ISubjectInResponse } from '@domain/subject'
-import { subjectSendNotification, updateSubject } from '@src/services/subject'
+import { useSubjectSendNotification, useUpdateSubject } from '@src/apis/subject/useMutationSubject'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button, Modal } from 'antd'
-import { isEmpty, isObject } from 'lodash'
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 import { toast } from 'react-toastify'
 
 interface IProps {
   open: { active: boolean; item: any }
   setOpen: React.Dispatch<React.SetStateAction<{ active: boolean; item: any }>>
   subject: ISubjectInResponse
-  setReloadData: React.DispatchWithoutAction
 }
 
-const ModalConfirm: FC<IProps> = ({ open, setOpen, setReloadData, subject }) => {
-  const [confirmLoading, setConfirmLoading] = useState(false)
+const ModalConfirm: FC<IProps> = ({ open, setOpen, subject }) => {
+  const queryClient = useQueryClient()
 
-  const onSubmit = async () => {
-    setConfirmLoading(true)
-    const resUpdate = await updateSubject(subject.id, open.item)
-    if (!isEmpty(resUpdate)) {
-      const resSendNotification = await subjectSendNotification(subject.id)
-      if (!isObject(resSendNotification) && resSendNotification) {
-        toast.success('Gửi thành công')
-        setReloadData()
-        setOpen({ active: false, item: undefined })
-      }
-    }
+  const onSuccessUpdateSubject = () => {
+    mutateSendNotification(subject.id)
+  }
 
-    setConfirmLoading(false)
+  const onSuccessSendNotification = () => {
+    queryClient.invalidateQueries({ queryKey: ['getSubjectNextMostRecent'] })
+    queryClient.invalidateQueries({ queryKey: ['getSubjectLastSentStudentRecent'] })
+    toast.success('Gửi thành công')
+    setOpen({ active: false, item: undefined })
+  }
+
+  const { mutate: mutateUpdateSubject, isPending: isPendingUpdate } = useUpdateSubject(onSuccessUpdateSubject)
+  const { mutate: mutateSendNotification, isPending: isPendingSend } = useSubjectSendNotification(onSuccessSendNotification)
+
+  const onSubmit = () => {
+    mutateUpdateSubject({
+      subjectId: subject.id,
+      data: open.item,
+    })
   }
   const handleCancel = () => {
     setOpen({ active: false, item: undefined })
@@ -42,13 +47,13 @@ const ModalConfirm: FC<IProps> = ({ open, setOpen, setReloadData, subject }) => 
       }
       open={open.active}
       onOk={handleCancel}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPendingUpdate || isPendingSend}
       onCancel={handleCancel}
       footer={[
         <Button key='back' onClick={handleCancel}>
           Hủy
         </Button>,
-        <Button key='submit' type='primary' loading={confirmLoading} onClick={onSubmit}>
+        <Button key='submit' type='primary' loading={isPendingUpdate || isPendingSend} onClick={onSubmit}>
           Gửi
         </Button>,
       ]}

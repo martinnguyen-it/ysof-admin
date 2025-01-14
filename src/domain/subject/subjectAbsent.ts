@@ -17,4 +17,10 @@ export interface ICreateSubjectAbsent {
   note?: string
 }
 
-export interface IUpdateSubjectAbsent extends ICreateSubjectAbsent {}
+export interface ICreateSubjectAbsentInPayload {
+  subjectId: string
+  studentId: string
+  data: ICreateSubjectAbsent
+}
+
+export interface IUpdateSubjectAbsentInPayload extends ICreateSubjectAbsentInPayload {}

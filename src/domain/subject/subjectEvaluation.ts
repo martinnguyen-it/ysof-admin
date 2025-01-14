@@ -63,4 +63,5 @@ export interface IParamsGetListSubjectEvaluation extends ISort, IPaginationAPIPa
   group?: number
   search?: string
   subject_id: string
+  season?: number
 }

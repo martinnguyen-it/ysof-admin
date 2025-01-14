@@ -1,31 +1,30 @@
 import { WarningFilled } from '@ant-design/icons'
 import { IOpenForm } from '@domain/common'
-import { deleteGeneralTask } from '@src/services/generalTask'
+import { useDeleteGeneralTask } from '@src/apis/generalTask/useMutationGeneralTask'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button, Modal } from 'antd'
-import { isEmpty } from 'lodash'
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 import { toast } from 'react-toastify'
 
 interface IProps {
   open: IOpenForm<string>
   setOpen: React.Dispatch<React.SetStateAction<IOpenForm<string>>>
-  setReloadData: React.DispatchWithoutAction
 }
 
-const ModalDelete: FC<IProps> = ({ open, setOpen, setReloadData }) => {
-  const [confirmLoading, setConfirmLoading] = useState(false)
+const ModalDelete: FC<IProps> = ({ open, setOpen }) => {
+  const queryClient = useQueryClient()
 
-  const handleOk = async () => {
-    setConfirmLoading(true)
-    const res = await deleteGeneralTask(open?.item || '')
-    if (!isEmpty(res)) {
-      toast.success('Xóa thành công')
-      setOpen({ active: false })
-      setReloadData()
-    }
-    setConfirmLoading(false)
+  const onSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['getListGeneralTasks'] })
+    toast.success('Xóa thành công')
+    setOpen({ active: false })
   }
 
+  const { mutate, isPending } = useDeleteGeneralTask(onSuccess)
+
+  const handleOk = () => {
+    mutate(open?.item || '')
+  }
   const handleCancel = () => {
     setOpen({ active: false })
   }
@@ -34,13 +33,13 @@ const ModalDelete: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       title={<WarningFilled className='text-yellow-400' />}
       open={open.active}
       onOk={handleOk}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPending}
       onCancel={handleCancel}
       footer={[
         <Button key='back' onClick={handleCancel}>
           Hủy
         </Button>,
-        <Button key='submit' type='primary' className='!bg-red-500' loading={confirmLoading} onClick={handleOk}>
+        <Button key='submit' type='primary' className='!bg-red-500' loading={isPending} onClick={handleOk}>
           Xóa
         </Button>,
       ]}

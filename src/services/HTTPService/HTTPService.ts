@@ -1,4 +1,4 @@
-import axios, { AxiosHeaders } from 'axios'
+import axios, { AxiosError, AxiosHeaders } from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import moment from 'moment'
 import { toast } from 'react-toastify'
@@ -67,7 +67,9 @@ instance.interceptors.response.use(
       const accessToken = getRecoil(accessTokenState)
       if (!isUnauthorizedError(error)) {
         const message = error?.response?.data?.detail || error?.response?.data?.message || error.message
-        return Promise.reject(new Error(message))
+        const customError = new AxiosError(message)
+        customError.status = error?.response?.status
+        return Promise.reject(customError)
       }
       if (!accessToken) {
         handleClearAuthorization()

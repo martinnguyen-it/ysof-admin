@@ -1,7 +1,3 @@
-import { forEach } from 'lodash'
-import { ServerErrorData } from './types'
-import { TypedEvent } from '@src/helpers'
-
 // eslint-disable-next-line no-shadow
 export enum HTTPStatusCode {
   /**
@@ -376,50 +372,4 @@ export enum HTTPStatusCode {
    * to require agreement to Terms of Service before granting full Internet access via a Wi-Fi hotspot).
    */
   NETWORK_AUTHENTICATION_REQUIRED = 511,
-}
-
-/**
- * Convert server error data to string message
- *
- * @param {ServerErrorData} serverError
- * @returns {string}
- */
-
-export type UnauthorizedEvent = TypedEvent<HTTPStatusCode.UNAUTHORIZED>
-
-export const serverErrorDataToString = (serverError: ServerErrorData): string => {
-  const { detail, error, message } = serverError
-  if (typeof error === 'string') return error
-  if (error && error.message) {
-    return `Status code ${error.code}! ${error.message}`
-  }
-  if (message) {
-    return message
-  }
-  if (!detail) return 'Unknown error'
-
-  if (typeof detail === 'string') return detail
-
-  // process server error data to string message
-  const errorMsg = detail.reduce((prev, curr) => {
-    const location = curr.loc.join(' ')
-    const row = `${location} ${curr.msg},\n`
-
-    const msg = prev + row
-    return msg
-  }, '')
-  return errorMsg
-}
-
-export const serialize = (object: any, prefix?: string) => {
-  const result: string[] = []
-  const objKeys = Object.keys(object)
-  forEach(objKeys, (key) => {
-    const prefixedKey = prefix ? `${prefix}[${key}]` : key
-    const value = object[key]
-    if (typeof value !== 'undefined' && value !== '') {
-      result.push(value !== null && typeof value === 'object' ? serialize(value, prefixedKey) : `${encodeURIComponent(prefixedKey)}=${encodeURIComponent(value)}`)
-    }
-  })
-  return result.join('&')
 }

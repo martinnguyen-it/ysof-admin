@@ -1,51 +1,52 @@
 import { currentSeasonState } from '@atom/seasonAtom'
 import { IOpenForm } from '@domain/common'
 import { ISeasonResponse } from '@domain/season'
-import { createSeason, updateSeason } from '@src/services/season'
+import { useCreateSeason, useUpdateSeason } from '@src/apis/season/useMutationSeason'
+import { useQueryClient } from '@tanstack/react-query'
 import { Form, Input, Modal } from 'antd'
 import { isEmpty } from 'lodash'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { useSetRecoilState } from 'recoil'
 
 interface IProps {
   open: IOpenForm<ISeasonResponse>
   setOpen: React.Dispatch<React.SetStateAction<IOpenForm<ISeasonResponse>>>
-  setReloadData: React.DispatchWithoutAction
 }
 
-const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
+const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
   const setCurrentSeason = useSetRecoilState(currentSeasonState)
+  const queryClient = useQueryClient()
+
+  const isUpdateForm = !isEmpty(open?.item)
+
+  const onSuccess = (data: ISeasonResponse) => {
+    queryClient.invalidateQueries({ queryKey: ['getListSeasons'] })
+    if (isUpdateForm) toast.success('Sửa thành công')
+    else {
+      toast.success('Thêm thành công')
+      setCurrentSeason(data)
+    }
+    setOpen({ active: false })
+  }
+
+  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateSeason(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateSeason(onSuccess)
 
   const handleOk = async () => {
-    setConfirmLoading(true)
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
-      let res: ISeasonResponse
       if (open?.item) {
-        res = await updateSeason(open.item.id, data)
-        if (!isEmpty(res)) {
-          toast.success('Sửa thành công')
-          setOpen({ active: false })
-          setReloadData()
-        }
+        mutateUpdate({
+          id: open.item.id,
+          data,
+        })
       } else {
-        res = await createSeason(data)
-        if (!isEmpty(res)) {
-          setCurrentSeason(res)
-          toast.success('Thêm thành công')
-          setOpen({ active: false })
-          setReloadData()
-        }
+        mutateCreate(data)
       }
-    } catch (error) {
-      setConfirmLoading(false)
-    }
-
-    setConfirmLoading(false)
+    } catch {}
   }
 
   const handleCancel = () => {
@@ -61,7 +62,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       title={open.item ? 'Sửa' : 'Thêm'}
       open={open.active}
       onOk={handleOk}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPendingCreate || isPendingUpdate}
       onCancel={handleCancel}
       cancelText='Hủy'
       okText={open.item ? 'Sửa' : 'Thêm'}

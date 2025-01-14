@@ -1,51 +1,53 @@
 import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
 import { isEmpty } from 'lodash'
-import React, { Dispatch, DispatchWithoutAction, FC, useEffect, useState } from 'react'
+import React, { Dispatch, FC, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { IOpenFormWithMode } from '@domain/common'
 import { IStudentInResponse } from '@domain/student'
-import { createStudent, updateStudent } from '@src/services/student'
 import { OPTION_SEX } from '@constants/student'
 import dayjs from 'dayjs'
+import { useQueryClient } from '@tanstack/react-query'
+import { useCreateStudent, useUpdateStudent } from '@src/apis/student/useMutationStudent'
 
 interface IProps {
   open: IOpenFormWithMode<IStudentInResponse>
   setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<IStudentInResponse>>>
-  setReloadData: DispatchWithoutAction
 }
 
-const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
+const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
   const [dateOfBirth, setDateOfBirth] = useState<string>()
+
+  const queryClient = useQueryClient()
+
+  const isUpdateForm = !isEmpty(open?.item)
+
+  const onSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['getListStudents'] })
+    if (isUpdateForm) toast.success('Sửa thành công')
+    else toast.success('Thêm thành công')
+    setOpen({ active: false, mode: 'add' })
+  }
+
+  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateStudent(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateStudent(onSuccess)
+
   const handleOk = async () => {
-    setConfirmLoading(true)
-    let res: IStudentInResponse
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
       delete data.date_of_birth_temp
       if (open?.item) {
-        res = await updateStudent(open.item.id, { ...data, date_of_birth: dateOfBirth || undefined })
-        if (!isEmpty(res)) {
-          toast.success('Sửa thành công')
-          setOpen({ active: false, mode: 'add' })
-          setReloadData()
-        }
+        mutateUpdate({
+          id: open.item.id,
+          data: { ...data, date_of_birth: dateOfBirth || undefined },
+        })
       } else {
-        res = await createStudent({ ...data, date_of_birth: dateOfBirth || undefined })
-        if (!isEmpty(res)) {
-          toast.success('Thêm thành công')
-          setOpen({ active: false, mode: 'add' })
-          setReloadData()
-        }
+        mutateCreate({ ...data, date_of_birth: dateOfBirth || undefined })
       }
-    } catch (error) {
-      setConfirmLoading(false)
-    }
-
-    setConfirmLoading(false)
+    } catch {}
   }
+
   const handleCancel = () => {
     setOpen({ active: false, mode: 'add' })
   }
@@ -72,7 +74,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       title={open.item ? 'Sửa' : 'Thêm'}
       open={open.active}
       onOk={handleOk}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPendingUpdate || isPendingCreate}
       onCancel={handleCancel}
       className='sm:!w-[70vw] lg:!w-[60vw]'
       cancelText='Hủy'

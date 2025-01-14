@@ -4,35 +4,34 @@ import { Button, Flex, Input, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
-import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
+import { FC, MouseEvent, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
-import { isArray, isEmpty, isObject } from 'lodash'
+import { isArray, isObject } from 'lodash'
 import dayjs from 'dayjs'
 import ModalDelete from './ModalDelete'
-import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
+import { currentSeasonState } from '@atom/seasonAtom'
 import { hasMatch, isSuperAdmin } from '@src/utils'
 import { EAdminRole } from '@domain/admin/type'
 import { ESubjectStatus, ISubjectInResponse } from '@domain/subject'
-import { getListSubjects } from '@src/services/subject'
 import { ESubjectStatusDetail, OPTIONS_SUBDIVISION, OPTIONS_SUBJECT_STATUS } from '@constants/subject'
 import ModalAdd from './ModalAdd'
 import ModalView from './ModalView'
+import { useGetListSubjects } from '@src/apis/subject/useQuerySubject'
 
 const SubjectV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
   const [openForm, setOpenForm] = useState<IOpenFormWithMode<ISubjectInResponse>>({ active: false, mode: 'add' })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
-  const [tableData, setTableData] = useState<ISubjectInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
 
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<ESubjectStatus[]>()
   const [subdivision, setSubdivision] = useState<string>()
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
+
+  const { data: tableData, isLoading } = useGetListSubjects({ search, subdivision, status, sort, sort_by: sortBy })
 
   const onClickAdd = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -41,7 +40,7 @@ const SubjectV: FC = () => {
 
   const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    const item = tableData.find((val) => val.id === e.currentTarget.id)
+    const item = tableData && tableData.find((val) => val.id === e.currentTarget.id)
     setOpenForm({ active: true, mode: 'add', item })
   }
 
@@ -49,18 +48,6 @@ const SubjectV: FC = () => {
     e.stopPropagation()
     setOpenDel({ active: true, item: e.currentTarget.id })
   }
-
-  const season = useRecoilValue(selectSeasonState)
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const data = await getListSubjects({ search, subdivision, status, sort, sort_by: sortBy, season })
-      if (!isEmpty(data) || isArray(data)) {
-        setTableData(data)
-      }
-      setIsLoading(false)
-    })()
-  }, [reloadData, subdivision, search, status, sort, sortBy, season])
 
   const columns: ColumnsType<ISubjectInResponse> = [
     {
@@ -170,9 +157,11 @@ const SubjectV: FC = () => {
                   <Button color='' type='primary' id={data.id} onClick={onClickUpdate} className='!bg-yellow-400 hover:opacity-80'>
                     Sửa
                   </Button>
-                  <Button type='primary' id={data.id} onClick={onClickDelete} danger>
-                    Xóa
-                  </Button>
+                  {data.status === ESubjectStatus.INIT && (
+                    <Button type='primary' id={data.id} onClick={onClickDelete} danger>
+                      Xóa
+                    </Button>
+                  )}
                 </>
               )) ||
                 (userInfo.roles.includes(EAdminRole.BKT) && (
@@ -252,7 +241,7 @@ const SubjectV: FC = () => {
         className='text-wrap'
         rowKey='id'
         pagination={false}
-        dataSource={tableData}
+        dataSource={tableData || []}
         loading={isLoading}
         scroll={{ x: 1200 }}
         bordered
@@ -264,9 +253,9 @@ const SubjectV: FC = () => {
           }
         }}
       />
-      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
+      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} />}
       {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />}
-      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
+      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
     </div>
   )
 }

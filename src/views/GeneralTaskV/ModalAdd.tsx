@@ -3,38 +3,36 @@ import { OPTIONS_ROLE } from '@constants/index'
 import { EAdminRoleDetail } from '@domain/admin/type'
 import { isSuperAdmin } from '@src/utils'
 import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
-import { isEmpty, isObject } from 'lodash'
-import React, { Dispatch, DispatchWithoutAction, FC, useEffect, useMemo, useState } from 'react'
+import { isEmpty, isObject, size } from 'lodash'
+import React, { Dispatch, FC, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
 import { IGeneralTaskInResponse } from '@domain/generalTask'
-import { createGeneralTask, updateGeneralTask } from '@src/services/generalTask'
 import { OPTIONS_GENERAL_TASK_LABEL, OPTIONS_GENERAL_TASK_TYPE } from '@constants/generalTask'
 import { useQuill } from 'react-quilljs'
-import { IDocumentInResponse } from '@domain/document'
-import { getListDocuments } from '@src/services/document'
 import { useDebounce } from '@src/hooks/useDebounce'
 import dayjs from 'dayjs'
 import 'quill/dist/quill.snow.css' // Add css for snow theme
 import { IOpenFormWithMode } from '@domain/common'
 import { selectSeasonState } from '@atom/seasonAtom'
+import { useGetListDocuments } from '@src/apis/document/useQueryDocument'
+import { useQueryClient } from '@tanstack/react-query'
+import { useCreateGeneralTask, useUpdateGeneralTask } from '@src/apis/generalTask/useMutationGeneralTask'
 
 interface IProps {
   open: IOpenFormWithMode<IGeneralTaskInResponse>
   setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<IGeneralTaskInResponse>>>
-  setReloadData: DispatchWithoutAction
 }
 
-const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
+const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
-  const [loadingGetDocuments, setLoadingGetDocuments] = useState(false)
-  const [documents, setDocuments] = useState<IDocumentInResponse[]>([])
   const [searchDocuments, setSearchDocuments] = useState('')
   const [startAt, setStartAt] = useState<string>()
   const [endAt, setEndAt] = useState<string>()
   const userInfo = useRecoilValue(userInfoState)
   const { quill, quillRef } = useQuill()
+  const queryClient = useQueryClient()
+
   useEffect(() => {
     if (quill) {
       quill.on('text-change', () => {
@@ -56,58 +54,52 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
   const searchDebounce = useDebounce(searchDocuments, 300)
 
   const season = useRecoilValue(selectSeasonState)
-  useEffect(() => {
-    ;(async () => {
-      setLoadingGetDocuments(true)
-      const res = await getListDocuments({ search: searchDebounce, season })
-      if (!isEmpty(res)) {
-        setDocuments(res.data)
-      }
-      setLoadingGetDocuments(false)
-    })()
-  }, [searchDebounce, season])
+  const { data: documents, isLoading: loadingGetDocuments } = useGetListDocuments({ search: searchDebounce, season })
+
+  const isUpdateForm = !isEmpty(open?.item)
+
+  const onSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['getListGeneralTasks'] })
+    if (isUpdateForm) toast.success('Sửa thành công')
+    else toast.success('Thêm thành công')
+    setOpen({ active: false, mode: 'add' })
+  }
+
+  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateGeneralTask(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateGeneralTask(onSuccess)
 
   const handleOk = async () => {
-    setConfirmLoading(true)
-    let res: IGeneralTaskInResponse
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
       delete data.date_start_at
       delete data.date_end_at
       if (open?.item) {
-        res = await updateGeneralTask(open.item.id, { ...data, start_at: startAt, end_at: endAt && endAt !== 'Invalid Date' ? endAt : undefined })
-        if (!isEmpty(res)) {
-          toast.success('Sửa thành công')
-          setOpen({ active: false, mode: 'add' })
-          setReloadData()
-        }
+        mutateUpdate({
+          id: open.item.id,
+          data: { ...data, start_at: startAt, end_at: endAt && endAt !== 'Invalid Date' ? endAt : undefined },
+        })
       } else {
-        res = await createGeneralTask({ ...data, start_at: startAt, end_at: endAt && endAt !== 'Invalid Date' ? endAt : undefined })
-        if (!isEmpty(res)) {
-          toast.success('Thêm thành công')
-          setOpen({ active: false, mode: 'add' })
-          setReloadData()
-        }
+        mutateCreate({ ...data, start_at: startAt, end_at: endAt && endAt !== 'Invalid Date' ? endAt : undefined })
       }
-    } catch (error) {
-      setConfirmLoading(false)
+    } catch {
+      /* empty */
     }
-
-    setConfirmLoading(false)
   }
 
   const documentOptions = useMemo(
     () =>
-      documents.map((item) => ({
-        value: item.id,
-        label: (
-          <span className='flex items-center'>
-            <img className='mr-1 size-4 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}></img>
-            {item.name}
-          </span>
-        ),
-      })),
+      documents && size(documents?.data)
+        ? documents.data.map((item) => ({
+            value: item.id,
+            label: (
+              <span className='flex items-center'>
+                <img className='mr-1 size-4 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}></img>
+                {item.name}
+              </span>
+            ),
+          }))
+        : [],
     [documents],
   )
 
@@ -154,7 +146,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       title={open.item ? 'Sửa' : 'Thêm'}
       open={open.active}
       onOk={handleOk}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPendingCreate || isPendingUpdate}
       onCancel={handleCancel}
       cancelText='Hủy'
       okText={open.item ? 'Sửa' : 'Thêm'}

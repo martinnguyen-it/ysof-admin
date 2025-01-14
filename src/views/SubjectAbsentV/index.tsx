@@ -2,12 +2,10 @@ import { ESort, IOpenForm } from '@domain/common'
 import { Button, Flex, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 
-import { FC, MouseEvent, useEffect, useMemo, useReducer, useState } from 'react'
+import { FC, MouseEvent, useEffect, useMemo, useState } from 'react'
 import { isArray, isObject, size } from 'lodash'
-import { ESubjectStatus, ISubjectShortInResponse } from '@domain/subject'
-import { getSubjectShort } from '@src/services/subject'
+import { ESubjectStatus } from '@domain/subject'
 import { toast } from 'react-toastify'
-import { getListSubjectAbsents } from '@src/services/subjectAbsent'
 import { ISubjectAbsentInResponse } from '@domain/subject/subjectAbsent'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
@@ -17,62 +15,46 @@ import ModalDelete from './ModalDelete'
 import { currentSeasonState } from '@atom/seasonAtom'
 import { FileAddOutlined } from '@ant-design/icons'
 import ModalAdd from './ModalAdd'
+import { useGetSubjectShort } from '@src/apis/subject/useQuerySubject'
+import { useGetListSubjectAbsents } from '@src/apis/subjectAbsent/useQuerySubjectAbsent'
 
 const SubjectAbsentV: FC = () => {
-  const [tableData, setTableData] = useState<ISubjectAbsentInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [subjectSentStudent, setSubjectSentStudent] = useState<ISubjectShortInResponse[]>()
   const [selectSubject, setSelectSubject] = useState<string>()
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
   const [openForm, setOpenForm] = useState<Required<IOpenForm<ISubjectAbsentInResponse | string>>>({ active: false, item: '' })
   const [openDel, setOpenDel] = useState<IOpenForm<{ studentId: string; subjectId: string }>>({ active: false })
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
+
+  const { data: subjectsSentStudent, isLoading: isLoadingSubject } = useGetSubjectShort({
+    sort: ESort.DESC,
+    sort_by: 'start_at',
+    status: [ESubjectStatus.COMPLETED, ESubjectStatus.SENT_EVALUATION, ESubjectStatus.SENT_NOTIFICATION],
+  })
+
+  useEffect(() => {
+    if (isArray(subjectsSentStudent))
+      if (size(subjectsSentStudent) > 0) {
+        setSelectSubject(subjectsSentStudent[0].id)
+      } else {
+        toast.warn('Chưa có môn học nào có nghỉ phép')
+      }
+  }, [subjectsSentStudent])
+
+  const { data: tableData, isLoading: isLoadingAbsent } = useGetListSubjectAbsents(selectSubject || '', !!selectSubject)
 
   const onClickAdd = () => {
     setOpenForm({ active: true, item: selectSubject || '' })
   }
 
   const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
-    const item = tableData.find((val) => val.id === e.currentTarget.id)
+    const item = tableData && tableData.find((val) => val.id === e.currentTarget.id)
     if (item) setOpenForm({ active: true, item: item })
   }
 
   const onClickDelete = (e: MouseEvent<HTMLButtonElement>) => {
-    const item = tableData.find((val) => val.id === e.currentTarget.id)
+    const item = tableData && tableData.find((val) => val.id === e.currentTarget.id)
     if (item) setOpenDel({ active: true, item: { studentId: item.student.id, subjectId: item.subject.id } })
   }
-
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const resSubject = await getSubjectShort({
-        sort: ESort.DESC,
-        sort_by: 'start_at',
-        status: [ESubjectStatus.COMPLETED, ESubjectStatus.SENT_EVALUATION, ESubjectStatus.SENT_NOTIFICATION],
-      })
-      if (size(resSubject) > 0) {
-        setSubjectSentStudent(resSubject)
-        setSelectSubject(resSubject[0].id)
-      } else {
-        toast.warn('Chưa có môn học nào có nghỉ phép')
-      }
-      setIsLoading(false)
-    })()
-  }, [])
-
-  useEffect(() => {
-    if (selectSubject) {
-      ;(async () => {
-        setIsLoading(true)
-        const data = await getListSubjectAbsents(selectSubject)
-        if (isArray(data)) {
-          setTableData(data)
-        }
-        setIsLoading(false)
-      })()
-    }
-  }, [selectSubject, reloadData])
 
   const columns: ColumnsType<ISubjectAbsentInResponse> = [
     {
@@ -142,10 +124,10 @@ const SubjectAbsentV: FC = () => {
     setSelectSubject(val)
   }
   const subjectOptions = useMemo(() => {
-    if (isArray(subjectSentStudent)) {
-      return subjectSentStudent.map((item) => ({ value: item.id, label: item.code + ' ' + item.title }))
+    if (isArray(subjectsSentStudent)) {
+      return subjectsSentStudent.map((item) => ({ value: item.id, label: item.code + ' ' + item.title }))
     }
-  }, [subjectSentStudent])
+  }, [subjectsSentStudent])
 
   return (
     <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
@@ -166,7 +148,7 @@ const SubjectAbsentV: FC = () => {
       </div>
       <div className='mb-4 flex justify-between'>
         <p className='my-3 font-semibold'>Tổng: {size(tableData) || 0}</p>{' '}
-        {userInfo && ((userInfo.latest_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
+        {userInfo && ((userInfo?.latest_season === currentSeason?.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
           <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
             Thêm
           </Button>
@@ -179,13 +161,13 @@ const SubjectAbsentV: FC = () => {
         rowKey='id'
         pagination={false}
         dataSource={tableData}
-        loading={isLoading}
+        loading={isLoadingSubject || isLoadingAbsent}
         scroll={{ x: 1000 }}
         bordered
       />
 
-      {openForm.active && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
-      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
+      {openForm.active && <ModalAdd open={openForm} setOpen={setOpenForm} />}
+      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
     </div>
   )
 }

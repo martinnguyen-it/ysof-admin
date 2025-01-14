@@ -5,20 +5,18 @@ import type { TableProps } from 'antd'
 
 import { FC, useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
-import { isArray, isEmpty, isObject } from 'lodash'
+import { isArray, isObject } from 'lodash'
 import dayjs from 'dayjs'
 import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
 import { selectSeasonState } from '@atom/seasonAtom'
 import ModalView from './ModalView'
 import { EAuditLogEndPoint, EAuditLogType, IAuditLogInResponse } from '@domain/auditLog'
-import { getListAuditLogs } from '@src/services/auditLog'
 import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
 import { OPTIONS_AUDIT_LOG_ENDPOINT, OPTIONS_AUDIT_LOG_TYPE } from '@constants/auditLog'
+import { useGetListAuditLogs } from '@src/apis/auditLog/useGetListAuditLogs'
 
 const AuditLogV: FC = () => {
   const [openForm, setOpenForm] = useState<IOpenFormWithMode<IAuditLogInResponse>>({ active: false, mode: 'view' })
-  const [tableData, setTableData] = useState<IAuditLogInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
 
   const initPaging = {
     current: 1,
@@ -35,19 +33,24 @@ const AuditLogV: FC = () => {
   useEffect(() => {
     setTableQueries(initPaging)
   }, [search])
-
   const season = useRecoilValue(selectSeasonState)
+
+  const { data, isLoading } = useGetListAuditLogs({
+    page_index: tableQueries.current,
+    page_size: tableQueries.pageSize,
+    search: search || undefined,
+    sort,
+    sort_by: sortBy,
+    type,
+    endpoint,
+    season,
+  })
+
   useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const res = await getListAuditLogs({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy, type, endpoint })
-      if (!isEmpty(res)) {
-        setTableData(res.data)
-        setPaging({ current: res.pagination.page_index, total: res.pagination.total })
-      }
-      setIsLoading(false)
-    })()
-  }, [tableQueries, search, sort, sortBy, season, type, endpoint])
+    if (data) {
+      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+    }
+  }, [data])
 
   const columns: ColumnsType<IAuditLogInResponse> = [
     {
@@ -150,7 +153,7 @@ const AuditLogV: FC = () => {
         className='text-wrap'
         rowKey='id'
         pagination={false}
-        dataSource={tableData}
+        dataSource={data?.data || []}
         loading={isLoading}
         scroll={{ x: 1200 }}
         bordered

@@ -4,26 +4,21 @@ import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
 import { FC, useEffect, useMemo, useState } from 'react'
-import { isArray, isEmpty, isObject, size } from 'lodash'
+import { isArray, isObject, size } from 'lodash'
 import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
-import { ESubjectStatus, ISubjectShortInResponse } from '@domain/subject'
-import { getSubjectShort } from '@src/services/subject'
-import { getListSubjectEvaluation } from '@src/services/subjectEvaluation'
+import { ESubjectStatus } from '@domain/subject'
 import { ISubjectEvaluationInResponse } from '@domain/subject/subjectEvaluation'
 import { toast } from 'react-toastify'
 import { EVALUATION_NAME, EVALUATION_QUALITY } from '@constants/subjectEvaluation'
-import { IEvaluationQuestionItem } from '@domain/subject/subjectEvaluationQuestion'
-import { getSubjectEvaluationQuestions } from '@src/services/subjectEvaluationQuestion'
+import { useGetSubjectShort } from '@src/apis/subject/useQuerySubject'
+import { useGetListSubjectEvaluation } from '@src/apis/subjectEvaluation/useQuerySubjectEvaluation'
+import { useGetSubjectEvaluationQuestions } from '@src/apis/subjectEvaluationQuestion/useQuerySubjectEvaluationQuestion'
 // import ModalView from './ModalView'
 
 const ListSubjectEvaluationV: FC = () => {
-  const [tableData, setTableData] = useState<ISubjectEvaluationInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [subjectSentEvaluation, setSubjectSentEvaluation] = useState<ISubjectShortInResponse[]>()
-
   const initPaging = {
     current: 1,
-    pageSize: 20,
+    pageSize: 300,
   }
   const [tableQueries, setTableQueries] = useState(initPaging)
   const [paging, setPaging] = useState({ total: 0, current: 1 })
@@ -32,51 +27,56 @@ const ListSubjectEvaluationV: FC = () => {
   const [sortBy, setSortBy] = useState<string>()
   const [group, setGroup] = useState<number>()
   const [selectSubject, setSelectSubject] = useState<string>()
-  const [questions, setQuestions] = useState<IEvaluationQuestionItem[]>()
 
   useEffect(() => {
     setTableQueries(initPaging)
   }, [search])
 
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const resSubject = await getSubjectShort({ sort: ESort.DESC, sort_by: 'start_at', status: [ESubjectStatus.COMPLETED, ESubjectStatus.SENT_EVALUATION] })
-      if (size(resSubject) > 0) {
-        setSubjectSentEvaluation(resSubject)
-        setSelectSubject(resSubject[0].id)
-      } else {
-        toast.warn('Chưa có môn học nào có lượng giá')
-      }
-      setIsLoading(false)
-    })()
-  }, [])
+  const {
+    data: subjectsSentEvaluation,
+    isLoading: isLoadingSubjects,
+    isSuccess,
+  } = useGetSubjectShort({
+    sort: ESort.DESC,
+    sort_by: 'start_at',
+    status: [ESubjectStatus.COMPLETED, ESubjectStatus.SENT_EVALUATION],
+  })
+
+  const { data: listSubjectEvaluation, isLoading: isLoadingSubjectEvaluation } = useGetListSubjectEvaluation(
+    {
+      subject_id: selectSubject!,
+      page_index: tableQueries.current,
+      page_size: tableQueries.pageSize,
+      search: search || undefined,
+      sort,
+      sort_by: sortBy,
+      group,
+    },
+    { enabled: !!selectSubject },
+  )
+
+  const { data: questions, isLoading: isLoadingQuestions } = useGetSubjectEvaluationQuestions({
+    subjectId: selectSubject!,
+    enabled: !!selectSubject,
+  })
 
   useEffect(() => {
-    if (selectSubject) {
-      ;(async () => {
-        setIsLoading(true)
-        const res = await getListSubjectEvaluation({
-          subject_id: selectSubject,
-          page_index: tableQueries.current,
-          page_size: tableQueries.pageSize,
-          search: search || undefined,
-          sort,
-          sort_by: sortBy,
-          group,
-        })
-        if (!isEmpty(res)) {
-          setTableData(res.data)
-          setPaging({ current: res.pagination.page_index, total: res.pagination.total })
+    ;(async () => {
+      if (isSuccess && isArray(subjectsSentEvaluation)) {
+        if (size(subjectsSentEvaluation) > 0) {
+          setSelectSubject(subjectsSentEvaluation[0].id)
+        } else {
+          toast.warn('Chưa có môn học nào có lượng giá')
         }
-        const resQuestion = await getSubjectEvaluationQuestions(selectSubject)
-        if (resQuestion) {
-          setQuestions(resQuestion.questions)
-        }
-        setIsLoading(false)
-      })()
+      }
+    })()
+  }, [isSuccess, subjectsSentEvaluation])
+
+  useEffect(() => {
+    if (listSubjectEvaluation) {
+      setPaging({ current: listSubjectEvaluation.pagination.page_index, total: listSubjectEvaluation.pagination.total })
     }
-  }, [selectSubject, search, sort, sortBy, group])
+  }, [listSubjectEvaluation])
 
   const columns: ColumnsType<ISubjectEvaluationInResponse> = useMemo(() => {
     const columns: ColumnsType<ISubjectEvaluationInResponse> = [
@@ -190,10 +190,10 @@ const ListSubjectEvaluationV: FC = () => {
   }
 
   const subjectOptions = useMemo(() => {
-    if (isArray(subjectSentEvaluation)) {
-      return subjectSentEvaluation.map((item) => ({ value: item.id, label: item.code + ' ' + item.title }))
+    if (isArray(subjectsSentEvaluation)) {
+      return subjectsSentEvaluation.map((item) => ({ value: item.id, label: item.code + ' ' + item.title }))
     }
-  }, [subjectSentEvaluation])
+  }, [subjectsSentEvaluation])
 
   return (
     <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
@@ -251,8 +251,8 @@ const ListSubjectEvaluationV: FC = () => {
         className='text-wrap'
         rowKey='id'
         pagination={false}
-        dataSource={tableData}
-        loading={isLoading}
+        dataSource={listSubjectEvaluation?.data}
+        loading={isLoadingQuestions || isLoadingSubjects || isLoadingSubjectEvaluation}
         scroll={{ x: 3500 }}
         bordered
       />

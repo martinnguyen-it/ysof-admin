@@ -4,10 +4,10 @@ import { Button, Flex, Input, Pagination } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
-import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
+import { FC, MouseEvent, useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
-import { isArray, isEmpty } from 'lodash'
+import { isArray } from 'lodash'
 import dayjs from 'dayjs'
 import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
 import ModalDelete from './ModalDelete'
@@ -15,18 +15,15 @@ import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
 import { EAdminRole } from '@domain/admin/type'
 import { ILecturerInResponse } from '@domain/lecturer'
-import { getListLecturers } from '@src/services/lecturer'
 import ModalAdd from './ModalAdd'
 import ModalView from './ModalView'
+import { useGetListLecturers } from '@src/apis/lecturer/useQueryLecturer'
 
 const LecturerV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
   const [openForm, setOpenForm] = useState<IOpenFormWithMode<ILecturerInResponse>>({ active: false, mode: 'add' })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
-  const [tableData, setTableData] = useState<ILecturerInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
 
   const initPaging = {
     current: 1,
@@ -38,6 +35,23 @@ const LecturerV: FC = () => {
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
 
+  const season = useRecoilValue(selectSeasonState)
+
+  const { data, isLoading } = useGetListLecturers({
+    page_index: tableQueries.current,
+    page_size: tableQueries.pageSize,
+    search: search || undefined,
+    sort,
+    sort_by: sortBy,
+    season,
+  })
+
+  useEffect(() => {
+    if (data) {
+      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+    }
+  }, [data])
+
   const onClickAdd = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     setOpenForm({ active: true, mode: 'add' })
@@ -45,7 +59,7 @@ const LecturerV: FC = () => {
 
   const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    const item = tableData.find((val) => val.id === e.currentTarget.id)
+    const item = data?.data.find((val) => val.id === e.currentTarget.id)
     setOpenForm({ active: true, mode: 'add', item })
   }
 
@@ -57,19 +71,6 @@ const LecturerV: FC = () => {
   useEffect(() => {
     setTableQueries(initPaging)
   }, [search])
-
-  const season = useRecoilValue(selectSeasonState)
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const res = await getListLecturers({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy })
-      if (!isEmpty(res)) {
-        setTableData(res.data)
-        setPaging({ current: res.pagination.page_index, total: res.pagination.total })
-      }
-      setIsLoading(false)
-    })()
-  }, [reloadData, tableQueries, search, sort, sortBy, season])
 
   const columns: ColumnsType<ILecturerInResponse> = [
     {
@@ -171,7 +172,7 @@ const LecturerV: FC = () => {
         className='text-wrap'
         rowKey='id'
         pagination={false}
-        dataSource={tableData}
+        dataSource={data?.data || []}
         loading={isLoading}
         scroll={{ x: 800 }}
         bordered
@@ -199,9 +200,9 @@ const LecturerV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
+      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} />}
       {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />}
-      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
+      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
     </div>
   )
 }

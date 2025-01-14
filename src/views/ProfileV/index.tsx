@@ -1,9 +1,9 @@
 import { userInfoState } from '@atom/authAtom'
-import { updateAdminMe } from '@src/services/admin'
-import { updatePassword } from '@src/services/auth'
+import { IAdminInResponse } from '@domain/admin/type'
+import { useUpdateMe } from '@src/apis/admin/useMutationAdmin'
+import { useUpdatePassword } from '@src/apis/auth/useUpdatePassword'
 import { Button, DatePicker, DatePickerProps, Divider, Form, Input, Select } from 'antd'
 import dayjs from 'dayjs'
-import { isEmpty } from 'lodash'
 import { FC, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilState } from 'recoil'
@@ -11,46 +11,43 @@ import { useRecoilState } from 'recoil'
 const ProfileV: FC = () => {
   const [form] = Form.useForm()
   const [formChangePassword] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
-  const [changePasswordLoading, setChangePasswordLoading] = useState(false)
   const [dateOfBirth, setDateOfBirth] = useState<string>()
   const [userInfo, setUserInfo] = useRecoilState(userInfoState)
 
+  const onSuccessUpdateMe = (data: IAdminInResponse) => {
+    toast.success('Cập nhật thành công.')
+    setUserInfo(data)
+  }
+
+  const { mutate: mutateUpdateMe, isPending: isLoadingUpdate } = useUpdateMe(onSuccessUpdateMe)
+
   const handleSubmit = async () => {
-    setConfirmLoading(true)
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
       delete data.date_of_birth_temp
       delete data.roles
       delete data.email
-      const res = await updateAdminMe({ ...data, date_of_birth: dateOfBirth || undefined })
-      if (!isEmpty(res)) {
-        toast.success('Cập nhật thành công.')
-        setUserInfo(res)
-      }
-    } catch (error) {
-      setConfirmLoading(false)
+      mutateUpdateMe({ ...data, date_of_birth: dateOfBirth || undefined })
+    } catch {
+      /* empty */
     }
-
-    setConfirmLoading(false)
   }
+
+  const onSuccessChangePassword = () => {
+    formChangePassword.resetFields()
+    toast.success('Cập nhật thành công.')
+  }
+  const { mutate: mutateUpdatePassword, isPending: isLoadingChangePassword } = useUpdatePassword(onSuccessChangePassword)
   const handleChangePassword = async () => {
-    setChangePasswordLoading(true)
     try {
       await formChangePassword.validateFields()
       const data = formChangePassword.getFieldsValue()
       delete data.confirm_password
-      const res = await updatePassword(data)
-      if (!isEmpty(res)) {
-        formChangePassword.resetFields()
-        toast.success('Cập nhật thành công.')
-      }
-    } catch (error) {
-      setChangePasswordLoading(false)
+      mutateUpdatePassword(data)
+    } catch {
+      /* empty */
     }
-
-    setChangePasswordLoading(false)
   }
 
   useEffect(() => {
@@ -144,7 +141,7 @@ const ProfileV: FC = () => {
           </div>
         </Form>
         <div className='flex justify-end'>
-          <Button type='primary' onClick={handleSubmit} loading={confirmLoading}>
+          <Button type='primary' onClick={handleSubmit} loading={isLoadingUpdate}>
             Cập nhật
           </Button>
         </div>
@@ -198,7 +195,7 @@ const ProfileV: FC = () => {
             <Input.Password />
           </Form.Item>
           <div className='flex justify-end'>
-            <Button type='primary' loading={changePasswordLoading} onClick={handleChangePassword}>
+            <Button type='primary' loading={isLoadingChangePassword} onClick={handleChangePassword}>
               Xác nhận
             </Button>
           </div>

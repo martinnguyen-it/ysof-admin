@@ -4,12 +4,11 @@ import { Avatar, Button, Flex, Input, Pagination, Select, Tooltip } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
-import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
+import { FC, MouseEvent, useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
 import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
-import { isArray, isEmpty, isObject } from 'lodash'
-import { getListDocuments } from '@src/services/document'
+import { isArray, isObject } from 'lodash'
 import { EDocumentType, IDocumentInResponse } from '@domain/document'
 import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
@@ -20,6 +19,7 @@ import { EDocumentTypeDetail, OPTIONS_DOCUMENT_LABEL, OPTIONS_DOCUMENT_TYPE } fr
 import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
 import ModalUpdate from './ModalUpdate'
+import { useGetListDocuments } from '@src/apis/document/useQueryDocument'
 
 const DocumentV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
@@ -27,9 +27,6 @@ const DocumentV: FC = () => {
   const [openForm, setOpenForm] = useState(false)
   const [openEdit, setOpenEdit] = useState<IDocumentInResponse>()
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
-  const [tableData, setTableData] = useState<IDocumentInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
 
   const initPaging = {
     current: 1,
@@ -44,6 +41,15 @@ const DocumentV: FC = () => {
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
 
+  const season = useRecoilValue(selectSeasonState)
+  const { data, isLoading } = useGetListDocuments({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy, season })
+
+  useEffect(() => {
+    if (data) {
+      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+    }
+  }, [data])
+
   const onClickAdd = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     setOpenForm(true)
@@ -51,7 +57,7 @@ const DocumentV: FC = () => {
 
   const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    const item = tableData.find((val) => val.id === e.currentTarget.id)
+    const item = data?.data.find((val) => val.id === e.currentTarget.id)
     setOpenEdit(item)
   }
 
@@ -63,19 +69,6 @@ const DocumentV: FC = () => {
   useEffect(() => {
     setTableQueries(initPaging)
   }, [search])
-
-  const season = useRecoilValue(selectSeasonState)
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const res = await getListDocuments({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy, season })
-      if (!isEmpty(res)) {
-        setTableData(res.data)
-        setPaging({ current: res.pagination.page_index, total: res.pagination.total })
-      }
-      setIsLoading(false)
-    })()
-  }, [reloadData, tableQueries, search, roles, type, label, sort, sortBy, season])
 
   const columns: ColumnsType<IDocumentInResponse> = [
     {
@@ -266,7 +259,7 @@ const DocumentV: FC = () => {
         className='text-wrap'
         rowKey='id'
         pagination={false}
-        dataSource={tableData}
+        dataSource={data?.data || []}
         loading={isLoading}
         scroll={{ x: 1500 }}
         bordered
@@ -287,9 +280,9 @@ const DocumentV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-      {openForm && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
-      {openEdit && <ModalUpdate open={openEdit} setOpen={setOpenEdit} setReloadData={setReloadData} />}
-      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
+      {openForm && <ModalAdd open={openForm} setOpen={setOpenForm} />}
+      {openEdit && <ModalUpdate open={openEdit} setOpen={setOpenEdit} />}
+      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
     </div>
   )
 }

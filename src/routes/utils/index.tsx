@@ -1,7 +1,7 @@
 import { accessTokenState, userInfoState } from '@atom/authAtom'
 import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
-import { getMe } from '@src/services/admin'
-import { getCurrentSeason } from '@src/services/season'
+import { useGetMe } from '@src/apis/admin/useQueryAdmin'
+import { useGetCurrentSeason } from '@src/apis/season/useQuerySeason'
 import { isEmpty } from 'lodash'
 import React, { useEffect } from 'react'
 import { Navigate, Route, Routes, BrowserRouter, useNavigate, useLocation } from 'react-router-dom'
@@ -42,15 +42,16 @@ const RequiredLoginRoute = (props: { children: React.ReactNode; requiredCurrent?
   const location = useLocation()
   const navigate = useNavigate()
 
+  const { data: dataUser, isFetched, isSuccess } = useGetMe()
+  const { data: dataCurrentSeason } = useGetCurrentSeason(isFetched && isSuccess)
+
   useEffect(() => {
-    if (accessToken)
-      (async () => {
-        const data = await getMe()
-        const currentSeason = await getCurrentSeason()
-        if (!isEmpty(data)) setUserInfo(data)
-        if (!isEmpty(currentSeason)) setCurrentSeason(currentSeason)
-      })()
-  }, [accessToken])
+    if (!isEmpty(dataUser)) setUserInfo(dataUser)
+  }, [dataUser])
+
+  useEffect(() => {
+    if (!isEmpty(dataCurrentSeason)) setCurrentSeason(dataCurrentSeason)
+  }, [dataCurrentSeason])
 
   useEffect(() => {
     if (props?.requiredCurrent && selectSeason && currentSeason && selectSeason !== currentSeason?.season) {

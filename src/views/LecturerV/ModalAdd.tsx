@@ -1,49 +1,48 @@
 import { Form, Input, Modal } from 'antd'
 import { isEmpty } from 'lodash'
-import React, { Dispatch, DispatchWithoutAction, FC, useEffect, useState } from 'react'
+import React, { Dispatch, FC, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { IOpenFormWithMode } from '@domain/common'
 import { ILecturerInResponse } from '@domain/lecturer'
-import { createLecturer, updateLecturer } from '@src/services/lecturer'
+import { useQueryClient } from '@tanstack/react-query'
+import { useCreateLecturer, useUpdateLecturer } from '@src/apis/lecturer/useMutationLecturer'
 
 interface IProps {
   open: IOpenFormWithMode<ILecturerInResponse>
   setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<ILecturerInResponse>>>
-  setReloadData: DispatchWithoutAction
 }
 
-const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
+const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
+  const queryClient = useQueryClient()
+
+  const isUpdateForm = !isEmpty(open?.item)
+
+  const onSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['getListLecturers'] })
+    if (isUpdateForm) toast.success('Sửa thành công')
+    else toast.success('Thêm thành công')
+    setOpen({ active: false, mode: 'add' })
+  }
+
+  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateLecturer(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateLecturer(onSuccess)
 
   const handleOk = async () => {
-    setConfirmLoading(true)
-    let res: ILecturerInResponse
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
       delete data.date_start_at
       delete data.date_end_at
       if (open?.item) {
-        res = await updateLecturer(open.item.id, data)
-        if (!isEmpty(res)) {
-          toast.success('Sửa thành công')
-          setOpen({ active: false, mode: 'add' })
-          setReloadData()
-        }
+        mutateUpdate({
+          id: open.item.id,
+          data,
+        })
       } else {
-        res = await createLecturer(data)
-        if (!isEmpty(res)) {
-          toast.success('Thêm thành công')
-          setOpen({ active: false, mode: 'add' })
-          setReloadData()
-        }
+        mutateCreate(data)
       }
-    } catch (error) {
-      setConfirmLoading(false)
-    }
-
-    setConfirmLoading(false)
+    } catch {}
   }
   const handleCancel = () => {
     setOpen({ active: false, mode: 'add' })
@@ -64,7 +63,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       title={open.item ? 'Sửa' : 'Thêm'}
       open={open.active}
       onOk={handleOk}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPendingUpdate || isPendingCreate}
       onCancel={handleCancel}
       cancelText='Hủy'
       okText={open.item ? 'Sửa' : 'Thêm'}

@@ -1,28 +1,16 @@
 import { IStudentInSubject } from '@domain/subject/subjectRegistration'
-import { getListSubjectRegistrationsBySubjectId } from '@src/services/subjectRegistration'
+import { useGetListSubjectRegistrationsBySubjectId } from '@src/apis/subjectRegistration/useQuerySubjectRegistration'
 import { Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
-import { isArray, size } from 'lodash'
-import { FC, useEffect, useState } from 'react'
+import { size } from 'lodash'
+import { FC } from 'react'
 
 interface IProps {
   subjectId: string
 }
 
 const TableStudent: FC<IProps> = ({ subjectId }) => {
-  const [tableData, setTableData] = useState<IStudentInSubject[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const data = await getListSubjectRegistrationsBySubjectId(subjectId)
-      if (isArray(data)) {
-        setTableData(data)
-      }
-      setIsLoading(false)
-    })()
-  }, [])
+  const { data: tableData, isLoading } = useGetListSubjectRegistrationsBySubjectId(subjectId)
 
   const columns: ColumnsType<IStudentInSubject> = [
     {

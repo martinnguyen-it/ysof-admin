@@ -23,6 +23,7 @@ export interface IParamsGetListAuditLog extends IPaginationAPIParams, ISort {
   search?: string
   type?: EAuditLogType
   endpoint?: EAuditLogEndPoint
+  season?: number
 }
 
 export enum EAuditLogType {

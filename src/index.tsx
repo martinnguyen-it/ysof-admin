@@ -12,27 +12,47 @@ import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { VN_TIMEZONE } from './constants'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault(VN_TIMEZONE)
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: (failureCount, error) => {
+        const axiosError = error as AxiosError
+        // Only retry for non-404 errors
+        if (axiosError?.status === 404) {
+          return false // Do not retry for 404 errors
+        }
+        return failureCount < 3 // Retry up to 3 times for other errors
+      },
+    },
+  },
+})
+
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <RecoilRoot>
-      <RecoilNexus />
-      <ConfigProvider
-        theme={{
-          token: {
-            fontFamily: 'inherit',
-          },
-        }}
-      >
-        <App />
-        <ToastContainer autoClose={3000} />
-      </ConfigProvider>
-    </RecoilRoot>
+    <QueryClientProvider client={queryClient}>
+      <RecoilRoot>
+        <RecoilNexus />
+        <ConfigProvider
+          theme={{
+            token: {
+              fontFamily: 'inherit',
+            },
+          }}
+        >
+          <App />
+          <ToastContainer autoClose={3000} />
+        </ConfigProvider>
+      </RecoilRoot>
+    </QueryClientProvider>
   </React.StrictMode>,
 )
 

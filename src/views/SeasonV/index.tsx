@@ -1,33 +1,31 @@
 import { FileAddOutlined } from '@ant-design/icons'
 import { IOpenForm } from '@domain/common'
 import { ISeasonResponse } from '@domain/season'
-import { getListSeasons } from '@src/services/season'
 import { Button, Flex } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
-import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
+import { FC, MouseEvent, useState } from 'react'
 import ModalAdd from './ModalAdd'
 import ModalDelete from './ModalDelete'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
 import { EAdminRole } from '@domain/admin/type'
-import { includes } from 'lodash'
+import { includes, isArray } from 'lodash'
+import { useGetListSeasons } from '@src/apis/season/useQuerySeason'
 
 const SeasonV: FC = () => {
-  const [tableData, setTableData] = useState<{ data: ISeasonResponse[]; loading: boolean }>({
-    data: [],
-    loading: false,
-  })
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
   const [openForm, setOpenForm] = useState<IOpenForm<ISeasonResponse>>({ active: false })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
   const userInfo = useRecoilValue(userInfoState)
+
+  const { data, isLoading } = useGetListSeasons()
+
   const onClickAdd = () => {
     setOpenForm({ active: true })
   }
 
   const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
-    const item = tableData.data.find((val) => val.id === e.currentTarget.id)
-    setOpenForm({ active: true, item: item })
+    const item = isArray(data) ? data.find((val) => val.id === e.currentTarget.id) : undefined
+    setOpenForm({ active: true, item })
   }
 
   const onClickDelete = (e: MouseEvent<HTMLButtonElement>) => {
@@ -35,14 +33,6 @@ const SeasonV: FC = () => {
   }
 
   const isAdmin = userInfo && includes(userInfo.roles, EAdminRole.ADMIN)
-
-  useEffect(() => {
-    ;(async () => {
-      setTableData((tableData) => ({ ...tableData, loading: true }))
-      const data = await getListSeasons()
-      setTableData({ data: data || [], loading: false })
-    })()
-  }, [reloadData])
 
   const columns: ColumnsType<ISeasonResponse> = [
     {
@@ -80,9 +70,11 @@ const SeasonV: FC = () => {
             <Button color='' type='primary' id={data.id} onClick={onClickUpdate} className='!bg-yellow-400 hover:opacity-80'>
               Sửa
             </Button>
-            <Button type='primary' id={data.id} onClick={onClickDelete} danger>
-              Xóa
-            </Button>
+            {!data.is_current && (
+              <Button type='primary' id={data.id} onClick={onClickDelete} danger>
+                Xóa
+              </Button>
+            )}
           </Flex>
         )
       },
@@ -99,9 +91,9 @@ const SeasonV: FC = () => {
           </Button>
         </div>
       )}
-      <Table columns={columns} rowKey='id' pagination={false} dataSource={tableData.data} loading={tableData.loading} bordered />
-      {openForm.active && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
-      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
+      <Table columns={columns} rowKey='id' pagination={false} dataSource={data || []} loading={isLoading} bordered />
+      {openForm.active && <ModalAdd open={openForm} setOpen={setOpenForm} />}
+      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
     </div>
   )
 }

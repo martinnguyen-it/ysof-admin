@@ -1,7 +1,7 @@
 import { appState } from '@atom/appAtom'
 import { IAppState, IRouter } from '@domain/app'
-import { map, size } from 'lodash'
-import { MouseEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { isArray, map, size } from 'lodash'
+import { MouseEvent, useCallback, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
@@ -10,9 +10,8 @@ import { EAdminRole } from '@domain/admin/type'
 import { hasMatch, isSuperAdmin } from '@src/utils'
 import { CaretUpOutlined, DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons'
 import { Select, Tooltip } from 'antd'
-import { ISeasonResponse } from '@domain/season'
-import { getListSeasons } from '@src/services/season'
 import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
+import { useGetListSeasons } from '@src/apis/season/useQuerySeason'
 
 const SidebarGroup = ({
   menuItem,
@@ -146,16 +145,10 @@ const Sidebar = () => {
     })
   }, [])
 
-  const [listSeason, setListSeason] = useState<ISeasonResponse[]>([])
-
-  useEffect(() => {
-    ;(async () => {
-      const data = await getListSeasons({ sort_by: 'season' })
-      setListSeason(data || [])
-    })()
-  }, [userInfo])
+  const { data: listSeason, isLoading } = useGetListSeasons({ sort_by: 'season' })
 
   const optionSeasons = useMemo(() => {
+    if (!isArray(listSeason)) return []
     if (userInfo) {
       if (isSuperAdmin(true)) {
         return listSeason.map((item) => ({ value: item.season, label: item.season }))
@@ -190,6 +183,7 @@ const Sidebar = () => {
             onChange={handleChangeSeason}
             options={optionSeasons}
             suffixIcon={null}
+            loading={isLoading}
           />
         </div>
         <ul className='max-h-[calc(100vh-146px)] overflow-auto border-gray-200'>

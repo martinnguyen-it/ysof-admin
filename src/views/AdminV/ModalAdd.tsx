@@ -1,53 +1,53 @@
 import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
-import { isEmpty } from 'lodash'
-import React, { Dispatch, DispatchWithoutAction, FC, useEffect, useState } from 'react'
+import React, { Dispatch, FC, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { IOpenFormWithMode } from '@domain/common'
 import { EAdminRole, IAdminInResponse } from '@domain/admin/type'
-import { createAdmin, updateAdmin } from '@src/services/admin'
 import { OPTIONS_ROLE } from '@constants/index'
 import dayjs from 'dayjs'
+import { useCreateAdmin, useUpdateAdmin } from '@src/apis/admin/useMutationAdmin'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface IProps {
   open: IOpenFormWithMode<IAdminInResponse>
   setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<IAdminInResponse>>>
-  setReloadData: DispatchWithoutAction
 }
 
-const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
+const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
   const [dateOfBirth, setDateOfBirth] = useState<string>()
 
+  const isUpdateForm = open.mode === 'update'
+  const queryClient = useQueryClient()
+
+  const onSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['getListAdmins'] })
+    if (isUpdateForm) toast.success('Sửa thành công')
+    else toast.success('Thêm thành công')
+    setOpen({ active: false, mode: 'add' })
+  }
+
+  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateAdmin(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateAdmin(onSuccess)
+
   const handleOk = async () => {
-    setConfirmLoading(true)
-    let res: IAdminInResponse
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
       delete data.date_of_birth_temp
       if (open.mode === 'update') {
         if (open?.item) {
-          res = await updateAdmin(open.item.id, { ...data, date_of_birth: dateOfBirth || undefined })
-          if (!isEmpty(res)) {
-            toast.success('Sửa thành công')
-            setOpen({ active: false, mode: 'add' })
-            setReloadData()
-          }
+          mutateUpdate({
+            id: open.item.id,
+            data: { ...data, date_of_birth: dateOfBirth || undefined },
+          })
         }
       } else {
-        res = await createAdmin({ ...data, date_of_birth: dateOfBirth || undefined })
-        if (!isEmpty(res)) {
-          toast.success('Thêm thành công')
-          setOpen({ active: false, mode: 'add' })
-          setReloadData()
-        }
+        mutateCreate({ ...data, date_of_birth: dateOfBirth || undefined })
       }
-    } catch (error) {
-      setConfirmLoading(false)
+    } catch {
+      /* empty */
     }
-
-    setConfirmLoading(false)
   }
   const handleCancel = () => {
     setOpen({ active: false, mode: 'add' })
@@ -74,7 +74,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       title={open.item ? 'Sửa' : 'Thêm'}
       open={open.active}
       onOk={handleOk}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPendingCreate || isPendingUpdate}
       onCancel={handleCancel}
       className='sm:!w-[70vw] lg:!w-[60vw]'
       cancelText='Hủy'

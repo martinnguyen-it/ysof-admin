@@ -4,10 +4,10 @@ import { Button, Flex, Input, Pagination, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import type { TableProps } from 'antd'
 
-import { FC, MouseEvent, useEffect, useReducer, useState } from 'react'
+import { FC, MouseEvent, useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userInfoState } from '@atom/authAtom'
-import { isArray, isEmpty } from 'lodash'
+import { isArray } from 'lodash'
 import dayjs from 'dayjs'
 import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
 import ModalDelete from './ModalDelete'
@@ -15,9 +15,9 @@ import { currentSeasonState } from '@atom/seasonAtom'
 import { isSuperAdmin } from '@src/utils'
 import { EAdminRole } from '@domain/admin/type'
 import { IStudentInResponse } from '@domain/student'
-import { getListStudents } from '@src/services/student'
 import ModalAdd from './ModalAdd'
 import ModalImport from './ModalImport'
+import { useGetListStudents } from '@src/apis/student/useQueryStudent'
 // import ModalView from './ModalView'
 
 const StudentV: FC = () => {
@@ -26,13 +26,10 @@ const StudentV: FC = () => {
   const [openForm, setOpenForm] = useState<IOpenFormWithMode<IStudentInResponse>>({ active: false, mode: 'add' })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
   const [openImport, setOpenImport] = useState(false)
-  const [tableData, setTableData] = useState<IStudentInResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [reloadData, setReloadData] = useReducer((prev) => !prev, false)
 
   const initPaging = {
     current: 1,
-    pageSize: 20,
+    pageSize: 300,
   }
   const [tableQueries, setTableQueries] = useState(initPaging)
   const [paging, setPaging] = useState({ total: 0, current: 1 })
@@ -41,6 +38,21 @@ const StudentV: FC = () => {
   const [sortBy, setSortBy] = useState<string>()
   const [group, setGroup] = useState<number>()
 
+  const { data, isLoading } = useGetListStudents({
+    page_index: tableQueries.current,
+    page_size: tableQueries.pageSize,
+    search: search || undefined,
+    sort,
+    sort_by: sortBy,
+    group,
+  })
+
+  useEffect(() => {
+    if (data) {
+      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+    }
+  }, [data])
+
   const onClickAdd = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     setOpenForm({ active: true, mode: 'add' })
@@ -48,7 +60,7 @@ const StudentV: FC = () => {
 
   const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    const item = tableData.find((val) => val.id === e.currentTarget.id)
+    const item = data?.data.find((val) => val.id === e.currentTarget.id)
     setOpenForm({ active: true, mode: 'add', item })
   }
 
@@ -65,18 +77,6 @@ const StudentV: FC = () => {
   useEffect(() => {
     setTableQueries(initPaging)
   }, [search])
-
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-      const res = await getListStudents({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy, group })
-      if (!isEmpty(res)) {
-        setTableData(res.data)
-        setPaging({ current: res.pagination.page_index, total: res.pagination.total })
-      }
-      setIsLoading(false)
-    })()
-  }, [reloadData, tableQueries, search, sort, sortBy, group])
 
   const columns: ColumnsType<IStudentInResponse> = [
     {
@@ -180,7 +180,7 @@ const StudentV: FC = () => {
           </Flex>
         )
       },
-      hidden: !userInfo || !((userInfo.roles.includes(EAdminRole.BKL) && userInfo.latest_season != currentSeason.season) || isSuperAdmin(true)),
+      hidden: !userInfo || !((userInfo.roles.includes(EAdminRole.BKL) && userInfo?.seasons.includes(currentSeason?.season)) || isSuperAdmin(true)),
     },
   ]
 
@@ -240,7 +240,7 @@ const StudentV: FC = () => {
           showQuickJumper
           showSizeChanger
         />
-        {userInfo && ((userInfo.latest_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BKL)) || isSuperAdmin(true)) && (
+        {userInfo && ((userInfo.latest_season === currentSeason?.season && userInfo.roles.includes(EAdminRole.BKL)) || isSuperAdmin(true)) && (
           <div className='mb-4 flex justify-end gap-3'>
             <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
               Thêm
@@ -258,7 +258,7 @@ const StudentV: FC = () => {
         className='text-wrap'
         rowKey='id'
         pagination={false}
-        dataSource={tableData}
+        dataSource={data?.data || []}
         loading={isLoading}
         scroll={{ x: 2000 }}
         bordered
@@ -271,10 +271,10 @@ const StudentV: FC = () => {
         }}
       />
 
-      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />}
+      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} />}
       {/* {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />} */}
-      <ModalImport open={openImport} setOpen={setOpenImport} setReloadData={setReloadData} />
-      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />}
+      <ModalImport open={openImport} setOpen={setOpenImport} />
+      {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
     </div>
   )
 }

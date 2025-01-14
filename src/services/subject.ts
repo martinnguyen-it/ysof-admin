@@ -6,9 +6,9 @@ export const getListSubjects = (params?: IParamsGetListSubject): Promise<ISubjec
 
 export const getSubjectDetail = (id: string): Promise<ISubjectInResponse> => get(API_LIST.subject + '/' + id)
 
-export const getSubjectNextMostRecent = (): Promise<ISubjectInResponse & { message?: string }> => get(API_LIST.subject + '/next-most-recent')
+export const getSubjectNextMostRecent = (): Promise<ISubjectInResponse> => get(API_LIST.subject + '/next-most-recent')
 
-export const getSubjectLastSentStudentRecent = (): Promise<ISubjectInResponse & { message?: string }> => get(API_LIST.subject + '/last-sent-student')
+export const getSubjectLastSentStudentRecent = (): Promise<ISubjectInResponse> => get(API_LIST.subject + '/last-sent-student')
 
 export const getSubjectShort = (params?: IParamsGetListSubject): Promise<ISubjectShortInResponse[]> => get(API_LIST.subject + '/list-short', { params })
 

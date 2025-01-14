@@ -75,7 +75,6 @@ export const ROUTES_SIDEBAR: IRouter[] = [
   {
     name: 'Học viên',
     icon: UserOutlined,
-    requiredCurrent: true,
     path: '/hoc-vien',
     children: [
       {
@@ -129,7 +128,6 @@ export const ROUTES_SIDEBAR: IRouter[] = [
     name: 'Đăng ký môn học',
     icon: RegisterIcon,
     path: '/dang-ky-mon',
-    requiredCurrent: true,
     children: [
       {
         path: '/dang-ky-mon/quan-ly-form',
@@ -140,7 +138,6 @@ export const ROUTES_SIDEBAR: IRouter[] = [
       {
         path: '/dang-ky-mon/ket-qua-dang-ky',
         name: 'Kết quả đăng ký',
-        requiredCurrent: true,
       },
     ],
   },

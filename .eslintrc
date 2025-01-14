@@ -39,6 +39,7 @@
     ],
     "@typescript-eslint/ban-ts-comment": "off",
     "no-constant-condition": "off",
+    "no-empty": "off",
     "react/display-name": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/ban-types": [
@@ -49,7 +50,8 @@
           "{}": false
         }
       }
-    ]
+    ],
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "off"
   },
   "settings": {
     "react": {

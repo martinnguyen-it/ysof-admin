@@ -23,4 +23,5 @@ export interface IManySubjectRegistrationInResponse {
 export interface IParamsGetListSubjectRegistration extends ISort, IPaginationAPIParams {
   group?: number
   search?: string
+  season?: number
 }

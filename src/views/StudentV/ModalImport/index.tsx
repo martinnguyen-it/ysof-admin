@@ -1,37 +1,36 @@
 import { Card, Form, Modal } from 'antd'
-import { isEmpty, size } from 'lodash'
-import React, { Dispatch, DispatchWithoutAction, FC, useEffect, useState } from 'react'
+import { size } from 'lodash'
+import React, { Dispatch, FC, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { IImportStudentFromSpreadSheetsResponse } from '@domain/student'
-import { importStudent } from '@src/services/student'
 import FormImport from './FormImport'
+import { useQueryClient } from '@tanstack/react-query'
+import { useImportStudent } from '@src/apis/student/useMutationStudent'
 
 interface IProps {
   open: boolean
   setOpen: Dispatch<React.SetStateAction<boolean>>
-  setReloadData: DispatchWithoutAction
 }
 
-const ModalImport: FC<IProps> = ({ open, setOpen, setReloadData }) => {
+const ModalImport: FC<IProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
-
+  const queryClient = useQueryClient()
   const [response, setResponse] = useState<IImportStudentFromSpreadSheetsResponse>()
+
+  const onSuccess = (data: IImportStudentFromSpreadSheetsResponse) => {
+    queryClient.invalidateQueries({ queryKey: ['getListStudents'] })
+    toast.success('Xử lý thành công')
+    setResponse(data)
+  }
+
+  const { mutate, isPending } = useImportStudent(onSuccess)
+
   const handleOk = async () => {
-    setConfirmLoading(true)
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
-      const res = await importStudent(data)
-      if (!isEmpty(res)) {
-        toast.success('Xử lý thành công')
-        setResponse(res)
-        setReloadData()
-      }
-    } catch (error) {
-      setConfirmLoading(false)
-    }
-    setConfirmLoading(false)
+      mutate(data)
+    } catch {}
   }
   const handleCancel = () => {
     setOpen(false)
@@ -50,7 +49,7 @@ const ModalImport: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       title={'Import'}
       open={open}
       onOk={response ? handleNewImport : handleOk}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPending}
       onCancel={handleCancel}
       cancelText={response ? 'Đóng' : 'Hủy'}
       okText={response ? 'Import mới' : 'Import'}

@@ -5,44 +5,46 @@ import { EAdminRoleDetail } from '@domain/admin/type'
 import { IDocumentInResponse } from '@domain/document'
 import { isSuperAdmin } from '@src/utils'
 import { Button, Form, Input, Modal, Select, Upload } from 'antd'
-import { isEmpty, isObject } from 'lodash'
+import { isObject } from 'lodash'
 import React, { FC, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
 import type { UploadProps } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import { updateDocument } from '@src/services/document'
+import { useQueryClient } from '@tanstack/react-query'
+import { useUpdateDocument } from '@src/apis/document/useMutationDocument'
 
 interface IProps {
   open: IDocumentInResponse
   setOpen: React.Dispatch<React.SetStateAction<IDocumentInResponse | undefined>>
-  setReloadData: React.DispatchWithoutAction
 }
 
-const ModalUpdate: FC<IProps> = ({ open, setOpen, setReloadData }) => {
+const ModalUpdate: FC<IProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
   const userInfo = useRecoilValue(userInfoState)
   const [fileSelected, setFileSelected] = useState<File>()
+  const queryClient = useQueryClient()
+
+  const onSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['getListDocuments'] })
+    toast.success('Sửa thành công')
+    setOpen(undefined)
+  }
+
+  const { mutate, isPending } = useUpdateDocument(onSuccess)
 
   const handleOk = async () => {
-    setConfirmLoading(true)
-    let res: IDocumentInResponse
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
       delete data.file
-      res = await updateDocument(open.id, { file: fileSelected as File, payload: data })
-      if (!isEmpty(res)) {
-        toast.success('Sửa thành công')
-        setOpen(undefined)
-        setReloadData()
-      }
-    } catch (error) {
-      setConfirmLoading(false)
+      mutate({
+        id: open.id,
+        data: { file: fileSelected as File, payload: data },
+      })
+    } catch {
+      /* empty */
     }
-
-    setConfirmLoading(false)
   }
 
   const handleCancel = () => {
@@ -73,7 +75,7 @@ const ModalUpdate: FC<IProps> = ({ open, setOpen, setReloadData }) => {
   }
 
   return (
-    <Modal title={'Sửa'} open={!!open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel} cancelText='Hủy' okText={'Sửa'}>
+    <Modal title={'Sửa'} open={!!open} onOk={handleOk} confirmLoading={isPending} onCancel={handleCancel} cancelText='Hủy' okText={'Sửa'}>
       <Form layout='vertical' form={form} name='form-update-doc' initialValues={open}>
         <Form.Item name='name' label='Tên'>
           <Input placeholder='Tên tài liệu' />

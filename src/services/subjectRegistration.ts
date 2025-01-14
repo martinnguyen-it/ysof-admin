@@ -5,4 +5,4 @@ import { IManySubjectRegistrationInResponse, IParamsGetListSubjectRegistration, 
 export const getListSubjectRegistrations = (params?: IParamsGetListSubjectRegistration): Promise<IManySubjectRegistrationInResponse> =>
   get(API_LIST.subjectRegistration, { params })
 
-export const getListSubjectRegistrationsBySubjectId = (subject_id: string): Promise<IStudentInSubject[]> => get(API_LIST.subjectRegistration + '/subject/' + subject_id)
+export const getListSubjectRegistrationsBySubjectId = (subjectId: string): Promise<IStudentInSubject[]> => get(API_LIST.subjectRegistration + '/subject/' + subjectId)

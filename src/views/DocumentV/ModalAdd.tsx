@@ -2,58 +2,52 @@ import { userInfoState } from '@atom/authAtom'
 import { OPTIONS_DOCUMENT_LABEL, OPTIONS_DOCUMENT_TYPE, OPTIONS_GOOGLE_FILE_TYPE, OPTIONS_MODE_FILE } from '@constants/document'
 import { OPTIONS_ROLE } from '@constants/index'
 import { EAdminRoleDetail } from '@domain/admin/type'
-import { IDocumentInResponse } from '@domain/document'
-import { createDocumentGoogle, createDocumentWithFile } from '@src/services/document'
 import { isSuperAdmin } from '@src/utils'
 import { Button, Form, Input, Modal, Select, Upload } from 'antd'
-import { isEmpty, isObject } from 'lodash'
+import { isObject } from 'lodash'
 import React, { FC, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
 import type { UploadProps } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
+import { useQueryClient } from '@tanstack/react-query'
+import { useCreateDocumentGoogle, useCreateDocumentWithFile } from '@src/apis/document/useMutationDocument'
 
 interface IProps {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setReloadData: React.DispatchWithoutAction
 }
 
-const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
+const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
-  const [confirmLoading, setConfirmLoading] = useState(false)
   const userInfo = useRecoilValue(userInfoState)
   const [fileSelected, setFileSelected] = useState<File>()
+  const queryClient = useQueryClient()
+
+  const onSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['getListDocuments'] })
+    toast.success('Thêm thành công')
+    setOpen(false)
+  }
+
+  const { mutate: mutateCreateFile, isPending: isPendingCreateWithFile } = useCreateDocumentWithFile(onSuccess)
+  const { mutate: mutateCreateGoogle, isPending: isPendingCreateWithGoogle } = useCreateDocumentGoogle(onSuccess)
 
   const handleOk = async () => {
-    setConfirmLoading(true)
-    let res: IDocumentInResponse
     try {
       await form.validateFields()
       const data = form.getFieldsValue()
       if (data.mode === 'file') {
         delete data.mode
         delete data.file
-        res = await createDocumentWithFile({ file: fileSelected as File, payload: data })
-        if (!isEmpty(res)) {
-          toast.success('Thêm thành công')
-          setOpen(false)
-          setReloadData()
-        }
+        mutateCreateFile({ file: fileSelected as File, payload: data })
       } else {
         delete data.mode
-        res = await createDocumentGoogle(data)
-        if (!isEmpty(res)) {
-          toast.success('Thêm thành công')
-          setOpen(false)
-          setReloadData()
-        }
+        mutateCreateGoogle(data)
       }
-    } catch (error) {
-      setConfirmLoading(false)
+    } catch {
+      /* empty */
     }
-
-    setConfirmLoading(false)
   }
 
   const handleCancel = () => {
@@ -90,7 +84,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen, setReloadData }) => {
       title={'Thêm'}
       open={open}
       onOk={handleOk}
-      confirmLoading={confirmLoading}
+      confirmLoading={isPendingCreateWithGoogle || isPendingCreateWithFile}
       onCancel={handleCancel}
       cancelText='Hủy'
       okText={'Thêm'}

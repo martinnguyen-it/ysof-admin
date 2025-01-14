@@ -30,4 +30,5 @@ export interface IUpdateLecturer extends Partial<ICreateLecturer> {}
 
 export interface IParamsGetListLecturer extends IPaginationAPIParams, ISort {
   search?: string
+  season?: number
 }
