@@ -27,9 +27,9 @@ else
 fi
 
 echo "Rebuild docker"
-docker compose -p "ysof_admin_fe_$1" -f docker-compose.yml -f "docker-compose.$1.yml" up -d --build --remove-orphans
+docker compose -p "ysof_admin_fe_$1" -f docker-compose.yml up -d --build --remove-orphans
 
-echo "Deployed admin-fe app from branch $2 to $1"
+echo "Deployed ysof_admin_fe app from branch $2 to $1"
 # echo "Clear cache"
 # docker system prune -f
 exit 0

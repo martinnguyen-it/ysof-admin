@@ -1,6 +1,12 @@
-import { ICreateSubject, IUpdateSubject } from '@domain/subject'
-import { createSubject, deleteSubject, subjectSendEvaluation, subjectSendNotification, updateSubject } from '@src/services/subject'
 import { useMutation } from '@tanstack/react-query'
+import { ICreateSubject, IUpdateSubject } from '@/domain/subject'
+import {
+  createSubject,
+  deleteSubject,
+  subjectSendEvaluation,
+  subjectSendNotification,
+  updateSubject,
+} from '@/services/subject'
 import { toast } from 'react-toastify'
 
 export const useCreateSubject = (onSuccess: () => void) =>
@@ -15,7 +21,8 @@ export const useCreateSubject = (onSuccess: () => void) =>
 
 export const useUpdateSubject = (onSuccess: () => void) =>
   useMutation({
-    mutationFn: (payload: { subjectId: string; data: IUpdateSubject }) => updateSubject(payload.subjectId, payload.data),
+    mutationFn: (payload: { subjectId: string; data: IUpdateSubject }) =>
+      updateSubject(payload.subjectId, payload.data),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error

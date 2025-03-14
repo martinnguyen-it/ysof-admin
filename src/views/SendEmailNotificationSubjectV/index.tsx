@@ -1,40 +1,60 @@
-import { Button, Divider, Form, Input, Select, Spin } from 'antd'
-
 import { FC, useEffect, useMemo, useState } from 'react'
-import { isEmpty, size } from 'lodash'
+import { useGetListDocuments } from '@/apis/document/useQueryDocument'
+import {
+  useGetSubjectLastSentStudentRecent,
+  useGetSubjectNextMostRecent,
+} from '@/apis/subject/useQuerySubject'
+import { currentSeasonState } from '@/atom/seasonAtom'
+import { EDocumentType } from '@/domain/document'
+import { ESubjectStatus } from '@/domain/subject'
+import { Button, Divider, Form, Input, Select, Spin } from 'antd'
 import dayjs from 'dayjs'
-import { ESubjectStatus } from '@domain/subject'
+import { isEmpty, size } from 'lodash'
 import { useRecoilValue } from 'recoil'
-import { currentSeasonState } from '@atom/seasonAtom'
-import { ESubjectStatusDetail } from '@constants/subject'
-import { useDebounce } from '@src/hooks/useDebounce'
-import { EDocumentType } from '@domain/document'
+import { ESubjectStatusDetail } from '@/constants/subject'
+import { useDebounce } from '@/hooks/useDebounce'
 import ModalConfirm from './ModalConfirm'
 import TableStudent from './TableStudent'
-import { useGetListDocuments } from '@src/apis/document/useQueryDocument'
-import { useGetSubjectLastSentStudentRecent, useGetSubjectNextMostRecent } from '@src/apis/subject/useQuerySubject'
 
 const SendEmailNotificationSubjectV: FC = () => {
   const [form] = Form.useForm()
   const currentSeason = useRecoilValue(currentSeasonState)
-  const [openConfirm, setOpenConfirm] = useState({ active: false, item: undefined })
+  const [openConfirm, setOpenConfirm] = useState({
+    active: false,
+    item: undefined,
+  })
   const [searchDocuments, setSearchDocuments] = useState('')
 
   const searchDocDebounce = useDebounce(searchDocuments, 300)
 
-  const { data: documents, isLoading: loadingGetDocuments } = useGetListDocuments(
-    { search: searchDocDebounce, season: currentSeason?.season, type: EDocumentType.STUDENT },
-    {
-      enabled: !!currentSeason?.season,
-    },
-  )
+  const { data: documents, isLoading: loadingGetDocuments } =
+    useGetListDocuments(
+      {
+        search: searchDocDebounce,
+        season: currentSeason?.season,
+        type: EDocumentType.STUDENT,
+      },
+      {
+        enabled: !!currentSeason?.season,
+      }
+    )
 
-  const { data: recentLastSentStudent, isLoading: isLoadingLastSentRecent, isFetched } = useGetSubjectLastSentStudentRecent()
-  const { data: recentNextSubject, isLoading: isLoadingNextRecent } = useGetSubjectNextMostRecent(isFetched)
+  const {
+    data: recentLastSentStudent,
+    isLoading: isLoadingLastSentRecent,
+    isFetched,
+  } = useGetSubjectLastSentStudentRecent()
+  const { data: recentNextSubject, isLoading: isLoadingNextRecent } =
+    useGetSubjectNextMostRecent(isFetched)
 
   useEffect(() => {
     if (!isEmpty(recentNextSubject)) {
-      form.setFieldsValue({ ...recentNextSubject, attachments: recentNextSubject?.attachments ? recentNextSubject.attachments.map((item) => item.id) : [] })
+      form.setFieldsValue({
+        ...recentNextSubject,
+        attachments: recentNextSubject?.attachments
+          ? recentNextSubject.attachments.map((item) => item.id)
+          : [],
+      })
     }
   }, [recentNextSubject])
 
@@ -43,7 +63,7 @@ const SendEmailNotificationSubjectV: FC = () => {
       await form.validateFields()
       const data = form.getFieldsValue()
       setOpenConfirm({ active: true, item: data })
-    } catch (error) {
+    } catch {
       /* empty */
     }
   }
@@ -59,17 +79,20 @@ const SendEmailNotificationSubjectV: FC = () => {
             value: item.id,
             label: (
               <span className='flex items-center'>
-                <img className='mr-1 size-4 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}></img>
+                <img
+                  className='mr-1 size-4 object-cover'
+                  src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}
+                ></img>
                 {item.name}
               </span>
             ),
           }))
         : [],
-    [documents],
+    [documents]
   )
 
   return (
-    <div className='m-6 min-h-[calc(100vh-96px)]'>
+    <>
       {isLoadingLastSentRecent || isLoadingNextRecent ? (
         <div className='mt-20 flex w-full justify-center'>
           <Spin size='large' />
@@ -77,7 +100,9 @@ const SendEmailNotificationSubjectV: FC = () => {
       ) : (
         <>
           <div className='rounded-xl bg-white px-10 py-6 shadow-lg'>
-            <div className='flex justify-center text-2xl font-bold'>THÔNG BÁO BUỔI HỌC</div>
+            <div className='flex justify-center text-2xl font-bold'>
+              THÔNG BÁO BUỔI HỌC
+            </div>
 
             <div className='mb-4 mt-3'>
               {!recentLastSentStudent && !recentNextSubject ? (
@@ -86,9 +111,13 @@ const SendEmailNotificationSubjectV: FC = () => {
                 <>
                   <span className='font-semibold'>Trạng thái:</span>{' '}
                   {recentLastSentStudent ? (
-                    <span className='rounded-md bg-green-100 px-2 py-1 text-green-700'>{ESubjectStatusDetail[recentLastSentStudent.status]}</span>
+                    <span className='rounded-md bg-green-100 px-2 py-1 text-green-700'>
+                      {ESubjectStatusDetail[recentLastSentStudent.status]}
+                    </span>
                   ) : recentNextSubject ? (
-                    <span className='rounded-md bg-blue-100 px-2 py-1 text-blue-700'>{ESubjectStatusDetail[recentNextSubject.status]}</span>
+                    <span className='rounded-md bg-blue-100 px-2 py-1 text-blue-700'>
+                      {ESubjectStatusDetail[recentNextSubject.status]}
+                    </span>
                   ) : null}
                 </>
               )}
@@ -103,11 +132,19 @@ const SendEmailNotificationSubjectV: FC = () => {
                   </span>
                 </p>
                 <p>
-                  Giảng Viên: {recentLastSentStudent.lecturer?.title ? recentLastSentStudent.lecturer.title + ' ' : ''}
-                  {recentLastSentStudent.lecturer?.holy_name ? recentLastSentStudent.lecturer.holy_name + ' ' : ''}
+                  Giảng Viên:{' '}
+                  {recentLastSentStudent.lecturer?.title
+                    ? recentLastSentStudent.lecturer.title + ' '
+                    : ''}
+                  {recentLastSentStudent.lecturer?.holy_name
+                    ? recentLastSentStudent.lecturer.holy_name + ' '
+                    : ''}
                   {recentLastSentStudent.lecturer.full_name}
                 </p>
-                <p>Ngày học: {dayjs(recentLastSentStudent.start_at).format('DD/MM/YYYY')}</p>
+                <p>
+                  Ngày học:{' '}
+                  {dayjs(recentLastSentStudent.start_at).format('DD/MM/YYYY')}
+                </p>
               </div>
             ) : null}
 
@@ -121,11 +158,19 @@ const SendEmailNotificationSubjectV: FC = () => {
                     </span>
                   </p>
                   <p>
-                    Giảng Viên: {recentNextSubject.lecturer?.title ? recentNextSubject.lecturer.title + ' ' : ''}
-                    {recentNextSubject.lecturer?.holy_name ? recentNextSubject.lecturer.holy_name + ' ' : ''}
+                    Giảng Viên:{' '}
+                    {recentNextSubject.lecturer?.title
+                      ? recentNextSubject.lecturer.title + ' '
+                      : ''}
+                    {recentNextSubject.lecturer?.holy_name
+                      ? recentNextSubject.lecturer.holy_name + ' '
+                      : ''}
                     {recentNextSubject.lecturer.full_name}
                   </p>
-                  <p>Ngày học: {dayjs(recentNextSubject.start_at).format('DD/MM/YYYY')}</p>
+                  <p>
+                    Ngày học:{' '}
+                    {dayjs(recentNextSubject.start_at).format('DD/MM/YYYY')}
+                  </p>
                 </div>
                 <Divider />
                 <Form
@@ -158,8 +203,15 @@ const SendEmailNotificationSubjectV: FC = () => {
                       loading={loadingGetDocuments}
                     />
                   </Form.Item>
-                  <Form.Item name='documents_url' label='Link tài liệu đính kèm ngoài'>
-                    <Select placeholder='Link tài liệu' mode='tags' allowClear />
+                  <Form.Item
+                    name='documents_url'
+                    label='Link tài liệu đính kèm ngoài'
+                  >
+                    <Select
+                      placeholder='Link tài liệu'
+                      mode='tags'
+                      allowClear
+                    />
                   </Form.Item>
                   <Form.Item
                     name={['zoom', 'link']}
@@ -199,7 +251,11 @@ const SendEmailNotificationSubjectV: FC = () => {
                   </Form.Item>
                 </Form>
                 <div className='flex justify-end'>
-                  <Button disabled={recentNextSubject.status !== ESubjectStatus.INIT} onClick={onOpenConfirm} type='primary'>
+                  <Button
+                    disabled={recentNextSubject.status !== ESubjectStatus.INIT}
+                    onClick={onOpenConfirm}
+                    type='primary'
+                  >
                     Xác nhận thông tin và Gửi
                   </Button>
                 </div>
@@ -210,8 +266,14 @@ const SendEmailNotificationSubjectV: FC = () => {
           </div>
         </>
       )}
-      {recentNextSubject && <ModalConfirm open={openConfirm} setOpen={setOpenConfirm} subject={recentNextSubject} />}
-    </div>
+      {recentNextSubject && (
+        <ModalConfirm
+          open={openConfirm}
+          setOpen={setOpenConfirm}
+          subject={recentNextSubject}
+        />
+      )}
+    </>
   )
 }
 

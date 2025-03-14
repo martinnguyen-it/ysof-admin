@@ -1,29 +1,38 @@
+import { FC, MouseEvent, useEffect, useState } from 'react'
+import { useGetListGeneralTasks } from '@/apis/generalTask/useQueryGeneralTask'
+import { userInfoState } from '@/atom/authAtom'
+import { currentSeasonState, selectSeasonState } from '@/atom/seasonAtom'
+import { EAdminRole, EAdminRoleDetail } from '@/domain/admin/type'
+import { ESort, IOpenForm, IOpenFormWithMode } from '@/domain/common'
+import { EGeneralTaskType, IGeneralTaskInResponse } from '@/domain/generalTask'
 import { FileAddOutlined } from '@ant-design/icons'
-import { ESort, IOpenForm, IOpenFormWithMode } from '@domain/common'
+import type { TableProps } from 'antd'
 import { Avatar, Button, Flex, Input, Pagination, Select, Tooltip } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
-import { FC, MouseEvent, useEffect, useState } from 'react'
-import { useRecoilValue } from 'recoil'
-import { userInfoState } from '@atom/authAtom'
-import { isArray, isObject } from 'lodash'
 import dayjs from 'dayjs'
-import { OPTIONS_ROLE, PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
-import ModalDelete from './ModalDelete'
-import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
-import { isSuperAdmin } from '@src/utils'
-import { EGeneralTaskType, IGeneralTaskInResponse } from '@domain/generalTask'
-import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
-import { EGeneralTaskTypeDetail, OPTIONS_GENERAL_TASK_LABEL, OPTIONS_GENERAL_TASK_TYPE } from '@constants/generalTask'
+import { isArray, isObject } from 'lodash'
+import { useRecoilValue } from 'recoil'
+import { isSuperAdmin } from '@/lib/utils'
+import {
+  EGeneralTaskTypeDetail,
+  OPTIONS_GENERAL_TASK_LABEL,
+  OPTIONS_GENERAL_TASK_TYPE,
+} from '@/constants/generalTask'
+import {
+  OPTIONS_ROLE,
+  PAGE_SIZE_OPTIONS_DEFAULT,
+  VN_TIMEZONE,
+} from '@/constants/index'
 import ModalAdd from './ModalAdd'
+import ModalDelete from './ModalDelete'
 import ModalView from './ModalView'
-import { useGetListGeneralTasks } from '@src/apis/generalTask/useQueryGeneralTask'
 
 const GeneralTaskV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
-  const [openForm, setOpenForm] = useState<IOpenFormWithMode<IGeneralTaskInResponse>>({ active: false, mode: 'add' })
+  const [openForm, setOpenForm] = useState<
+    IOpenFormWithMode<IGeneralTaskInResponse>
+  >({ active: false, mode: 'add' })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
 
   const initPaging = {
@@ -75,7 +84,10 @@ const GeneralTaskV: FC = () => {
 
   useEffect(() => {
     if (data) {
-      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+      setPaging({
+        current: data.pagination.page_index,
+        total: data.pagination.total,
+      })
     }
   }, [data])
 
@@ -85,7 +97,8 @@ const GeneralTaskV: FC = () => {
       dataIndex: 'index',
       key: 'index',
       width: '60px',
-      render: (_text, _record, index) => index + 1 + (paging.current - 1) * tableQueries.pageSize,
+      render: (_text, _record, index) =>
+        index + 1 + (paging.current - 1) * tableQueries.pageSize,
     },
     {
       title: 'Tiêu đề',
@@ -117,7 +130,9 @@ const GeneralTaskV: FC = () => {
       title: 'Mô tả ngắn',
       dataIndex: 'short_desc',
       key: 'short_desc',
-      render: (text: string) => <span className='text-wrap italic'>{text}</span>,
+      render: (text: string) => (
+        <span className='text-wrap italic'>{text}</span>
+      ),
     },
     {
       title: 'Ngày bắt đầu',
@@ -131,14 +146,18 @@ const GeneralTaskV: FC = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
     {
       title: 'Ngày sửa',
       dataIndex: 'updated_at',
       key: 'updated_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
     {
       title: 'Người tạo',
@@ -149,12 +168,17 @@ const GeneralTaskV: FC = () => {
       render: (_, record: IGeneralTaskInResponse) => {
         return (
           <Avatar.Group className='flex items-center'>
-            <img className='mr-4 size-7 object-cover' src={record.author.avatar || '/images/avatar.png'}></img>
+            <img
+              className='mr-4 size-7 object-cover'
+              src={record.author.avatar || '/images/avatar.png'}
+            ></img>
             <Tooltip placement='bottom' title='Nhấn vào đây để xem file'>
               {/* <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
                 {record.author.full_name}
               </Link> */}
-              <p className='text-wrap font-medium text-black'>{record.author.full_name}</p>
+              <p className='text-wrap font-medium text-black'>
+                {record.author.full_name}
+              </p>
             </Tooltip>
           </Avatar.Group>
         )
@@ -168,12 +192,23 @@ const GeneralTaskV: FC = () => {
       render: (_, data: IGeneralTaskInResponse) => {
         return (
           <Flex gap='small' wrap='wrap'>
-            {userInfo && (userInfo.roles.includes(data.role) || isSuperAdmin(true)) ? (
+            {userInfo &&
+            (userInfo.roles.includes(data.role) || isSuperAdmin(true)) ? (
               <>
-                <Button color='' type='primary' id={data.id} onClick={onClickUpdate} className='!bg-yellow-400 hover:opacity-80'>
+                <Button
+                  type='primary'
+                  id={data.id}
+                  onClick={onClickUpdate}
+                  className='!bg-yellow-400 hover:opacity-80'
+                >
                   Sửa
                 </Button>
-                <Button type='primary' id={data.id} onClick={onClickDelete} danger>
+                <Button
+                  type='primary'
+                  id={data.id}
+                  onClick={onClickDelete}
+                  danger
+                >
                   Xóa
                 </Button>
               </>
@@ -203,7 +238,11 @@ const GeneralTaskV: FC = () => {
     setLabel(val)
   }
 
-  const handleTableChange: TableProps<IGeneralTaskInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<IGeneralTaskInResponse>['onChange'] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -214,16 +253,24 @@ const GeneralTaskV: FC = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
         <Select
           className='w-60'
           mode='multiple'
           size='large'
           placeholder='Lọc theo ban'
           filterOption={(input, option) =>
-            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            isObject(option) &&
+            (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+              option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
           }
           onChange={onChangeRole}
           value={roles}
@@ -248,7 +295,9 @@ const GeneralTaskV: FC = () => {
           size='large'
           placeholder='Lọc theo nhãn'
           filterOption={(input, option) =>
-            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            isObject(option) &&
+            (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+              option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
           }
           onChange={onChangeLabel}
           value={label}
@@ -259,13 +308,20 @@ const GeneralTaskV: FC = () => {
         />
       </div>
 
-      {userInfo && (userInfo.roles.includes(EAdminRole.ADMIN) || userInfo.latest_season === currentSeason?.season) && (
-        <div className='mb-4 flex justify-end'>
-          <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
-            Thêm
-          </Button>
-        </div>
-      )}
+      {userInfo &&
+        (userInfo.roles.includes(EAdminRole.ADMIN) ||
+          userInfo.latest_season === currentSeason?.season) && (
+          <div className='mb-4 flex justify-end'>
+            <Button
+              type='primary'
+              icon={<FileAddOutlined />}
+              onClick={onClickAdd}
+              size={'middle'}
+            >
+              Thêm
+            </Button>
+          </div>
+        )}
       <Table
         showSorterTooltip={{ target: 'sorter-icon' }}
         onChange={handleTableChange}
@@ -301,10 +357,14 @@ const GeneralTaskV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} />}
-      {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />}
+      {openForm.active && openForm.mode !== 'view' && (
+        <ModalAdd open={openForm} setOpen={setOpenForm} />
+      )}
+      {openForm.active && openForm.mode === 'view' && (
+        <ModalView open={openForm} setOpen={setOpenForm} />
+      )}
       {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
-    </div>
+    </>
   )
 }
 

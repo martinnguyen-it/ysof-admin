@@ -1,4 +1,9 @@
-import { EAccountStatus, IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
+import {
+  EAccountStatus,
+  IPaginationAPI,
+  IPaginationAPIParams,
+  ISort,
+} from '@/domain/common'
 
 export interface IAdminInResponse {
   created_at: Date

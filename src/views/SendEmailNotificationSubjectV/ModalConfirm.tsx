@@ -1,9 +1,12 @@
-import { WarningFilled } from '@ant-design/icons'
-import { ISubjectInResponse } from '@domain/subject'
-import { useSubjectSendNotification, useUpdateSubject } from '@src/apis/subject/useMutationSubject'
-import { useQueryClient } from '@tanstack/react-query'
-import { Button, Modal } from 'antd'
 import React, { FC } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import {
+  useSubjectSendNotification,
+  useUpdateSubject,
+} from '@/apis/subject/useMutationSubject'
+import { ISubjectInResponse } from '@/domain/subject'
+import { WarningFilled } from '@ant-design/icons'
+import { Button, Modal } from 'antd'
 import { toast } from 'react-toastify'
 
 interface IProps {
@@ -21,13 +24,17 @@ const ModalConfirm: FC<IProps> = ({ open, setOpen, subject }) => {
 
   const onSuccessSendNotification = () => {
     queryClient.invalidateQueries({ queryKey: ['getSubjectNextMostRecent'] })
-    queryClient.invalidateQueries({ queryKey: ['getSubjectLastSentStudentRecent'] })
+    queryClient.invalidateQueries({
+      queryKey: ['getSubjectLastSentStudentRecent'],
+    })
     toast.success('Gửi thành công')
     setOpen({ active: false, item: undefined })
   }
 
-  const { mutate: mutateUpdateSubject, isPending: isPendingUpdate } = useUpdateSubject(onSuccessUpdateSubject)
-  const { mutate: mutateSendNotification, isPending: isPendingSend } = useSubjectSendNotification(onSuccessSendNotification)
+  const { mutate: mutateUpdateSubject, isPending: isPendingUpdate } =
+    useUpdateSubject(onSuccessUpdateSubject)
+  const { mutate: mutateSendNotification, isPending: isPendingSend } =
+    useSubjectSendNotification(onSuccessSendNotification)
 
   const onSubmit = () => {
     mutateUpdateSubject({
@@ -42,7 +49,8 @@ const ModalConfirm: FC<IProps> = ({ open, setOpen, subject }) => {
     <Modal
       title={
         <span className='text-lg'>
-          <WarningFilled className='text-yellow-400' /> Xác nhận thông tin và gửi
+          <WarningFilled className='text-yellow-400' /> Xác nhận thông tin và
+          gửi
         </span>
       }
       open={open.active}
@@ -53,7 +61,12 @@ const ModalConfirm: FC<IProps> = ({ open, setOpen, subject }) => {
         <Button key='back' onClick={handleCancel}>
           Hủy
         </Button>,
-        <Button key='submit' type='primary' loading={isPendingUpdate || isPendingSend} onClick={onSubmit}>
+        <Button
+          key='submit'
+          type='primary'
+          loading={isPendingUpdate || isPendingSend}
+          onClick={onSubmit}
+        >
           Gửi
         </Button>,
       ]}

@@ -1,5 +1,10 @@
-import { IListAuditLogInResponse, IParamsGetListAuditLog } from '@domain/auditLog'
+import {
+  IListAuditLogInResponse,
+  IParamsGetListAuditLog,
+} from '@/domain/auditLog'
+import { API_LIST } from '@/constants/index'
 import { get } from './HTTPService'
-import { API_LIST } from '@constants/index'
 
-export const getListAuditLogs = (params?: IParamsGetListAuditLog): Promise<IListAuditLogInResponse> => get(API_LIST.auditLog, { params })
+export const getListAuditLogs = (
+  params?: IParamsGetListAuditLog
+): Promise<IListAuditLogInResponse> => get(API_LIST.auditLog, { params })

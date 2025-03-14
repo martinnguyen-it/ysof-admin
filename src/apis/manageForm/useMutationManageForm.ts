@@ -1,6 +1,6 @@
-import { IManageFormInPayload } from '@domain/manageForm'
-import { updateManageForm } from '@src/services/manageForm'
 import { useMutation } from '@tanstack/react-query'
+import { IManageFormInPayload } from '@/domain/manageForm'
+import { updateManageForm } from '@/services/manageForm'
 import { toast } from 'react-toastify'
 
 export const useUpdateManageForm = (onSuccess?: () => void) =>

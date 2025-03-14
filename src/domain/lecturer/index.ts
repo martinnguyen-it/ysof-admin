@@ -1,4 +1,4 @@
-import { IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
+import { IPaginationAPI, IPaginationAPIParams, ISort } from '@/domain/common'
 
 export interface ILecturerInResponse {
   created_at: Date

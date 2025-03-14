@@ -1,18 +1,26 @@
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS base
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN npm install -g corepack@latest && corepack enable
 ENV COMPOSE_HTTP_TIMEOUT=50000
 
-RUN mkdir -p /usr/app/
 WORKDIR /usr/app
 
-COPY package*.json yarn.lock /usr/app/
-RUN yarn install --frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+  pnpm install --frozen-lockfile --prod
 
+FROM base AS builder
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+  pnpm install --frozen-lockfile
 COPY . .
-RUN yarn run build
+RUN pnpm run build
 
+# Production stage using Nginx
 FROM nginx:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /usr/app/build /usr/share/nginx/html
+COPY --from=builder /usr/app/dist /usr/share/nginx/html
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

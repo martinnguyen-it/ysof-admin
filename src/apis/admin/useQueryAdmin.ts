@@ -1,8 +1,12 @@
-import { IAdminInResponse, IListAdminInResponse, IParamsGetListAdmin } from '@domain/admin/type'
-import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
-import { getAdminDetail, getListAdmins, getMe } from '@src/services/admin'
-import { useQuery } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
+import { useQuery } from '@tanstack/react-query'
+import {
+  IAdminInResponse,
+  IListAdminInResponse,
+  IParamsGetListAdmin,
+} from '@/domain/admin/type'
+import { getAdminDetail, getListAdmins, getMe } from '@/services/admin'
+import { useQueryErrorToast } from '@/hooks/useQueryErrorToast'
 
 export const useGetMe = () => {
   const query = useQuery<IAdminInResponse, AxiosError>({

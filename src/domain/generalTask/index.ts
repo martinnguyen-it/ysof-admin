@@ -1,6 +1,6 @@
-import { EAdminRole, IAdminShort } from '@domain/admin/type'
-import { IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
-import { IDocumentInResponse } from '@domain/document'
+import { EAdminRole, IAdminShort } from '@/domain/admin/type'
+import { IPaginationAPI, IPaginationAPIParams, ISort } from '@/domain/common'
+import { IDocumentInResponse } from '@/domain/document'
 
 export interface IGeneralTaskInResponse {
   created_at: Date

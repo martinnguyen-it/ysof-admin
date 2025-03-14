@@ -1,14 +1,13 @@
-import { ESort } from '@domain/common'
+import { FC, useEffect, useMemo, useState } from 'react'
+import { useGetListSubjects } from '@/apis/subject/useQuerySubject'
+import { useGetListSubjectRegistrations } from '@/apis/subjectRegistration/useQuerySubjectRegistration'
+import { ESort } from '@/domain/common'
+import { ISubjectRegistrationInResponse } from '@/domain/subject/subjectRegistration'
+import type { TableProps } from 'antd'
 import { Input, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
-import { FC, useEffect, useMemo, useState } from 'react'
-import { isArray, size } from 'lodash'
-import { ISubjectRegistrationInResponse } from '@domain/subject/subjectRegistration'
 import dayjs from 'dayjs'
-import { useGetListSubjects } from '@src/apis/subject/useQuerySubject'
-import { useGetListSubjectRegistrations } from '@src/apis/subjectRegistration/useQuerySubjectRegistration'
+import { isArray, size } from 'lodash'
 
 const ListSubjectRegistrationV: FC = () => {
   const initPaging = {
@@ -37,7 +36,10 @@ const ListSubjectRegistrationV: FC = () => {
 
   useEffect(() => {
     if (data) {
-      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+      setPaging({
+        current: data.pagination.page_index,
+        total: data.pagination.total,
+      })
     }
   }, [data])
 
@@ -51,7 +53,11 @@ const ListSubjectRegistrationV: FC = () => {
         align: 'center',
         key: 'numerical_order',
         sorter: true,
-        render: (_, record: ISubjectRegistrationInResponse) => String(record.student.seasons_info[record.student.seasons_info.length - 1].numerical_order).padStart(3, '0'),
+        render: (_, record: ISubjectRegistrationInResponse) =>
+          String(
+            record.student.seasons_info[record.student.seasons_info.length - 1]
+              .numerical_order
+          ).padStart(3, '0'),
       },
       {
         title: 'Nhóm',
@@ -59,7 +65,9 @@ const ListSubjectRegistrationV: FC = () => {
         align: 'center',
         key: 'group',
         sorter: true,
-        render: (_, record: ISubjectRegistrationInResponse) => record.student.seasons_info[record.student.seasons_info.length - 1].group,
+        render: (_, record: ISubjectRegistrationInResponse) =>
+          record.student.seasons_info[record.student.seasons_info.length - 1]
+            .group,
       },
       {
         title: 'Họ tên',
@@ -90,7 +98,11 @@ const ListSubjectRegistrationV: FC = () => {
         columns.push({
           title: (
             <>
-              {item.code} - {item.title} (<span className='italic'>{dayjs(item.start_at).format('DD-MM-YYYY')}</span>)
+              {item.code} - {item.title} (
+              <span className='italic'>
+                {dayjs(item.start_at).format('DD-MM-YYYY')}
+              </span>
+              )
             </>
           ),
           dataIndex: item.code,
@@ -121,20 +133,27 @@ const ListSubjectRegistrationV: FC = () => {
     setGroup(val ? Number(val) : undefined)
   }
 
-  const handleTableChange: TableProps<ISubjectRegistrationInResponse>['onChange'] = (_pagination, _filters, sorter) => {
-    if (!isArray(sorter) && sorter?.order) {
-      setSort(sorter.order as ESort)
-      setSortBy(sorter.field as string)
-    } else {
-      setSort(undefined)
-      setSortBy(undefined)
+  const handleTableChange: TableProps<ISubjectRegistrationInResponse>['onChange'] =
+    (_pagination, _filters, sorter) => {
+      if (!isArray(sorter) && sorter?.order) {
+        setSort(sorter.order as ESort)
+        setSortBy(sorter.field as string)
+      } else {
+        setSort(undefined)
+        setSortBy(undefined)
+      }
     }
-  }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
         <Select
           options={Array.from({ length: 15 }, (_, index) => ({
             value: String(index + 1),
@@ -149,7 +168,9 @@ const ListSubjectRegistrationV: FC = () => {
         />
       </div>
 
-      <div className='mb-4 flex items-center justify-between font-semibold'>{paging.total} học viên</div>
+      <div className='mb-4 flex items-center justify-between font-semibold'>
+        {paging.total} học viên
+      </div>
       <Table
         showSorterTooltip={{ target: 'sorter-icon' }}
         onChange={handleTableChange}
@@ -162,7 +183,7 @@ const ListSubjectRegistrationV: FC = () => {
         scroll={{ x: 2000 }}
         bordered
       />
-    </div>
+    </>
   )
 }
 

@@ -1,18 +1,21 @@
-import { userInfoState } from '@atom/authAtom'
-import { OPTIONS_DOCUMENT_LABEL, OPTIONS_DOCUMENT_TYPE } from '@constants/document'
-import { OPTIONS_ROLE } from '@constants/index'
-import { EAdminRoleDetail } from '@domain/admin/type'
-import { IDocumentInResponse } from '@domain/document'
-import { isSuperAdmin } from '@src/utils'
+import React, { FC, useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useUpdateDocument } from '@/apis/document/useMutationDocument'
+import { userInfoState } from '@/atom/authAtom'
+import { EAdminRoleDetail } from '@/domain/admin/type'
+import { IDocumentInResponse } from '@/domain/document'
+import { UploadOutlined } from '@ant-design/icons'
+import type { UploadProps } from 'antd'
 import { Button, Form, Input, Modal, Select, Upload } from 'antd'
 import { isObject } from 'lodash'
-import React, { FC, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
-import type { UploadProps } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
-import { useQueryClient } from '@tanstack/react-query'
-import { useUpdateDocument } from '@src/apis/document/useMutationDocument'
+import { isSuperAdmin } from '@/lib/utils'
+import {
+  OPTIONS_DOCUMENT_LABEL,
+  OPTIONS_DOCUMENT_TYPE,
+} from '@/constants/document'
+import { OPTIONS_ROLE } from '@/constants/index'
 
 interface IProps {
   open: IDocumentInResponse
@@ -75,13 +78,29 @@ const ModalUpdate: FC<IProps> = ({ open, setOpen }) => {
   }
 
   return (
-    <Modal title={'Sửa'} open={!!open} onOk={handleOk} confirmLoading={isPending} onCancel={handleCancel} cancelText='Hủy' okText={'Sửa'}>
-      <Form layout='vertical' form={form} name='form-update-doc' initialValues={open}>
+    <Modal
+      title={'Sửa'}
+      open={!!open}
+      onOk={handleOk}
+      confirmLoading={isPending}
+      onCancel={handleCancel}
+      cancelText='Hủy'
+      okText={'Sửa'}
+    >
+      <Form
+        layout='vertical'
+        form={form}
+        name='form-update-doc'
+        initialValues={open}
+      >
         <Form.Item name='name' label='Tên'>
           <Input placeholder='Tên tài liệu' />
         </Form.Item>
         <Form.Item name='type' label='Loại'>
-          <Select placeholder='Chọn loại tài liệu' options={OPTIONS_DOCUMENT_TYPE} />
+          <Select
+            placeholder='Chọn loại tài liệu'
+            options={OPTIONS_DOCUMENT_TYPE}
+          />
         </Form.Item>
         <Form.Item label='Mô tả' name='description'>
           <Input.TextArea rows={3} placeholder='Nhập mô tả' />
@@ -92,14 +111,18 @@ const ModalUpdate: FC<IProps> = ({ open, setOpen }) => {
             options={optionsRole}
             showSearch
             filterOption={(input, option) =>
-              isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+              isObject(option) &&
+              (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+                option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
             }
           />
         </Form.Item>
         <Form.Item name='label' label='Nhãn tài liệu'>
           <Select
             filterOption={(input, option) =>
-              isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+              isObject(option) &&
+              (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+                option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
             }
             placeholder='Chọn nhãn tài liệu'
             options={OPTIONS_DOCUMENT_LABEL}
@@ -107,7 +130,13 @@ const ModalUpdate: FC<IProps> = ({ open, setOpen }) => {
             allowClear
           />
         </Form.Item>
-        {!(open?.mimeType && ['application/vnd.google-apps.document', 'application/vnd.google-apps.spreadsheet'].includes(open.mimeType)) && (
+        {!(
+          open?.mimeType &&
+          [
+            'application/vnd.google-apps.document',
+            'application/vnd.google-apps.spreadsheet',
+          ].includes(open.mimeType)
+        ) && (
           <Form.Item name='file' label='Sửa file'>
             <Upload maxCount={1} {...props}>
               <Button icon={<UploadOutlined />}>Chọn file</Button>

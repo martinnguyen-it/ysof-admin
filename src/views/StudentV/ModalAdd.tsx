@@ -1,13 +1,16 @@
-import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
-import { isEmpty } from 'lodash'
 import React, { Dispatch, FC, useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
-import { IOpenFormWithMode } from '@domain/common'
-import { IStudentInResponse } from '@domain/student'
-import { OPTION_SEX } from '@constants/student'
-import dayjs from 'dayjs'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCreateStudent, useUpdateStudent } from '@src/apis/student/useMutationStudent'
+import {
+  useCreateStudent,
+  useUpdateStudent,
+} from '@/apis/student/useMutationStudent'
+import { IOpenFormWithMode } from '@/domain/common'
+import { IStudentInResponse } from '@/domain/student'
+import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
+import dayjs from 'dayjs'
+import { isEmpty } from 'lodash'
+import { toast } from 'react-toastify'
+import { OPTION_SEX } from '@/constants/student'
 
 interface IProps {
   open: IOpenFormWithMode<IStudentInResponse>
@@ -29,8 +32,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
     setOpen({ active: false, mode: 'add' })
   }
 
-  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateStudent(onSuccess)
-  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateStudent(onSuccess)
+  const { mutate: mutateCreate, isPending: isPendingCreate } =
+    useCreateStudent(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } =
+    useUpdateStudent(onSuccess)
 
   const handleOk = async () => {
     try {
@@ -58,7 +63,9 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
       form.setFieldsValue({
         ...open.item,
         date_of_birth: undefined,
-        date_of_birth_temp: open.item.date_of_birth ? dayjs(open.item.date_of_birth, 'YYYY-MM-DD') : undefined,
+        date_of_birth_temp: open.item.date_of_birth
+          ? dayjs(open.item.date_of_birth, 'YYYY-MM-DD')
+          : undefined,
         numerical_order: open.item.seasons_info[lenSeasons - 1].numerical_order,
         group: open.item.seasons_info[lenSeasons - 1].group,
       })
@@ -66,7 +73,9 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   }, [open])
 
   const onChangeDateOfBirth: DatePickerProps['onChange'] = (_, dateString) => {
-    setDateOfBirth(dayjs(dateString as unknown as string, 'DD/MM/YYYY').format('YYYY-MM-DD'))
+    setDateOfBirth(
+      dayjs(dateString as unknown as string, 'DD/MM/YYYY').format('YYYY-MM-DD')
+    )
   }
 
   return (
@@ -80,7 +89,12 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
       cancelText='Hủy'
       okText={open.item ? 'Sửa' : 'Thêm'}
     >
-      <Form layout='vertical' form={form} name='form-add-student' className='grid grid-cols-1 gap-x-3 sm:grid-cols-2'>
+      <Form
+        layout='vertical'
+        form={form}
+        name='form-add-student'
+        className='grid grid-cols-1 gap-x-3 sm:grid-cols-2'
+      >
         <Form.Item
           name='numerical_order'
           label='MSHV'

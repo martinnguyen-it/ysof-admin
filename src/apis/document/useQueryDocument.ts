@@ -1,10 +1,17 @@
-import { IDocumentInResponse, IListDocumentInResponse, IParamsGetListDocument } from '@domain/document'
-import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
-import { getDocumentDetail, getListDocuments } from '@src/services/document'
-import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
+import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import {
+  IDocumentInResponse,
+  IListDocumentInResponse,
+  IParamsGetListDocument,
+} from '@/domain/document'
+import { getDocumentDetail, getListDocuments } from '@/services/document'
+import { useQueryErrorToast } from '@/hooks/useQueryErrorToast'
 
-export const useGetListDocuments = (params?: IParamsGetListDocument, props?: Partial<UseQueryOptions<IListDocumentInResponse, AxiosError>>) => {
+export const useGetListDocuments = (
+  params?: IParamsGetListDocument,
+  props?: Partial<UseQueryOptions<IListDocumentInResponse, AxiosError>>
+) => {
   const query = useQuery<IListDocumentInResponse, AxiosError>({
     queryKey: ['getListDocuments', params],
     queryFn: () => getListDocuments(params),

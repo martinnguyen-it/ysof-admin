@@ -1,22 +1,25 @@
-import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
-import { isEmpty, size } from 'lodash'
 import React, { Dispatch, FC, useEffect, useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useGetListDocuments } from '@/apis/document/useQueryDocument'
+import { useGetListLecturers } from '@/apis/lecturer/useQueryLecturer'
+import {
+  useCreateSubject,
+  useUpdateSubject,
+} from '@/apis/subject/useMutationSubject'
+import { userInfoState } from '@/atom/authAtom'
+import { currentSeasonState } from '@/atom/seasonAtom'
+import { EAdminRole } from '@/domain/admin/type'
+import { IOpenFormWithMode } from '@/domain/common'
+import { EDocumentType } from '@/domain/document'
+import { ISubjectInResponse } from '@/domain/subject'
+import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
+import dayjs from 'dayjs'
+import { isEmpty, size } from 'lodash'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
-import { useDebounce } from '@src/hooks/useDebounce'
-import { IOpenFormWithMode } from '@domain/common'
-import { ISubjectInResponse } from '@domain/subject'
-import { currentSeasonState } from '@atom/seasonAtom'
-import { OPTIONS_SUBDIVISION } from '@constants/subject'
-import dayjs from 'dayjs'
-import { userInfoState } from '@atom/authAtom'
-import { EAdminRole } from '@domain/admin/type'
-import { isSuperAdmin } from '@src/utils'
-import { useGetListLecturers } from '@src/apis/lecturer/useQueryLecturer'
-import { useGetListDocuments } from '@src/apis/document/useQueryDocument'
-import { EDocumentType } from '@domain/document'
-import { useCreateSubject, useUpdateSubject } from '@src/apis/subject/useMutationSubject'
-import { useQueryClient } from '@tanstack/react-query'
+import { isSuperAdmin } from '@/lib/utils'
+import { OPTIONS_SUBDIVISION } from '@/constants/subject'
+import { useDebounce } from '@/hooks/useDebounce'
 
 interface IProps {
   open: IOpenFormWithMode<ISubjectInResponse>
@@ -34,14 +37,20 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   const searchDocDebounce = useDebounce(searchDocuments, 300)
   const searchLecturerDebounce = useDebounce(searchLecturers, 300)
 
-  const { data: lecturers, isPending: loadingGetLecturers } = useGetListLecturers({ search: searchLecturerDebounce })
+  const { data: lecturers, isPending: loadingGetLecturers } =
+    useGetListLecturers({ search: searchLecturerDebounce })
 
-  const { data: documents, isPending: loadingGetDocuments } = useGetListDocuments(
-    { search: searchDocDebounce, season: currentSeason?.season, type: EDocumentType.STUDENT },
-    {
-      enabled: !!currentSeason?.season,
-    },
-  )
+  const { data: documents, isPending: loadingGetDocuments } =
+    useGetListDocuments(
+      {
+        search: searchDocDebounce,
+        season: currentSeason?.season,
+        type: EDocumentType.STUDENT,
+      },
+      {
+        enabled: !!currentSeason?.season,
+      }
+    )
 
   const queryClient = useQueryClient()
 
@@ -54,8 +63,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
     setOpen({ active: false, mode: 'add' })
   }
 
-  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateSubject(onSuccess)
-  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateSubject(onSuccess)
+  const { mutate: mutateCreate, isPending: isPendingCreate } =
+    useCreateSubject(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } =
+    useUpdateSubject(onSuccess)
 
   const handleOk = async () => {
     try {
@@ -80,13 +91,16 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
             value: item.id,
             label: (
               <span className='flex items-center'>
-                <img className='mr-1 size-4 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}></img>
+                <img
+                  className='mr-1 size-4 object-cover'
+                  src={`https://drive-thirdparty.googleusercontent.com/64/type/${item?.mimeType}`}
+                ></img>
                 {item.name}
               </span>
             ),
           }))
         : [],
-    [documents],
+    [documents]
   )
 
   const lecturerOptions = useMemo(
@@ -96,7 +110,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
             value: item.id,
             label: (
               <span className='flex items-center'>
-                <img className='mr-1 size-4 object-cover' src={item?.avatar || '/images/avatar.png'}></img>
+                <img
+                  className='mr-1 size-4 object-cover'
+                  src={item?.avatar || '/images/avatar.png'}
+                ></img>
                 {item?.title ? item.title + ' ' : ''}
                 {item?.holy_name ? item.holy_name + ' ' : ''}
                 {item.full_name}
@@ -104,7 +121,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
             ),
           }))
         : [],
-    [lecturers],
+    [lecturers]
   )
 
   const handleCancel = () => {
@@ -115,7 +132,9 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
     if (open?.item) {
       form.setFieldsValue({
         ...open.item,
-        attachments: open.item?.attachments ? open.item.attachments.map((item) => item.id) : [],
+        attachments: open.item?.attachments
+          ? open.item.attachments.map((item) => item.id)
+          : [],
         lecturer: open.item.lecturer.id,
         date_start_at: dayjs(open.item.start_at, 'YYYY-MM-DD'),
       })
@@ -131,7 +150,9 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
   }
 
   const onChangeStartAt: DatePickerProps['onChange'] = (_, dateString) => {
-    setStartAt(dayjs(dateString as unknown as string, 'DD/MM/YYYY').format('YYYY-MM-DD'))
+    setStartAt(
+      dayjs(dateString as unknown as string, 'DD/MM/YYYY').format('YYYY-MM-DD')
+    )
   }
 
   return (
@@ -145,7 +166,12 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
       className='sm:!w-[70vw] lg:!w-[60vw]'
       okText={open.item ? 'Sửa' : 'Thêm'}
     >
-      <Form layout='vertical' form={form} name='form-subject' className='grid grid-cols-1 gap-x-3 sm:grid-cols-2'>
+      <Form
+        layout='vertical'
+        form={form}
+        name='form-subject'
+        className='grid grid-cols-1 gap-x-3 sm:grid-cols-2'
+      >
         {(userInfo.roles.includes(EAdminRole.BHV) || isSuperAdmin(true)) && (
           <>
             <Form.Item
@@ -182,7 +208,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
                 },
               ]}
             >
-              <Select placeholder='Chọn phân môn' options={OPTIONS_SUBDIVISION} />
+              <Select
+                placeholder='Chọn phân môn'
+                options={OPTIONS_SUBDIVISION}
+              />
             </Form.Item>
             <Form.Item
               name='date_start_at'
@@ -230,7 +259,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
                 loading={loadingGetDocuments}
               />
             </Form.Item>
-            <Form.Item name='documents_url' label='Link tài liệu đính kèm ngoài'>
+            <Form.Item
+              name='documents_url'
+              label='Link tài liệu đính kèm ngoài'
+            >
               <Select placeholder='Link tài liệu' mode='tags' allowClear />
             </Form.Item>
             <Form.Item name='abstract' label='Mô tả'>

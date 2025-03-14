@@ -4,3 +4,6 @@
 .gitignore
 Dockerfile
 .editorconfig
+
+dist/*
+dist

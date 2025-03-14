@@ -1,5 +1,5 @@
-import { IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
-import { IStudentSeason } from '@domain/student'
+import { IPaginationAPI, IPaginationAPIParams, ISort } from '@/domain/common'
+import { IStudentSeason } from '@/domain/student'
 
 export interface IQualityEvaluation {
   focused_right_topic: EQualityValue
@@ -59,7 +59,9 @@ export enum EQualityValue {
   STRONGLY_AGREE = 'Hoàn toàn đồng ý',
 }
 
-export interface IParamsGetListSubjectEvaluation extends ISort, IPaginationAPIParams {
+export interface IParamsGetListSubjectEvaluation
+  extends ISort,
+    IPaginationAPIParams {
   group?: number
   search?: string
   subject_id: string

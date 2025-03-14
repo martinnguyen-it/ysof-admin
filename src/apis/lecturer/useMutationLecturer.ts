@@ -1,6 +1,10 @@
-import { ICreateLecturer, IUpdateLecturer } from '@domain/lecturer'
-import { createLecturer, deleteLecturer, updateLecturer } from '@src/services/lecturer'
 import { useMutation } from '@tanstack/react-query'
+import { ICreateLecturer, IUpdateLecturer } from '@/domain/lecturer'
+import {
+  createLecturer,
+  deleteLecturer,
+  updateLecturer,
+} from '@/services/lecturer'
 import { toast } from 'react-toastify'
 
 export const useCreateLecturer = (onSuccess: () => void) =>
@@ -15,7 +19,8 @@ export const useCreateLecturer = (onSuccess: () => void) =>
 
 export const useUpdateLecturer = (onSuccess: () => void) =>
   useMutation({
-    mutationFn: (payload: { id: string; data: IUpdateLecturer }) => updateLecturer(payload.id, payload.data),
+    mutationFn: (payload: { id: string; data: IUpdateLecturer }) =>
+      updateLecturer(payload.id, payload.data),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error

@@ -1,5 +1,5 @@
-import { EAdminRole, IAdminShort } from '@domain/admin/type'
-import { IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
+import { EAdminRole, IAdminShort } from '@/domain/admin/type'
+import { IPaginationAPI, IPaginationAPIParams, ISort } from '@/domain/common'
 
 export interface IDocumentInResponse {
   file_id: string

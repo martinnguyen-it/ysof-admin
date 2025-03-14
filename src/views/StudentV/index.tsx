@@ -1,29 +1,31 @@
+import { FC, MouseEvent, useEffect, useState } from 'react'
+import { useGetListStudents } from '@/apis/student/useQueryStudent'
+import { userInfoState } from '@/atom/authAtom'
+import { currentSeasonState } from '@/atom/seasonAtom'
+import { EAdminRole } from '@/domain/admin/type'
+import { ESort, IOpenForm, IOpenFormWithMode } from '@/domain/common'
+import { IStudentInResponse } from '@/domain/student'
 import { FileAddOutlined, ImportOutlined } from '@ant-design/icons'
-import { ESort, IOpenForm, IOpenFormWithMode } from '@domain/common'
+import type { TableProps } from 'antd'
 import { Button, Flex, Input, Pagination, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
-import { FC, MouseEvent, useEffect, useState } from 'react'
-import { useRecoilValue } from 'recoil'
-import { userInfoState } from '@atom/authAtom'
-import { isArray } from 'lodash'
 import dayjs from 'dayjs'
-import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
-import ModalDelete from './ModalDelete'
-import { currentSeasonState } from '@atom/seasonAtom'
-import { isSuperAdmin } from '@src/utils'
-import { EAdminRole } from '@domain/admin/type'
-import { IStudentInResponse } from '@domain/student'
+import { isArray } from 'lodash'
+import { useRecoilValue } from 'recoil'
+import { isSuperAdmin } from '@/lib/utils'
+import { PAGE_SIZE_OPTIONS_DEFAULT } from '@/constants/index'
 import ModalAdd from './ModalAdd'
+import ModalDelete from './ModalDelete'
 import ModalImport from './ModalImport'
-import { useGetListStudents } from '@src/apis/student/useQueryStudent'
+
 // import ModalView from './ModalView'
 
 const StudentV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
-  const [openForm, setOpenForm] = useState<IOpenFormWithMode<IStudentInResponse>>({ active: false, mode: 'add' })
+  const [openForm, setOpenForm] = useState<
+    IOpenFormWithMode<IStudentInResponse>
+  >({ active: false, mode: 'add' })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
   const [openImport, setOpenImport] = useState(false)
 
@@ -49,7 +51,10 @@ const StudentV: FC = () => {
 
   useEffect(() => {
     if (data) {
-      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+      setPaging({
+        current: data.pagination.page_index,
+        total: data.pagination.total,
+      })
     }
   }, [data])
 
@@ -85,7 +90,10 @@ const StudentV: FC = () => {
       key: 'numerical_order',
       width: '80px',
       sorter: true,
-      render: (_, record: IStudentInResponse) => String(record.seasons_info[record.seasons_info.length - 1].numerical_order).padStart(3, '0'),
+      render: (_, record: IStudentInResponse) =>
+        String(
+          record.seasons_info[record.seasons_info.length - 1].numerical_order
+        ).padStart(3, '0'),
     },
     {
       title: 'Nhóm',
@@ -93,7 +101,8 @@ const StudentV: FC = () => {
       key: 'group',
       sorter: true,
       width: '80px',
-      render: (_, record: IStudentInResponse) => record.seasons_info[record.seasons_info.length - 1].group,
+      render: (_, record: IStudentInResponse) =>
+        record.seasons_info[record.seasons_info.length - 1].group,
     },
     {
       title: 'Họ tên',
@@ -171,7 +180,12 @@ const StudentV: FC = () => {
       render: (_, data: IStudentInResponse) => {
         return (
           <Flex gap='small' wrap='wrap'>
-            <Button color='' type='primary' id={data.id} onClick={onClickUpdate} className='!bg-yellow-400 hover:opacity-80'>
+            <Button
+              type='primary'
+              id={data.id}
+              onClick={onClickUpdate}
+              className='!bg-yellow-400 hover:opacity-80'
+            >
               Sửa
             </Button>
             <Button type='primary' id={data.id} onClick={onClickDelete} danger>
@@ -180,7 +194,13 @@ const StudentV: FC = () => {
           </Flex>
         )
       },
-      hidden: !userInfo || !((userInfo.roles.includes(EAdminRole.BKL) && userInfo?.seasons.includes(currentSeason?.season)) || isSuperAdmin(true)),
+      hidden:
+        !userInfo ||
+        !(
+          (userInfo.roles.includes(EAdminRole.BKL) &&
+            userInfo?.seasons.includes(currentSeason?.season)) ||
+          isSuperAdmin(true)
+        ),
     },
   ]
 
@@ -195,7 +215,11 @@ const StudentV: FC = () => {
     setGroup(val ? Number(val) : undefined)
   }
 
-  const handleTableChange: TableProps<IStudentInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<IStudentInResponse>['onChange'] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -206,9 +230,15 @@ const StudentV: FC = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
         <Select
           options={Array.from({ length: 15 }, (_, index) => ({
             value: String(index + 1),
@@ -240,16 +270,29 @@ const StudentV: FC = () => {
           showQuickJumper
           showSizeChanger
         />
-        {userInfo && ((userInfo.latest_season === currentSeason?.season && userInfo.roles.includes(EAdminRole.BKL)) || isSuperAdmin(true)) && (
-          <div className='mb-4 flex justify-end gap-3'>
-            <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
-              Thêm
-            </Button>
-            <Button type='primary' icon={<ImportOutlined />} onClick={onClickImport} size={'middle'}>
-              Import từ Google Spreadsheet
-            </Button>
-          </div>
-        )}
+        {userInfo &&
+          ((userInfo.latest_season === currentSeason?.season &&
+            userInfo.roles.includes(EAdminRole.BKL)) ||
+            isSuperAdmin(true)) && (
+            <div className='mb-4 flex justify-end gap-3'>
+              <Button
+                type='primary'
+                icon={<FileAddOutlined />}
+                onClick={onClickAdd}
+                size={'middle'}
+              >
+                Thêm
+              </Button>
+              <Button
+                type='primary'
+                icon={<ImportOutlined />}
+                onClick={onClickImport}
+                size={'middle'}
+              >
+                Import từ Google Spreadsheet
+              </Button>
+            </div>
+          )}
       </div>
       <Table
         showSorterTooltip={{ target: 'sorter-icon' }}
@@ -271,11 +314,13 @@ const StudentV: FC = () => {
         }}
       />
 
-      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} />}
+      {openForm.active && openForm.mode !== 'view' && (
+        <ModalAdd open={openForm} setOpen={setOpenForm} />
+      )}
       {/* {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />} */}
       <ModalImport open={openImport} setOpen={setOpenImport} />
       {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
-    </div>
+    </>
   )
 }
 

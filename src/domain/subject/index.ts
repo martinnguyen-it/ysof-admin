@@ -1,6 +1,6 @@
-import { ISort } from '@domain/common'
-import { IDocumentInResponse } from '@domain/document'
-import { ILecturerInResponse } from '@domain/lecturer'
+import { ISort } from '@/domain/common'
+import { IDocumentInResponse } from '@/domain/document'
+import { ILecturerInResponse } from '@/domain/lecturer'
 
 export interface ISubjectInResponse {
   created_at: Date

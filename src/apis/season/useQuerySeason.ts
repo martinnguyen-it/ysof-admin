@@ -1,9 +1,13 @@
-import { IPaginationAPIParams, ISort } from '@domain/common'
-import { ISeasonResponse } from '@domain/season'
-import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
-import { getCurrentSeason, getListSeasons, getSeasonById } from '@src/services/season'
-import { useQuery } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
+import { useQuery } from '@tanstack/react-query'
+import { IPaginationAPIParams, ISort } from '@/domain/common'
+import { ISeasonResponse } from '@/domain/season'
+import {
+  getCurrentSeason,
+  getListSeasons,
+  getSeasonById,
+} from '@/services/season'
+import { useQueryErrorToast } from '@/hooks/useQueryErrorToast'
 
 export const useGetListSeasons = (params?: IPaginationAPIParams & ISort) => {
   const query = useQuery<ISeasonResponse[], AxiosError>({

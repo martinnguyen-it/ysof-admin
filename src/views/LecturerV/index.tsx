@@ -1,28 +1,29 @@
+import { FC, MouseEvent, useEffect, useState } from 'react'
+import { useGetListLecturers } from '@/apis/lecturer/useQueryLecturer'
+import { userInfoState } from '@/atom/authAtom'
+import { currentSeasonState, selectSeasonState } from '@/atom/seasonAtom'
+import { EAdminRole } from '@/domain/admin/type'
+import { ESort, IOpenForm, IOpenFormWithMode } from '@/domain/common'
+import { ILecturerInResponse } from '@/domain/lecturer'
 import { FileAddOutlined } from '@ant-design/icons'
-import { ESort, IOpenForm, IOpenFormWithMode } from '@domain/common'
+import type { TableProps } from 'antd'
 import { Button, Flex, Input, Pagination } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
-import { FC, MouseEvent, useEffect, useState } from 'react'
-import { useRecoilValue } from 'recoil'
-import { userInfoState } from '@atom/authAtom'
-import { isArray } from 'lodash'
 import dayjs from 'dayjs'
-import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
-import ModalDelete from './ModalDelete'
-import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
-import { isSuperAdmin } from '@src/utils'
-import { EAdminRole } from '@domain/admin/type'
-import { ILecturerInResponse } from '@domain/lecturer'
+import { isArray } from 'lodash'
+import { useRecoilValue } from 'recoil'
+import { isSuperAdmin } from '@/lib/utils'
+import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@/constants/index'
 import ModalAdd from './ModalAdd'
+import ModalDelete from './ModalDelete'
 import ModalView from './ModalView'
-import { useGetListLecturers } from '@src/apis/lecturer/useQueryLecturer'
 
 const LecturerV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
-  const [openForm, setOpenForm] = useState<IOpenFormWithMode<ILecturerInResponse>>({ active: false, mode: 'add' })
+  const [openForm, setOpenForm] = useState<
+    IOpenFormWithMode<ILecturerInResponse>
+  >({ active: false, mode: 'add' })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
 
   const initPaging = {
@@ -48,7 +49,10 @@ const LecturerV: FC = () => {
 
   useEffect(() => {
     if (data) {
-      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+      setPaging({
+        current: data.pagination.page_index,
+        total: data.pagination.total,
+      })
     }
   }, [data])
 
@@ -78,7 +82,8 @@ const LecturerV: FC = () => {
       dataIndex: 'index',
       key: 'index',
       width: '60px',
-      render: (_text, _record, index) => index + 1 + (paging.current - 1) * tableQueries.pageSize,
+      render: (_text, _record, index) =>
+        index + 1 + (paging.current - 1) * tableQueries.pageSize,
     },
     {
       title: 'Họ tên',
@@ -104,14 +109,18 @@ const LecturerV: FC = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
     {
       title: 'Ngày sửa',
       dataIndex: 'updated_at',
       key: 'updated_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
     {
       title: 'Hành động',
@@ -121,7 +130,12 @@ const LecturerV: FC = () => {
       render: (_, data: ILecturerInResponse) => {
         return (
           <Flex gap='small' wrap='wrap'>
-            <Button color='' type='primary' id={data.id} onClick={onClickUpdate} className='!bg-yellow-400 hover:opacity-80'>
+            <Button
+              type='primary'
+              id={data.id}
+              onClick={onClickUpdate}
+              className='!bg-yellow-400 hover:opacity-80'
+            >
               Sửa
             </Button>
             <Button type='primary' id={data.id} onClick={onClickDelete} danger>
@@ -130,7 +144,9 @@ const LecturerV: FC = () => {
           </Flex>
         )
       },
-      hidden: !userInfo || !(userInfo.roles.includes(EAdminRole.BHV) || isSuperAdmin(true)),
+      hidden:
+        !userInfo ||
+        !(userInfo.roles.includes(EAdminRole.BHV) || isSuperAdmin(true)),
     },
   ]
 
@@ -142,7 +158,11 @@ const LecturerV: FC = () => {
     setSearch(val)
   }
 
-  const handleTableChange: TableProps<ILecturerInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<ILecturerInResponse>['onChange'] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -153,18 +173,32 @@ const LecturerV: FC = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
       </div>
 
-      {userInfo && ((userInfo.latest_season === currentSeason.season && userInfo.roles.includes(EAdminRole.BHV)) || isSuperAdmin(true)) && (
-        <div className='mb-4 flex justify-end'>
-          <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
-            Thêm
-          </Button>
-        </div>
-      )}
+      {userInfo &&
+        ((userInfo.latest_season === currentSeason.season &&
+          userInfo.roles.includes(EAdminRole.BHV)) ||
+          isSuperAdmin(true)) && (
+          <div className='mb-4 flex justify-end'>
+            <Button
+              type='primary'
+              icon={<FileAddOutlined />}
+              onClick={onClickAdd}
+              size={'middle'}
+            >
+              Thêm
+            </Button>
+          </div>
+        )}
       <Table
         showSorterTooltip={{ target: 'sorter-icon' }}
         onChange={handleTableChange}
@@ -200,10 +234,14 @@ const LecturerV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} />}
-      {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />}
+      {openForm.active && openForm.mode !== 'view' && (
+        <ModalAdd open={openForm} setOpen={setOpenForm} />
+      )}
+      {openForm.active && openForm.mode === 'view' && (
+        <ModalView open={openForm} setOpen={setOpenForm} />
+      )}
       {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
-    </div>
+    </>
   )
 }
 

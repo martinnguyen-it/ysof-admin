@@ -1,6 +1,6 @@
-import { IChangePassword, ILoginResponse } from '@domain/auth/type'
-import { updatePassword } from '@src/services/auth'
 import { useMutation } from '@tanstack/react-query'
+import { IChangePassword, ILoginResponse } from '@/domain/auth/type'
+import { updatePassword } from '@/services/auth'
 import { toast } from 'react-toastify'
 
 export const useUpdatePassword = (onSuccess: (data: ILoginResponse) => void) =>

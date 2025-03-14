@@ -1,4 +1,4 @@
-import { IStudentInResponse } from '@domain/student'
+import { IStudentInResponse } from '@/domain/student'
 import { ISubjectInEvaluation } from './subjectEvaluation'
 
 export interface ISubjectAbsentInResponse {
@@ -23,4 +23,5 @@ export interface ICreateSubjectAbsentInPayload {
   data: ICreateSubjectAbsent
 }
 
-export interface IUpdateSubjectAbsentInPayload extends ICreateSubjectAbsentInPayload {}
+export interface IUpdateSubjectAbsentInPayload
+  extends ICreateSubjectAbsentInPayload {}

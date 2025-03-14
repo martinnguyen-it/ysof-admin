@@ -1,22 +1,30 @@
-import { ESort, IOpenFormWithMode } from '@domain/common'
+import { FC, useEffect, useState } from 'react'
+import { useGetListAuditLogs } from '@/apis/auditLog/useGetListAuditLogs'
+import { selectSeasonState } from '@/atom/seasonAtom'
+import { EAdminRole, EAdminRoleDetail } from '@/domain/admin/type'
+import {
+  EAuditLogEndPoint,
+  EAuditLogType,
+  IAuditLogInResponse,
+} from '@/domain/auditLog'
+import { ESort, IOpenFormWithMode } from '@/domain/common'
+import type { TableProps } from 'antd'
 import { Input, Pagination, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
-import { FC, useEffect, useState } from 'react'
-import { useRecoilValue } from 'recoil'
-import { isArray, isObject } from 'lodash'
 import dayjs from 'dayjs'
-import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
-import { selectSeasonState } from '@atom/seasonAtom'
+import { isArray, isObject } from 'lodash'
+import { useRecoilValue } from 'recoil'
+import {
+  OPTIONS_AUDIT_LOG_ENDPOINT,
+  OPTIONS_AUDIT_LOG_TYPE,
+} from '@/constants/auditLog'
+import { PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@/constants/index'
 import ModalView from './ModalView'
-import { EAuditLogEndPoint, EAuditLogType, IAuditLogInResponse } from '@domain/auditLog'
-import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
-import { OPTIONS_AUDIT_LOG_ENDPOINT, OPTIONS_AUDIT_LOG_TYPE } from '@constants/auditLog'
-import { useGetListAuditLogs } from '@src/apis/auditLog/useGetListAuditLogs'
 
 const AuditLogV: FC = () => {
-  const [openForm, setOpenForm] = useState<IOpenFormWithMode<IAuditLogInResponse>>({ active: false, mode: 'view' })
+  const [openForm, setOpenForm] = useState<
+    IOpenFormWithMode<IAuditLogInResponse>
+  >({ active: false, mode: 'view' })
 
   const initPaging = {
     current: 1,
@@ -48,7 +56,10 @@ const AuditLogV: FC = () => {
 
   useEffect(() => {
     if (data) {
-      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+      setPaging({
+        current: data.pagination.page_index,
+        total: data.pagination.total,
+      })
     }
   }, [data])
 
@@ -58,21 +69,29 @@ const AuditLogV: FC = () => {
       dataIndex: 'index',
       key: 'index',
       width: '60px',
-      render: (_text, _record, index) => index + 1 + (paging.current - 1) * tableQueries.pageSize,
+      render: (_text, _record, index) =>
+        index + 1 + (paging.current - 1) * tableQueries.pageSize,
     },
     {
       title: 'Họ tên',
       dataIndex: 'author_name',
       key: 'author_name',
       sorter: true,
-      render: (_, record: IAuditLogInResponse) => <>{record?.author ? record.author.holy_name + ' ' + record.author.full_name : record.author_name}</>,
+      render: (_, record: IAuditLogInResponse) => (
+        <>
+          {record?.author
+            ? record.author.holy_name + ' ' + record.author.full_name
+            : record.author_name}
+        </>
+      ),
     },
     {
       title: 'Thuộc ban',
       dataIndex: 'author_roles',
       sorter: true,
       key: 'author_roles',
-      render: (text: EAdminRole[]) => text.map((item) => EAdminRoleDetail[item]).join(', '),
+      render: (text: EAdminRole[]) =>
+        text.map((item) => EAdminRoleDetail[item]).join(', '),
     },
     {
       title: 'Loại',
@@ -98,7 +117,9 @@ const AuditLogV: FC = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
   ]
 
@@ -116,7 +137,11 @@ const AuditLogV: FC = () => {
     setEndpoint(val)
   }
 
-  const handleTableChange: TableProps<IAuditLogInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<IAuditLogInResponse>['onChange'] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -127,23 +152,40 @@ const AuditLogV: FC = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
         <Select
           className='w-60'
           size='large'
           placeholder='Lọc theo endpoint'
           onChange={onChangeEndpoint}
           filterOption={(input, option) =>
-            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            isObject(option) &&
+            (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+              option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
           }
           value={endpoint}
           options={OPTIONS_AUDIT_LOG_ENDPOINT}
           allowClear
           showSearch
         />
-        <Select className='w-60' size='large' placeholder='Lọc theo loại' onChange={onChangeType} value={type} options={OPTIONS_AUDIT_LOG_TYPE} allowClear showSearch />
+        <Select
+          className='w-60'
+          size='large'
+          placeholder='Lọc theo loại'
+          onChange={onChangeType}
+          value={type}
+          options={OPTIONS_AUDIT_LOG_TYPE}
+          allowClear
+          showSearch
+        />
       </div>
 
       <Table
@@ -182,7 +224,7 @@ const AuditLogV: FC = () => {
         showSizeChanger
       />
       {openForm.active && <ModalView open={openForm} setOpen={setOpenForm} />}
-    </div>
+    </>
   )
 }
 

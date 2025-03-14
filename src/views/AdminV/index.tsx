@@ -1,26 +1,32 @@
+import { FC, MouseEvent, useEffect, useState } from 'react'
+import { useGetListAdmins } from '@/apis/admin/useQueryAdmin'
+import { userInfoState } from '@/atom/authAtom'
+import { selectSeasonState } from '@/atom/seasonAtom'
+import {
+  EAdminRole,
+  EAdminRoleDetail,
+  IAdminInResponse,
+} from '@/domain/admin/type'
+import { ESort, IOpenFormWithMode } from '@/domain/common'
 import { FileAddOutlined } from '@ant-design/icons'
-import { ESort, IOpenFormWithMode } from '@domain/common'
+import type { TableProps } from 'antd'
 import { Button, Flex, Input, Pagination } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
-import { FC, MouseEvent, useEffect, useState } from 'react'
-import { useRecoilValue } from 'recoil'
-import { userInfoState } from '@atom/authAtom'
-import { isArray } from 'lodash'
 import dayjs from 'dayjs'
-import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
-import { selectSeasonState } from '@atom/seasonAtom'
-import { isSuperAdmin } from '@src/utils'
-import { EAdminRole, EAdminRoleDetail, IAdminInResponse } from '@domain/admin/type'
+import { isArray } from 'lodash'
+import { useRecoilValue } from 'recoil'
+import { isSuperAdmin } from '@/lib/utils'
+import { PAGE_SIZE_OPTIONS_DEFAULT } from '@/constants/index'
 import ModalAdd from './ModalAdd'
-import { useGetListAdmins } from '@src/apis/admin/useQueryAdmin'
+
 // import ModalAdd from './ModalAdd'
 // import ModalView from './ModalView'
 
 const AdminV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
-  const [openForm, setOpenForm] = useState<IOpenFormWithMode<IAdminInResponse>>({ active: false, mode: 'add' })
+  const [openForm, setOpenForm] = useState<IOpenFormWithMode<IAdminInResponse>>(
+    { active: false, mode: 'add' }
+  )
   // const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
 
   const initPaging = {
@@ -39,11 +45,21 @@ const AdminV: FC = () => {
 
   const season = useRecoilValue(selectSeasonState)
 
-  const { data, isLoading } = useGetListAdmins({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search: search || undefined, sort, sort_by: sortBy, season })
+  const { data, isLoading } = useGetListAdmins({
+    page_index: tableQueries.current,
+    page_size: tableQueries.pageSize,
+    search: search || undefined,
+    sort,
+    sort_by: sortBy,
+    season,
+  })
 
   useEffect(() => {
     if (data) {
-      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+      setPaging({
+        current: data.pagination.page_index,
+        total: data.pagination.total,
+      })
     }
   }, [data])
 
@@ -70,7 +86,8 @@ const AdminV: FC = () => {
       key: 'index',
       align: 'center',
       width: '60px',
-      render: (_text, _record, index) => index + 1 + (paging.current - 1) * tableQueries.pageSize,
+      render: (_text, _record, index) =>
+        index + 1 + (paging.current - 1) * tableQueries.pageSize,
     },
     {
       title: 'Họ tên',
@@ -87,7 +104,8 @@ const AdminV: FC = () => {
       title: 'Thuộc ban',
       dataIndex: 'roles',
       key: 'roles',
-      render: (text: EAdminRole[]) => text.map((item) => EAdminRoleDetail[item]).join(', '),
+      render: (text: EAdminRole[]) =>
+        text.map((item) => EAdminRoleDetail[item]).join(', '),
     },
     {
       title: 'Ngày sinh',
@@ -140,7 +158,12 @@ const AdminV: FC = () => {
       render: (_, data: IAdminInResponse) => {
         return (
           <Flex gap='small' wrap='wrap'>
-            <Button color='' type='primary' id={data.id} onClick={onClickUpdate} className='!bg-yellow-400 hover:opacity-80'>
+            <Button
+              type='primary'
+              id={data.id}
+              onClick={onClickUpdate}
+              className='!bg-yellow-400 hover:opacity-80'
+            >
               Sửa
             </Button>
             {/* <Button type='primary' id={data.id} onClick={onClickDelete} danger>
@@ -161,9 +184,15 @@ const AdminV: FC = () => {
     setSearch(val)
   }
 
-  const handleTableChange: TableProps<IAdminInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<IAdminInResponse>['onChange'] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
     if (!isArray(sorter) && sorter?.order) {
-      const field = sorter.field && (isArray(sorter.field) ? sorter.field.join('.') : sorter.field)
+      const field =
+        sorter.field &&
+        (isArray(sorter.field) ? sorter.field.join('.') : sorter.field)
       setSort(sorter.order as ESort)
       setSortBy(field as string)
     } else {
@@ -173,14 +202,25 @@ const AdminV: FC = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
       </div>
 
       {userInfo && isSuperAdmin(true) && (
         <div className='mb-4 flex justify-end'>
-          <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
+          <Button
+            type='primary'
+            icon={<FileAddOutlined />}
+            onClick={onClickAdd}
+            size={'middle'}
+          >
             Thêm
           </Button>
         </div>
@@ -220,10 +260,12 @@ const AdminV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
-      {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} />}
+      {openForm.active && openForm.mode !== 'view' && (
+        <ModalAdd open={openForm} setOpen={setOpenForm} />
+      )}
       {/* {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />} */}
       {/* {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />} */}
-    </div>
+    </>
   )
 }
 

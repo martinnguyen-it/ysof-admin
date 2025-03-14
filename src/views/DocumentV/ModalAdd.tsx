@@ -1,17 +1,25 @@
-import { userInfoState } from '@atom/authAtom'
-import { OPTIONS_DOCUMENT_LABEL, OPTIONS_DOCUMENT_TYPE, OPTIONS_GOOGLE_FILE_TYPE, OPTIONS_MODE_FILE } from '@constants/document'
-import { OPTIONS_ROLE } from '@constants/index'
-import { EAdminRoleDetail } from '@domain/admin/type'
-import { isSuperAdmin } from '@src/utils'
+import React, { FC, useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import {
+  useCreateDocumentGoogle,
+  useCreateDocumentWithFile,
+} from '@/apis/document/useMutationDocument'
+import { userInfoState } from '@/atom/authAtom'
+import { EAdminRoleDetail } from '@/domain/admin/type'
+import { UploadOutlined } from '@ant-design/icons'
+import type { UploadProps } from 'antd'
 import { Button, Form, Input, Modal, Select, Upload } from 'antd'
 import { isObject } from 'lodash'
-import React, { FC, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
-import type { UploadProps } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
-import { useQueryClient } from '@tanstack/react-query'
-import { useCreateDocumentGoogle, useCreateDocumentWithFile } from '@src/apis/document/useMutationDocument'
+import { isSuperAdmin } from '@/lib/utils'
+import {
+  OPTIONS_DOCUMENT_LABEL,
+  OPTIONS_DOCUMENT_TYPE,
+  OPTIONS_GOOGLE_FILE_TYPE,
+  OPTIONS_MODE_FILE,
+} from '@/constants/document'
+import { OPTIONS_ROLE } from '@/constants/index'
 
 interface IProps {
   open: boolean
@@ -30,8 +38,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
     setOpen(false)
   }
 
-  const { mutate: mutateCreateFile, isPending: isPendingCreateWithFile } = useCreateDocumentWithFile(onSuccess)
-  const { mutate: mutateCreateGoogle, isPending: isPendingCreateWithGoogle } = useCreateDocumentGoogle(onSuccess)
+  const { mutate: mutateCreateFile, isPending: isPendingCreateWithFile } =
+    useCreateDocumentWithFile(onSuccess)
+  const { mutate: mutateCreateGoogle, isPending: isPendingCreateWithGoogle } =
+    useCreateDocumentGoogle(onSuccess)
 
   const handleOk = async () => {
     try {
@@ -122,7 +132,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
             },
           ]}
         >
-          <Select placeholder='Chọn loại tài liệu' options={OPTIONS_DOCUMENT_TYPE} />
+          <Select
+            placeholder='Chọn loại tài liệu'
+            options={OPTIONS_DOCUMENT_TYPE}
+          />
         </Form.Item>
         <Form.Item
           name='role'
@@ -137,7 +150,9 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           <Select
             showSearch
             filterOption={(input, option) =>
-              isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+              isObject(option) &&
+              (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+                option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
             }
             placeholder='Chọn ban'
             options={optionsRole}
@@ -148,7 +163,9 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
             placeholder='Chọn nhãn tài liệu'
             options={OPTIONS_DOCUMENT_LABEL}
             filterOption={(input, option) =>
-              isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+              isObject(option) &&
+              (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+                option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
             }
             mode='multiple'
             showSearch
@@ -178,7 +195,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
               },
             ]}
           >
-            <Select placeholder='Chọn kiểu file google' options={OPTIONS_GOOGLE_FILE_TYPE} />
+            <Select
+              placeholder='Chọn kiểu file google'
+              options={OPTIONS_GOOGLE_FILE_TYPE}
+            />
           </Form.Item>
         ) : (
           <Form.Item

@@ -1,17 +1,22 @@
-import { IOpenForm } from '@domain/common'
-import { ISubjectAbsentInResponse } from '@domain/subject/subjectAbsent'
-import { useGetListStudents } from '@src/apis/student/useQueryStudent'
-import { useCreateSubjectAbsents, useUpdateSubjectAbsents } from '@src/apis/subjectAbsent/useMutationSubjectAbsent'
-import { useDebounce } from '@src/hooks/useDebounce'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useGetListStudents } from '@/apis/student/useQueryStudent'
+import {
+  useCreateSubjectAbsents,
+  useUpdateSubjectAbsents,
+} from '@/apis/subjectAbsent/useMutationSubjectAbsent'
+import { IOpenForm } from '@/domain/common'
+import { ISubjectAbsentInResponse } from '@/domain/subject/subjectAbsent'
 import { Form, Input, Modal, Select } from 'antd'
 import { isEmpty, isObject } from 'lodash'
-import React, { FC, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
+import { useDebounce } from '@/hooks/useDebounce'
 
 interface IProps {
   open: Required<IOpenForm<ISubjectAbsentInResponse | string>>
-  setOpen: React.Dispatch<React.SetStateAction<Required<IOpenForm<ISubjectAbsentInResponse | string>>>>
+  setOpen: React.Dispatch<
+    React.SetStateAction<Required<IOpenForm<ISubjectAbsentInResponse | string>>>
+  >
 }
 
 const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
@@ -29,8 +34,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
     setOpen({ active: false, item: '' })
   }
 
-  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateSubjectAbsents(onSuccess)
-  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateSubjectAbsents(onSuccess)
+  const { mutate: mutateCreate, isPending: isPendingCreate } =
+    useCreateSubjectAbsents(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } =
+    useUpdateSubjectAbsents(onSuccess)
 
   const handleOk = async () => {
     try {
@@ -44,7 +51,11 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           data: { reason: data?.reason, note: data?.note },
         })
       } else {
-        mutateCreate({ subjectId: open.item, studentId: data.student, data: { reason: data?.reason, note: data?.note } })
+        mutateCreate({
+          subjectId: open.item,
+          studentId: data.student,
+          data: { reason: data?.reason, note: data?.note },
+        })
       }
     } catch {}
   }
@@ -74,11 +85,12 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
         value: item.id,
         label: (
           <>
-            {item.seasons_info[item.seasons_info.length - 1].numerical_order} {item.holy_name} {item.full_name}
+            {item.seasons_info[item.seasons_info.length - 1].numerical_order}{' '}
+            {item.holy_name} {item.full_name}
           </>
         ),
       })),
-    [students],
+    [students]
   )
 
   return (
@@ -103,7 +115,15 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
             ]}
             label='Học viên'
           >
-            <Select placeholder='Chọn học viên' onSearch={onSearchStudent} filterOption={() => true} allowClear showSearch options={studentOptions} loading={isLoading} />
+            <Select
+              placeholder='Chọn học viên'
+              onSearch={onSearchStudent}
+              filterOption={() => true}
+              allowClear
+              showSearch
+              options={studentOptions}
+              loading={isLoading}
+            />
           </Form.Item>
         ) : null}
         <Form.Item label='Lý do' name='reason'>

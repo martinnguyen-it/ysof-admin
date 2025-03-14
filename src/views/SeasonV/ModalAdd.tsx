@@ -1,11 +1,14 @@
-import { currentSeasonState } from '@atom/seasonAtom'
-import { IOpenForm } from '@domain/common'
-import { ISeasonResponse } from '@domain/season'
-import { useCreateSeason, useUpdateSeason } from '@src/apis/season/useMutationSeason'
+import React, { FC, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import {
+  useCreateSeason,
+  useUpdateSeason,
+} from '@/apis/season/useMutationSeason'
+import { currentSeasonState } from '@/atom/seasonAtom'
+import { IOpenForm } from '@/domain/common'
+import { ISeasonResponse } from '@/domain/season'
 import { Form, Input, Modal } from 'antd'
 import { isEmpty } from 'lodash'
-import React, { FC, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { useSetRecoilState } from 'recoil'
 
@@ -31,8 +34,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
     setOpen({ active: false })
   }
 
-  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateSeason(onSuccess)
-  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateSeason(onSuccess)
+  const { mutate: mutateCreate, isPending: isPendingCreate } =
+    useCreateSeason(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } =
+    useUpdateSeason(onSuccess)
 
   const handleOk = async () => {
     try {

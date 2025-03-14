@@ -1,13 +1,18 @@
-import { selectSeasonState } from '@atom/seasonAtom'
-import { IListStudentInResponse, IParamsGetListStudent, IStudentInResponse } from '@domain/student'
-import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
-import { getListStudents, getStudentDetail } from '@src/services/student'
-import { useQuery } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
-
+import { useQuery } from '@tanstack/react-query'
+import { selectSeasonState } from '@/atom/seasonAtom'
+import {
+  IListStudentInResponse,
+  IParamsGetListStudent,
+  IStudentInResponse,
+} from '@/domain/student'
+import { getListStudents, getStudentDetail } from '@/services/student'
 import { useRecoilValue } from 'recoil'
+import { useQueryErrorToast } from '@/hooks/useQueryErrorToast'
 
-export const useGetListStudents = (params?: Omit<IParamsGetListStudent, 'season'>) => {
+export const useGetListStudents = (
+  params?: Omit<IParamsGetListStudent, 'season'>
+) => {
   const season = useRecoilValue(selectSeasonState)
   const query = useQuery<IListStudentInResponse, AxiosError>({
     queryKey: ['getListStudents', params, season],

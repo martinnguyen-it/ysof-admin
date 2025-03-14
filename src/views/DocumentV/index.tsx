@@ -1,25 +1,32 @@
+import { FC, MouseEvent, useEffect, useState } from 'react'
+import { Link } from '@tanstack/react-router'
+import { useGetListDocuments } from '@/apis/document/useQueryDocument'
+import { userInfoState } from '@/atom/authAtom'
+import { currentSeasonState, selectSeasonState } from '@/atom/seasonAtom'
+import { EAdminRole, EAdminRoleDetail } from '@/domain/admin/type'
+import { ESort, IOpenForm } from '@/domain/common'
+import { EDocumentType, IDocumentInResponse } from '@/domain/document'
 import { FileAddOutlined } from '@ant-design/icons'
-import { ESort, IOpenForm } from '@domain/common'
+import type { TableProps } from 'antd'
 import { Avatar, Button, Flex, Input, Pagination, Select, Tooltip } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
-import { FC, MouseEvent, useEffect, useState } from 'react'
-import { useRecoilValue } from 'recoil'
-import { userInfoState } from '@atom/authAtom'
-import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
-import { isArray, isObject } from 'lodash'
-import { EDocumentType, IDocumentInResponse } from '@domain/document'
-import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
-import { OPTIONS_ROLE, PAGE_SIZE_OPTIONS_DEFAULT, VN_TIMEZONE } from '@constants/index'
+import { isArray, isObject } from 'lodash'
+import { useRecoilValue } from 'recoil'
+import { isSuperAdmin } from '@/lib/utils'
+import {
+  EDocumentTypeDetail,
+  OPTIONS_DOCUMENT_LABEL,
+  OPTIONS_DOCUMENT_TYPE,
+} from '@/constants/document'
+import {
+  OPTIONS_ROLE,
+  PAGE_SIZE_OPTIONS_DEFAULT,
+  VN_TIMEZONE,
+} from '@/constants/index'
 import ModalAdd from './ModalAdd'
 import ModalDelete from './ModalDelete'
-import { EDocumentTypeDetail, OPTIONS_DOCUMENT_LABEL, OPTIONS_DOCUMENT_TYPE } from '@constants/document'
-import { currentSeasonState, selectSeasonState } from '@atom/seasonAtom'
-import { isSuperAdmin } from '@src/utils'
 import ModalUpdate from './ModalUpdate'
-import { useGetListDocuments } from '@src/apis/document/useQueryDocument'
 
 const DocumentV: FC = () => {
   const userInfo = useRecoilValue(userInfoState)
@@ -42,11 +49,24 @@ const DocumentV: FC = () => {
   const [sortBy, setSortBy] = useState<string>()
 
   const season = useRecoilValue(selectSeasonState)
-  const { data, isLoading } = useGetListDocuments({ page_index: tableQueries.current, page_size: tableQueries.pageSize, search, roles, type, label, sort, sort_by: sortBy, season })
+  const { data, isLoading } = useGetListDocuments({
+    page_index: tableQueries.current,
+    page_size: tableQueries.pageSize,
+    search,
+    roles,
+    type,
+    label,
+    sort,
+    sort_by: sortBy,
+    season,
+  })
 
   useEffect(() => {
     if (data) {
-      setPaging({ current: data.pagination.page_index, total: data.pagination.total })
+      setPaging({
+        current: data.pagination.page_index,
+        total: data.pagination.total,
+      })
     }
   }, [data])
 
@@ -76,7 +96,8 @@ const DocumentV: FC = () => {
       dataIndex: 'index',
       key: 'index',
       width: '60px',
-      render: (_text, _record, index) => index + 1 + (paging.current - 1) * tableQueries.pageSize,
+      render: (_text, _record, index) =>
+        index + 1 + (paging.current - 1) * tableQueries.pageSize,
     },
     {
       title: 'Tên',
@@ -87,9 +108,16 @@ const DocumentV: FC = () => {
       render: (text, record: IDocumentInResponse) => {
         return (
           <Avatar.Group className='flex items-center'>
-            <img className='mr-4 size-7 object-cover' src={`https://drive-thirdparty.googleusercontent.com/64/type/${record?.mimeType}`}></img>
+            <img
+              className='mr-4 size-7 object-cover'
+              src={`https://drive-thirdparty.googleusercontent.com/64/type/${record?.mimeType}`}
+            ></img>
             <Tooltip placement='bottom' title='Nhấn vào đây để xem file'>
-              <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
+              <Link
+                to={record.webViewLink}
+                target='_blank'
+                className='text-wrap font-medium text-blue-500'
+              >
                 {text}
               </Link>
             </Tooltip>
@@ -121,21 +149,27 @@ const DocumentV: FC = () => {
       title: 'Mô tả',
       dataIndex: 'description',
       key: 'description',
-      render: (text: string) => <span className='text-wrap italic'>{text}</span>,
+      render: (text: string) => (
+        <span className='text-wrap italic'>{text}</span>
+      ),
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
     {
       title: 'Ngày sửa',
       dataIndex: 'updated_at',
       key: 'updated_at',
       sorter: true,
-      render: (text) => <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>,
+      render: (text) => (
+        <>{dayjs.utc(text).tz(VN_TIMEZONE).format('HH:mm DD-MM-YYYY')}</>
+      ),
     },
     {
       title: 'Người tạo',
@@ -146,11 +180,16 @@ const DocumentV: FC = () => {
       render: (_, record: IDocumentInResponse) => {
         return (
           <Avatar.Group className='flex items-center'>
-            <img className='mr-4 size-7 object-cover' src={record.author.avatar || '/images/avatar.png'}></img>
+            <img
+              className='mr-4 size-7 object-cover'
+              src={record.author.avatar || '/images/avatar.png'}
+            ></img>
             {/* <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
                 {record.author.full_name}
               </Link> */}
-            <p className='text-wrap font-medium text-black'>{record.author.full_name}</p>
+            <p className='text-wrap font-medium text-black'>
+              {record.author.full_name}
+            </p>
           </Avatar.Group>
         )
       },
@@ -163,12 +202,23 @@ const DocumentV: FC = () => {
       render: (_, data: IDocumentInResponse) => {
         return (
           <Flex gap='small' wrap='wrap'>
-            {userInfo && (userInfo.roles.includes(data.role) || isSuperAdmin(true)) ? (
+            {userInfo &&
+            (userInfo.roles.includes(data.role) || isSuperAdmin(true)) ? (
               <>
-                <Button color='' type='primary' id={data.id} onClick={onClickUpdate} className='!bg-yellow-400 hover:opacity-80'>
+                <Button
+                  type='primary'
+                  id={data.id}
+                  onClick={onClickUpdate}
+                  className='!bg-yellow-400 hover:opacity-80'
+                >
                   Sửa
                 </Button>
-                <Button type='primary' id={data.id} onClick={onClickDelete} danger>
+                <Button
+                  type='primary'
+                  id={data.id}
+                  onClick={onClickDelete}
+                  danger
+                >
                   Xóa
                 </Button>
               </>
@@ -198,7 +248,11 @@ const DocumentV: FC = () => {
     setLabel(val)
   }
 
-  const handleTableChange: TableProps<IDocumentInResponse>['onChange'] = (_pagination, _filters, sorter) => {
+  const handleTableChange: TableProps<IDocumentInResponse>['onChange'] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
     if (!isArray(sorter) && sorter?.order) {
       setSort(sorter.order as ESort)
       setSortBy(sorter.field as string)
@@ -209,16 +263,24 @@ const DocumentV: FC = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
         <Select
           className='w-60'
           mode='multiple'
           size='large'
           placeholder='Lọc theo ban'
           filterOption={(input, option) =>
-            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            isObject(option) &&
+            (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+              option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
           }
           onChange={onChangeRole}
           value={roles}
@@ -227,12 +289,23 @@ const DocumentV: FC = () => {
           allowClear
           maxTagCount='responsive'
         />
-        <Select className='w-60' size='large' placeholder='Lọc theo loại' onChange={onChangType} value={type} options={OPTIONS_DOCUMENT_TYPE} allowClear maxTagCount='responsive' />
+        <Select
+          className='w-60'
+          size='large'
+          placeholder='Lọc theo loại'
+          onChange={onChangType}
+          value={type}
+          options={OPTIONS_DOCUMENT_TYPE}
+          allowClear
+          maxTagCount='responsive'
+        />
         <Select
           className='w-60'
           mode='multiple'
           filterOption={(input, option) =>
-            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            isObject(option) &&
+            (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+              option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
           }
           size='large'
           placeholder='Lọc theo nhãn'
@@ -245,13 +318,20 @@ const DocumentV: FC = () => {
         />
       </div>
 
-      {userInfo && (userInfo.roles.includes(EAdminRole.ADMIN) || userInfo.latest_season === currentSeason?.season) && (
-        <div className='mb-4 flex justify-end'>
-          <Button type='primary' icon={<FileAddOutlined />} onClick={onClickAdd} size={'middle'}>
-            Thêm
-          </Button>
-        </div>
-      )}
+      {userInfo &&
+        (userInfo.roles.includes(EAdminRole.ADMIN) ||
+          userInfo.latest_season === currentSeason?.season) && (
+          <div className='mb-4 flex justify-end'>
+            <Button
+              type='primary'
+              icon={<FileAddOutlined />}
+              onClick={onClickAdd}
+              size={'middle'}
+            >
+              Thêm
+            </Button>
+          </div>
+        )}
       <Table
         showSorterTooltip={{ target: 'sorter-icon' }}
         onChange={handleTableChange}
@@ -283,7 +363,7 @@ const DocumentV: FC = () => {
       {openForm && <ModalAdd open={openForm} setOpen={setOpenForm} />}
       {openEdit && <ModalUpdate open={openEdit} setOpen={setOpenEdit} />}
       {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
-    </div>
+    </>
   )
 }
 

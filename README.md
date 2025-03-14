@@ -1,46 +1,73 @@
-# Getting Started with Create React App
+# Admin Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Tech Stack
 
-## Available Scripts
+- **UI:** [ShadcnUI](https://ui.shadcn.com) (TailwindCSS + RadixUI) & [Ant Design](https://ant.design/)
+- **Build Tool:** [Vite](https://vitejs.dev/)
+- **Routing:** [TanStack Router](https://tanstack.com/router/latest)
+- **Type Checking:** [TypeScript](https://www.typescriptlang.org/)
+- **Linting/Formatting:** [ESLint](https://eslint.org/) & [Prettier](https://prettier.io/)
+- **Icons:** [Tabler Icons](https://tabler.io/icons)
 
-In the project directory, you can run:
+## Run Locally
 
-### `npm start`
+1. **Clone the project:**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```bash
+git clone <repository-url>
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+2. **Install dependencies:**
 
-### `npm test`
+```bash
+pnpm install
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. **Start the server:**
 
-### `npm run build`
+```bash
+pnpm run dev
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+4. **Before committing, run Knip to check for unused files:**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+pnpm run knip
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Conventions
 
-### `npm run eject`
+- **Type Naming:**
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+  - Types start with `T`
+  - Interfaces start with `I`
+  - Enums start with `E`
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+  **Examples:**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+  - **Type of Student:**
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+  ```typescript
+  type TStudent = {
+    full_name: string
+    // other fields...
+  }
+  ```
 
-## Learn More
+  - **Interface of Props:**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+  ```typescript
+  interface IProps {
+    full_name: string
+    // other fields...
+  }
+  ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+  - **Enum of Role:**
+
+  ```typescript
+  enum ERole {
+    ADMIN = 'Admin',
+    // other roles...
+  }
+  ```

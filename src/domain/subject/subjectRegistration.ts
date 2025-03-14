@@ -1,5 +1,5 @@
-import { IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
-import { IStudentSeason } from '@domain/student'
+import { IPaginationAPI, IPaginationAPIParams, ISort } from '@/domain/common'
+import { IStudentSeason } from '@/domain/student'
 
 export interface IStudentInSubject {
   seasons_info: IStudentSeason[]
@@ -20,7 +20,9 @@ export interface IManySubjectRegistrationInResponse {
   data: ISubjectRegistrationInResponse[]
 }
 
-export interface IParamsGetListSubjectRegistration extends ISort, IPaginationAPIParams {
+export interface IParamsGetListSubjectRegistration
+  extends ISort,
+    IPaginationAPIParams {
   group?: number
   search?: string
   season?: number

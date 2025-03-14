@@ -1,8 +1,12 @@
-import { ILecturerInResponse, IListLecturerInResponse, IParamsGetListLecturer } from '@domain/lecturer'
-import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
-import { getLecturerDetail, getListLecturers } from '@src/services/lecturer'
-import { useQuery } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
+import { useQuery } from '@tanstack/react-query'
+import {
+  ILecturerInResponse,
+  IListLecturerInResponse,
+  IParamsGetListLecturer,
+} from '@/domain/lecturer'
+import { getLecturerDetail, getListLecturers } from '@/services/lecturer'
+import { useQueryErrorToast } from '@/hooks/useQueryErrorToast'
 
 export const useGetListLecturers = (params?: IParamsGetListLecturer) => {
   const query = useQuery<IListLecturerInResponse, AxiosError>({

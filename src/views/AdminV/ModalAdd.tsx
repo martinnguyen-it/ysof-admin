@@ -1,12 +1,12 @@
-import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
 import React, { Dispatch, FC, useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
-import { IOpenFormWithMode } from '@domain/common'
-import { EAdminRole, IAdminInResponse } from '@domain/admin/type'
-import { OPTIONS_ROLE } from '@constants/index'
-import dayjs from 'dayjs'
-import { useCreateAdmin, useUpdateAdmin } from '@src/apis/admin/useMutationAdmin'
 import { useQueryClient } from '@tanstack/react-query'
+import { useCreateAdmin, useUpdateAdmin } from '@/apis/admin/useMutationAdmin'
+import { EAdminRole, IAdminInResponse } from '@/domain/admin/type'
+import { IOpenFormWithMode } from '@/domain/common'
+import { DatePicker, DatePickerProps, Form, Input, Modal, Select } from 'antd'
+import dayjs from 'dayjs'
+import { toast } from 'react-toastify'
+import { OPTIONS_ROLE } from '@/constants/index'
 
 interface IProps {
   open: IOpenFormWithMode<IAdminInResponse>
@@ -27,8 +27,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
     setOpen({ active: false, mode: 'add' })
   }
 
-  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateAdmin(onSuccess)
-  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateAdmin(onSuccess)
+  const { mutate: mutateCreate, isPending: isPendingCreate } =
+    useCreateAdmin(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } =
+    useUpdateAdmin(onSuccess)
 
   const handleOk = async () => {
     try {
@@ -58,15 +60,21 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
       form.setFieldsValue({
         ...open.item,
         date_of_birth: undefined,
-        date_of_birth_temp: open.item.date_of_birth ? dayjs(open.item.date_of_birth, 'YYYY-MM-DD') : undefined,
+        date_of_birth_temp: open.item.date_of_birth
+          ? dayjs(open.item.date_of_birth, 'YYYY-MM-DD')
+          : undefined,
       })
     else form.resetFields()
   }, [open])
 
-  const optionsRole = OPTIONS_ROLE.filter((item) => item.value != EAdminRole.ADMIN)
+  const optionsRole = OPTIONS_ROLE.filter(
+    (item) => item.value != EAdminRole.ADMIN
+  )
 
   const onChangeDateOfBirth: DatePickerProps['onChange'] = (_, dateString) => {
-    setDateOfBirth(dayjs(dateString as unknown as string, 'DD/MM/YYYY').format('YYYY-MM-DD'))
+    setDateOfBirth(
+      dayjs(dateString as unknown as string, 'DD/MM/YYYY').format('YYYY-MM-DD')
+    )
   }
 
   return (
@@ -80,7 +88,12 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
       cancelText='Hủy'
       okText={open.item ? 'Sửa' : 'Thêm'}
     >
-      <Form layout='vertical' form={form} name='form-add-admin' className='grid grid-cols-1 gap-x-3 sm:grid-cols-2'>
+      <Form
+        layout='vertical'
+        form={form}
+        name='form-add-admin'
+        className='grid grid-cols-1 gap-x-3 sm:grid-cols-2'
+      >
         <Form.Item
           label='Tên thánh'
           name='holy_name'
@@ -131,10 +144,20 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
             },
           ]}
         >
-          <Select allowClear mode='multiple' placeholder='Chọn ban' options={optionsRole} />
+          <Select
+            allowClear
+            mode='multiple'
+            placeholder='Chọn ban'
+            options={optionsRole}
+          />
         </Form.Item>
         <Form.Item name='phone_number' label='Số điện thoại'>
-          <Select allowClear mode='tags' placeholder='Có thể nhập nhiều số' showSearch />
+          <Select
+            allowClear
+            mode='tags'
+            placeholder='Có thể nhập nhiều số'
+            showSearch
+          />
         </Form.Item>
         <Form.Item name={['address', 'original']} label='Quê quán'>
           <Input />

@@ -1,5 +1,5 @@
-import { EAdminRole, IAdminInResponse } from '@domain/admin/type'
-import { IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
+import { EAdminRole, IAdminInResponse } from '@/domain/admin/type'
+import { IPaginationAPI, IPaginationAPIParams, ISort } from '@/domain/common'
 
 export interface IAuditLogInResponse {
   type: EAuditLogType

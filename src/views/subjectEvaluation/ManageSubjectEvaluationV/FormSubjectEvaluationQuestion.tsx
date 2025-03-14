@@ -1,18 +1,26 @@
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { OPTIONS_EVALUATION_QUESTION_TYPES } from '@constants/subjectEvaluationQuestion'
-import { EManageFormStatus, EManageFormType, IManageFormInPayload, IManageFormInResponse } from '@domain/manageForm'
-import { ESubjectStatus, ISubjectInResponse } from '@domain/subject'
-import { EEvaluationQuestionType, IEvaluationQuestionItem } from '@domain/subject/subjectEvaluationQuestion'
-import { useUpdateManageForm } from '@src/apis/manageForm/useMutationManageForm'
-import { useSubjectSendEvaluation } from '@src/apis/subject/useMutationSubject'
-import { useCreateSubjectEvaluationQuestion } from '@src/apis/subjectEvaluationQuestion/useMutationSubjectEvaluationQuestion'
-import { useGetSubjectEvaluationQuestions } from '@src/apis/subjectEvaluationQuestion/useQuerySubjectEvaluationQuestion'
+import { FC, useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useUpdateManageForm } from '@/apis/manageForm/useMutationManageForm'
+import { useSubjectSendEvaluation } from '@/apis/subject/useMutationSubject'
+import { useCreateSubjectEvaluationQuestion } from '@/apis/subjectEvaluationQuestion/useMutationSubjectEvaluationQuestion'
+import { useGetSubjectEvaluationQuestions } from '@/apis/subjectEvaluationQuestion/useQuerySubjectEvaluationQuestion'
+import {
+  EManageFormStatus,
+  EManageFormType,
+  IManageFormInPayload,
+  IManageFormInResponse,
+} from '@/domain/manageForm'
+import { ESubjectStatus, ISubjectInResponse } from '@/domain/subject'
+import {
+  EEvaluationQuestionType,
+  IEvaluationQuestionItem,
+} from '@/domain/subject/subjectEvaluationQuestion'
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Select } from 'antd'
 import { findIndex, isObject } from 'lodash'
-import { FC, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { v4 as uuidv4 } from 'uuid'
+import { OPTIONS_EVALUATION_QUESTION_TYPES } from '@/constants/subjectEvaluationQuestion'
 
 interface IProps {
   subject: ISubjectInResponse
@@ -20,7 +28,11 @@ interface IProps {
   onOpenClose: () => void
 }
 
-const FormSubjectEvaluationQuestion: FC<IProps> = ({ subject, infoForm, onOpenClose }) => {
+const FormSubjectEvaluationQuestion: FC<IProps> = ({
+  subject,
+  infoForm,
+  onOpenClose,
+}) => {
   const queryClient = useQueryClient()
   const [form] = Form.useForm()
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
@@ -28,7 +40,9 @@ const FormSubjectEvaluationQuestion: FC<IProps> = ({ subject, infoForm, onOpenCl
   const [enableUpdateQuestion, setEnableUpdateQuestion] = useState(false)
 
   // id for update and delete, block for block update type when submitted
-  const [fields, setFields] = useState<(IEvaluationQuestionItem & { id: string; block?: boolean })[]>([{ id: uuidv4(), title: '', type: EEvaluationQuestionType.TEXT }])
+  const [fields, setFields] = useState<
+    (IEvaluationQuestionItem & { id: string; block?: boolean })[]
+  >([{ id: uuidv4(), title: '', type: EEvaluationQuestionType.TEXT }])
 
   const { data: dataQuestions } = useGetSubjectEvaluationQuestions({
     subjectId: subject.id,
@@ -36,7 +50,11 @@ const FormSubjectEvaluationQuestion: FC<IProps> = ({ subject, infoForm, onOpenCl
 
   useEffect(() => {
     if (dataQuestions) {
-      const questions = dataQuestions.questions.map((item) => ({ ...item, id: uuidv4(), block: true }))
+      const questions = dataQuestions.questions.map((item) => ({
+        ...item,
+        id: uuidv4(),
+        block: true,
+      }))
       setFields(questions)
       const obj: any = {}
       questions.forEach((item) => {
@@ -47,7 +65,11 @@ const FormSubjectEvaluationQuestion: FC<IProps> = ({ subject, infoForm, onOpenCl
   }, [dataQuestions])
 
   const handleAddField = () => {
-    const newField = { id: uuidv4(), title: '', type: EEvaluationQuestionType.TEXT }
+    const newField = {
+      id: uuidv4(),
+      title: '',
+      type: EEvaluationQuestionType.TEXT,
+    }
     setFields([...fields, newField])
   }
 
@@ -60,7 +82,8 @@ const FormSubjectEvaluationQuestion: FC<IProps> = ({ subject, infoForm, onOpenCl
     })
   }
 
-  const { mutateAsync: mutateAsyncCreateSubjectEvaluationQuestion } = useCreateSubjectEvaluationQuestion()
+  const { mutateAsync: mutateAsyncCreateSubjectEvaluationQuestion } =
+    useCreateSubjectEvaluationQuestion()
   const handleCreateQuestion = async (sendRequest?: boolean) => {
     if (!sendRequest) setIsLoadingUpdateQuestion(true)
     try {
@@ -68,9 +91,13 @@ const FormSubjectEvaluationQuestion: FC<IProps> = ({ subject, infoForm, onOpenCl
       const data = form.getFieldsValue()
       const sortedKeys = Object.keys(data).sort()
       const result = sortedKeys.map((key) => data[key])
-      const resCreateQuestion = await mutateAsyncCreateSubjectEvaluationQuestion({ subjectId: subject.id, data: { questions: result } })
+      const resCreateQuestion =
+        await mutateAsyncCreateSubjectEvaluationQuestion({
+          subjectId: subject.id,
+          data: { questions: result },
+        })
       if (resCreateQuestion) return true
-    } catch (error) {
+    } catch {
       return false
     }
   }
@@ -118,42 +145,86 @@ const FormSubjectEvaluationQuestion: FC<IProps> = ({ subject, infoForm, onOpenCl
   }
   return (
     <>
-      <div className='mb-4 flex justify-center text-2xl font-bold'>CÂU HỎI LƯỢNG GIÁ</div>
-      <Form form={form} layout='vertical' disabled={!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_NOTIFICATION}>
+      <div className='mb-4 flex justify-center text-2xl font-bold'>
+        CÂU HỎI LƯỢNG GIÁ
+      </div>
+      <Form
+        form={form}
+        layout='vertical'
+        disabled={
+          !enableUpdateQuestion &&
+          subject.status !== ESubjectStatus.SENT_NOTIFICATION
+        }
+      >
         {fields.map((field, idx) => (
           <div key={field.id}>
             <div className='font-bold'>
               Câu hỏi {idx + 1}{' '}
-              {!field?.block && fields.length > 1 && !(!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_NOTIFICATION) && (
-                <MinusCircleOutlined onClick={() => handleRemoveField(field.id)} />
-              )}
+              {!field?.block &&
+                fields.length > 1 &&
+                !(
+                  !enableUpdateQuestion &&
+                  subject.status !== ESubjectStatus.SENT_NOTIFICATION
+                ) && (
+                  <MinusCircleOutlined
+                    onClick={() => handleRemoveField(field.id)}
+                  />
+                )}
             </div>
-            <Form.Item name={[field.id, 'title']} label='Câu hỏi' rules={[{ required: true, message: 'Vui lòng điền câu hỏi' }]}>
+            <Form.Item
+              name={[field.id, 'title']}
+              label='Câu hỏi'
+              rules={[{ required: true, message: 'Vui lòng điền câu hỏi' }]}
+            >
               <Input.TextArea
                 value={field.title}
                 onChange={(e) => {
                   const value = e.target.value
-                  setFields(fields.map((item) => (item.id === field.id ? { ...item, title: value } : item)))
+                  setFields(
+                    fields.map((item) =>
+                      item.id === field.id ? { ...item, title: value } : item
+                    )
+                  )
                 }}
               />
             </Form.Item>
-            <Form.Item className='min-w-[170px]' name={[field.id, 'type']} label='Loại' rules={[{ required: true, message: 'Vui lòng chọn loại câu hỏi' }]}>
+            <Form.Item
+              className='min-w-[170px]'
+              name={[field.id, 'type']}
+              label='Loại'
+              rules={[
+                { required: true, message: 'Vui lòng chọn loại câu hỏi' },
+              ]}
+            >
               <Select
                 value={field.type}
                 disabled={field?.block}
                 onChange={(value) => {
-                  setFields(fields.map((item) => (item.id === field.id ? { ...item, type: value } : item)))
+                  setFields(
+                    fields.map((item) =>
+                      item.id === field.id ? { ...item, type: value } : item
+                    )
+                  )
                 }}
                 options={OPTIONS_EVALUATION_QUESTION_TYPES}
               />
             </Form.Item>
             {field.type !== 'text' && (
-              <Form.Item className='min-w-[400px]' name={[field.id, 'answers']} label='Đáp án' rules={[{ required: true, message: 'Vui lòng điền đáp án' }]}>
+              <Form.Item
+                className='min-w-[400px]'
+                name={[field.id, 'answers']}
+                label='Đáp án'
+                rules={[{ required: true, message: 'Vui lòng điền đáp án' }]}
+              >
                 <Select
                   mode='tags'
                   value={field.answers}
                   onChange={(val) => {
-                    setFields(fields.map((item) => (item.id === field.id ? { ...item, answers: val } : item)))
+                    setFields(
+                      fields.map((item) =>
+                        item.id === field.id ? { ...item, answers: val } : item
+                      )
+                    )
                   }}
                 />
               </Form.Item>
@@ -161,14 +232,19 @@ const FormSubjectEvaluationQuestion: FC<IProps> = ({ subject, infoForm, onOpenCl
           </div>
         ))}
         <Form.Item>
-          <Button type='dashed' onClick={handleAddField} icon={<PlusOutlined />}>
+          <Button
+            type='dashed'
+            onClick={handleAddField}
+            icon={<PlusOutlined />}
+          >
             Thêm câu hỏi
           </Button>
         </Form.Item>
       </Form>
 
       <div className='flex justify-end gap-3'>
-        {!enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_NOTIFICATION ? (
+        {!enableUpdateQuestion &&
+        subject.status !== ESubjectStatus.SENT_NOTIFICATION ? (
           <Button
             className='mt-2 bg-yellow-400 hover:!bg-yellow-400/80'
             onClick={() => {
@@ -178,24 +254,46 @@ const FormSubjectEvaluationQuestion: FC<IProps> = ({ subject, infoForm, onOpenCl
           >
             Mở sửa câu hỏi
           </Button>
-        ) : enableUpdateQuestion && subject.status !== ESubjectStatus.SENT_NOTIFICATION ? (
-          <Button className='mt-2 bg-green-500 hover:!bg-green-500/80' loading={isLoadingUpdateQuestion} onClick={handleUpdateQuestion} type='primary'>
+        ) : enableUpdateQuestion &&
+          subject.status !== ESubjectStatus.SENT_NOTIFICATION ? (
+          <Button
+            className='mt-2 bg-green-500 hover:!bg-green-500/80'
+            loading={isLoadingUpdateQuestion}
+            onClick={handleUpdateQuestion}
+            type='primary'
+          >
             Sửa câu hỏi
           </Button>
         ) : (
           <div></div>
         )}
         {infoForm?.status === EManageFormStatus.ACTIVE && (
-          <Button className='mt-2 bg-red-500 hover:!bg-red-500/80' onClick={onOpenClose} type='primary'>
+          <Button
+            className='mt-2 bg-red-500 hover:!bg-red-500/80'
+            onClick={onOpenClose}
+            type='primary'
+          >
             Tạm đóng form
           </Button>
         )}
         {subject.status === ESubjectStatus.SENT_NOTIFICATION ? (
-          <Button disabled={infoForm?.status === EManageFormStatus.ACTIVE} loading={isLoadingSubmit} className='mt-2' onClick={handleSubmitSend} type='primary'>
+          <Button
+            disabled={infoForm?.status === EManageFormStatus.ACTIVE}
+            loading={isLoadingSubmit}
+            className='mt-2'
+            onClick={handleSubmitSend}
+            type='primary'
+          >
             Gửi email lượng giá
           </Button>
         ) : (
-          <Button disabled={infoForm?.status === EManageFormStatus.ACTIVE} loading={isPendingManageForm} className='mt-2' onClick={onOpenForm} type='primary'>
+          <Button
+            disabled={infoForm?.status === EManageFormStatus.ACTIVE}
+            loading={isPendingManageForm}
+            className='mt-2'
+            onClick={onOpenForm}
+            type='primary'
+          >
             Mở form
           </Button>
         )}

@@ -1,15 +1,20 @@
+import React, { Dispatch, FC, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import {
+  useCreateLecturer,
+  useUpdateLecturer,
+} from '@/apis/lecturer/useMutationLecturer'
+import { IOpenFormWithMode } from '@/domain/common'
+import { ILecturerInResponse } from '@/domain/lecturer'
 import { Form, Input, Modal } from 'antd'
 import { isEmpty } from 'lodash'
-import React, { Dispatch, FC, useEffect } from 'react'
 import { toast } from 'react-toastify'
-import { IOpenFormWithMode } from '@domain/common'
-import { ILecturerInResponse } from '@domain/lecturer'
-import { useQueryClient } from '@tanstack/react-query'
-import { useCreateLecturer, useUpdateLecturer } from '@src/apis/lecturer/useMutationLecturer'
 
 interface IProps {
   open: IOpenFormWithMode<ILecturerInResponse>
-  setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<ILecturerInResponse>>>
+  setOpen: Dispatch<
+    React.SetStateAction<IOpenFormWithMode<ILecturerInResponse>>
+  >
 }
 
 const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
@@ -25,8 +30,10 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
     setOpen({ active: false, mode: 'add' })
   }
 
-  const { mutate: mutateCreate, isPending: isPendingCreate } = useCreateLecturer(onSuccess)
-  const { mutate: mutateUpdate, isPending: isPendingUpdate } = useUpdateLecturer(onSuccess)
+  const { mutate: mutateCreate, isPending: isPendingCreate } =
+    useCreateLecturer(onSuccess)
+  const { mutate: mutateUpdate, isPending: isPendingUpdate } =
+    useUpdateLecturer(onSuccess)
 
   const handleOk = async () => {
     try {
@@ -96,8 +103,14 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
         >
           <Input placeholder='Nhập họ và tên' />
         </Form.Item>
-        <Form.Item label='Thông tin cơ bản (Lưu ý: Học viên sẽ thấy phần này)' name='information'>
-          <Input.TextArea rows={3} placeholder='Tốt nghiệp, nơi đang phục vụ,...' />
+        <Form.Item
+          label='Thông tin cơ bản (Lưu ý: Học viên sẽ thấy phần này)'
+          name='information'
+        >
+          <Input.TextArea
+            rows={3}
+            placeholder='Tốt nghiệp, nơi đang phục vụ,...'
+          />
         </Form.Item>
         <Form.Item label='Thông tin liên hệ' name='contact'>
           <Input.TextArea rows={3} placeholder='Email, số điện thoại,...' />

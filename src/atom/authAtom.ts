@@ -1,4 +1,4 @@
-import { IAdminInResponse } from '@domain/admin/type'
+import { IAdminInResponse } from '@/domain/admin/type'
 import { atom } from 'recoil'
 import { recoilPersist } from 'recoil-persist'
 

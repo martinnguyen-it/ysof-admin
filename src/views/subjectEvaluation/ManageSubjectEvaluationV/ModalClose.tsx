@@ -1,9 +1,13 @@
-import { WarningFilled } from '@ant-design/icons'
-import { EManageFormStatus, EManageFormType, IManageFormInPayload } from '@domain/manageForm'
-import { useUpdateManageForm } from '@src/apis/manageForm/useMutationManageForm'
-import { useQueryClient } from '@tanstack/react-query'
-import { Button, Modal } from 'antd'
 import { FC } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useUpdateManageForm } from '@/apis/manageForm/useMutationManageForm'
+import {
+  EManageFormStatus,
+  EManageFormType,
+  IManageFormInPayload,
+} from '@/domain/manageForm'
+import { WarningFilled } from '@ant-design/icons'
+import { Button, Modal } from 'antd'
 import { toast } from 'react-toastify'
 
 interface IProps {
@@ -41,7 +45,13 @@ const ModalClose: FC<IProps> = ({ open, setOpen }) => {
         <Button key='back' onClick={handleCancel}>
           Hủy
         </Button>,
-        <Button key='submit' type='primary' className='!bg-red-500' loading={confirmLoading} onClick={onClose}>
+        <Button
+          key='submit'
+          type='primary'
+          className='!bg-red-500'
+          loading={confirmLoading}
+          onClick={onClose}
+        >
           Tạm đóng
         </Button>,
       ]}

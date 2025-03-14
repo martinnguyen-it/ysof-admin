@@ -1,8 +1,15 @@
-import { IGeneralTaskInResponse, IListGeneralTaskInResponse, IParamsGetListGeneralTask } from '@domain/generalTask'
-import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
-import { getGeneralTaskDetail, getListGeneralTasks } from '@src/services/generalTask'
-import { useQuery } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
+import { useQuery } from '@tanstack/react-query'
+import {
+  IGeneralTaskInResponse,
+  IListGeneralTaskInResponse,
+  IParamsGetListGeneralTask,
+} from '@/domain/generalTask'
+import {
+  getGeneralTaskDetail,
+  getListGeneralTasks,
+} from '@/services/generalTask'
+import { useQueryErrorToast } from '@/hooks/useQueryErrorToast'
 
 export const useGetListGeneralTasks = (params?: IParamsGetListGeneralTask) => {
   const query = useQuery<IListGeneralTaskInResponse, AxiosError>({

@@ -1,7 +1,12 @@
-import { ICreateSeason } from '@domain/common'
-import { ISeasonResponse } from '@domain/season'
-import { createSeason, delSeasonById, markSeasonCurrent, updateSeason } from '@src/services/season'
 import { useMutation } from '@tanstack/react-query'
+import { ICreateSeason } from '@/domain/common'
+import { ISeasonResponse } from '@/domain/season'
+import {
+  createSeason,
+  delSeasonById,
+  markSeasonCurrent,
+  updateSeason,
+} from '@/services/season'
 import { toast } from 'react-toastify'
 
 export const useCreateSeason = (onSuccess: (data: ISeasonResponse) => void) =>
@@ -16,7 +21,8 @@ export const useCreateSeason = (onSuccess: (data: ISeasonResponse) => void) =>
 
 export const useUpdateSeason = (onSuccess: (data: ISeasonResponse) => void) =>
   useMutation({
-    mutationFn: (payload: { id: string; data: ICreateSeason }) => updateSeason(payload.id, payload.data),
+    mutationFn: (payload: { id: string; data: ICreateSeason }) =>
+      updateSeason(payload.id, payload.data),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error

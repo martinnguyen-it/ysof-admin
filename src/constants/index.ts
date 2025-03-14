@@ -1,13 +1,10 @@
-import { ApartmentOutlined, DashboardOutlined, FileTextOutlined, HistoryOutlined, ProjectOutlined, SolutionOutlined, UserOutlined } from '@ant-design/icons'
-import { AdminIcon, LessonIcon, RegisterIcon, SubjectEvaluationIcon } from '@components/assets/svg'
-import { EAdminRole, EAdminRoleDetail } from '@domain/admin/type'
-import { IRouter } from '@domain/app'
+import { EAdminRole, EAdminRoleDetail } from '@/domain/admin/type'
 
 export const API_CONFIG = {
   isLoggingEnable: false,
   timeout: 600000,
   unauthorizedErrorCode: 401,
-  HOST: process.env.REACT_APP_BASE_URL || 'http://localhost:8000',
+  HOST: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
 }
 
 export const VN_TIMEZONE = 'Asia/Ho_Chi_Minh'
@@ -50,116 +47,6 @@ export const API_LIST = {
   manageForm: '/api/v1/manage-form',
   auditLog: '/api/v1/audit-logs',
 }
-
-export const ROUTES_SIDEBAR: IRouter[] = [
-  {
-    name: 'Bảng tin',
-    path: '/',
-    icon: DashboardOutlined,
-  },
-  {
-    name: 'Mùa',
-    path: '/mua',
-    icon: ApartmentOutlined,
-  },
-  {
-    name: 'Công việc chung',
-    path: '/cong-viec-chung',
-    icon: ProjectOutlined,
-  },
-  {
-    name: 'Tài liệu',
-    path: '/tai-lieu',
-    icon: FileTextOutlined,
-  },
-  {
-    name: 'Học viên',
-    icon: UserOutlined,
-    path: '/hoc-vien',
-    children: [
-      {
-        path: '/hoc-vien/danh-sach-hoc-vien',
-        name: 'Danh sách học viên',
-      },
-    ],
-  },
-  {
-    name: 'Chủ đề',
-    icon: LessonIcon,
-    path: '/chu-de',
-    children: [
-      {
-        path: '/chu-de/danh-sach-chu-de',
-        name: 'Danh sách chủ đề',
-      },
-      {
-        path: '/chu-de/gui-email',
-        requiredCurrent: true,
-        name: 'Gửi email thông báo',
-        role: [EAdminRole.BHV],
-      },
-      {
-        path: '/chu-de/nghi-phep',
-        requiredCurrent: true,
-        name: 'Nghỉ phép',
-      },
-    ],
-  },
-  {
-    name: 'Lượng giá',
-    icon: SubjectEvaluationIcon,
-    path: '/luong-gia',
-    requiredCurrent: true,
-    children: [
-      {
-        path: '/luong-gia/quan-ly-form',
-        name: 'Quản lý form',
-        requiredCurrent: true,
-        role: [EAdminRole.BHV],
-      },
-      {
-        path: '/luong-gia/ket-qua',
-        name: 'Kết quả',
-        requiredCurrent: true,
-      },
-    ],
-  },
-  {
-    name: 'Đăng ký môn học',
-    icon: RegisterIcon,
-    path: '/dang-ky-mon',
-    children: [
-      {
-        path: '/dang-ky-mon/quan-ly-form',
-        name: 'Quản lý form',
-        requiredCurrent: true,
-        role: [EAdminRole.BKL, EAdminRole.BHV],
-      },
-      {
-        path: '/dang-ky-mon/ket-qua-dang-ky',
-        name: 'Kết quả đăng ký',
-      },
-    ],
-  },
-  {
-    name: 'Giảng viên',
-    path: '/giang-vien',
-    icon: SolutionOutlined,
-  },
-  {
-    name: 'Ban tổ chức',
-    path: '/ban-to-chuc',
-    icon: AdminIcon,
-    requiredCurrent: true,
-  },
-  {
-    name: 'Nhật ký chỉnh sửa',
-    path: '/nhat-ky-chinh-sua',
-    icon: HistoryOutlined,
-    requiredCurrent: true,
-    role: [EAdminRole.ADMIN],
-  },
-]
 
 export const OPTIONS_ROLE = Object.keys(EAdminRoleDetail).map((key) => ({
   value: key,

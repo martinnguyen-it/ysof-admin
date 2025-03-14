@@ -1,8 +1,11 @@
-import { IListAuditLogInResponse, IParamsGetListAuditLog } from '@domain/auditLog'
-import { useQueryErrorToast } from '@src/hooks/useQueryErrorToast'
-import { getListAuditLogs } from '@src/services/auditLog'
-import { useQuery } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
+import { useQuery } from '@tanstack/react-query'
+import {
+  IListAuditLogInResponse,
+  IParamsGetListAuditLog,
+} from '@/domain/auditLog'
+import { getListAuditLogs } from '@/services/auditLog'
+import { useQueryErrorToast } from '@/hooks/useQueryErrorToast'
 
 export const useGetListAuditLogs = (params?: IParamsGetListAuditLog) => {
   const query = useQuery<IListAuditLogInResponse, AxiosError>({

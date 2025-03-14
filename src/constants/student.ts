@@ -1,4 +1,4 @@
-import { ESex } from '@domain/student'
+import { ESex } from '@/domain/student'
 
 export const OPTION_SEX = Object.values(ESex).map((value) => ({
   value,

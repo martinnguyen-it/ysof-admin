@@ -1,6 +1,17 @@
-import { ICreateStudent, IImportStudentFromSpreadSheetsRequest, IImportStudentFromSpreadSheetsResponse, IUpdateStudent } from '@domain/student'
-import { createStudent, deleteStudent, importStudent, resetPasswordStudent, updateStudent } from '@src/services/student'
 import { useMutation } from '@tanstack/react-query'
+import {
+  ICreateStudent,
+  IImportStudentFromSpreadSheetsRequest,
+  IImportStudentFromSpreadSheetsResponse,
+  IUpdateStudent,
+} from '@/domain/student'
+import {
+  createStudent,
+  deleteStudent,
+  importStudent,
+  resetPasswordStudent,
+  updateStudent,
+} from '@/services/student'
 import { toast } from 'react-toastify'
 
 export const useCreateStudent = (onSuccess: () => void) =>
@@ -15,7 +26,8 @@ export const useCreateStudent = (onSuccess: () => void) =>
 
 export const useUpdateStudent = (onSuccess: () => void) =>
   useMutation({
-    mutationFn: (payload: { id: string; data: IUpdateStudent }) => updateStudent(payload.id, payload.data),
+    mutationFn: (payload: { id: string; data: IUpdateStudent }) =>
+      updateStudent(payload.id, payload.data),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error
@@ -33,9 +45,12 @@ export const useDeleteStudent = (onSuccess: () => void) =>
     },
   })
 
-export const useImportStudent = (onSuccess: (data: IImportStudentFromSpreadSheetsResponse) => void) =>
+export const useImportStudent = (
+  onSuccess: (data: IImportStudentFromSpreadSheetsResponse) => void
+) =>
   useMutation({
-    mutationFn: (data: IImportStudentFromSpreadSheetsRequest) => importStudent(data),
+    mutationFn: (data: IImportStudentFromSpreadSheetsRequest) =>
+      importStudent(data),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error

@@ -1,11 +1,21 @@
-import { ICreateDocumentGoogle, ICreateDocumentWithFile, IUpdateDocument } from '@domain/document'
-import { createDocumentGoogle, createDocumentWithFile, deleteDocument, updateDocument } from '@src/services/document'
 import { useMutation } from '@tanstack/react-query'
+import {
+  ICreateDocumentGoogle,
+  ICreateDocumentWithFile,
+  IUpdateDocument,
+} from '@/domain/document'
+import {
+  createDocumentGoogle,
+  createDocumentWithFile,
+  deleteDocument,
+  updateDocument,
+} from '@/services/document'
 import { toast } from 'react-toastify'
 
 export const useCreateDocumentWithFile = (onSuccess: () => void) =>
   useMutation({
-    mutationFn: (payload: ICreateDocumentWithFile) => createDocumentWithFile(payload),
+    mutationFn: (payload: ICreateDocumentWithFile) =>
+      createDocumentWithFile(payload),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error
@@ -15,7 +25,8 @@ export const useCreateDocumentWithFile = (onSuccess: () => void) =>
 
 export const useCreateDocumentGoogle = (onSuccess: () => void) =>
   useMutation({
-    mutationFn: (payload: ICreateDocumentGoogle) => createDocumentGoogle(payload),
+    mutationFn: (payload: ICreateDocumentGoogle) =>
+      createDocumentGoogle(payload),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error
@@ -25,7 +36,8 @@ export const useCreateDocumentGoogle = (onSuccess: () => void) =>
 
 export const useUpdateDocument = (onSuccess: () => void) =>
   useMutation({
-    mutationFn: (payload: { id: string; data: IUpdateDocument }) => updateDocument(payload.id, payload.data),
+    mutationFn: (payload: { id: string; data: IUpdateDocument }) =>
+      updateDocument(payload.id, payload.data),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error

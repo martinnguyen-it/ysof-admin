@@ -1,18 +1,21 @@
-import { ESort } from '@domain/common'
+import { FC, useEffect, useMemo, useState } from 'react'
+import { useGetSubjectShort } from '@/apis/subject/useQuerySubject'
+import { useGetListSubjectEvaluation } from '@/apis/subjectEvaluation/useQuerySubjectEvaluation'
+import { useGetSubjectEvaluationQuestions } from '@/apis/subjectEvaluationQuestion/useQuerySubjectEvaluationQuestion'
+import { ESort } from '@/domain/common'
+import { ESubjectStatus } from '@/domain/subject'
+import { ISubjectEvaluationInResponse } from '@/domain/subject/subjectEvaluation'
+import type { TableProps } from 'antd'
 import { Input, Pagination, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
-import type { TableProps } from 'antd'
-
-import { FC, useEffect, useMemo, useState } from 'react'
 import { isArray, isObject, size } from 'lodash'
-import { PAGE_SIZE_OPTIONS_DEFAULT } from '@constants/index'
-import { ESubjectStatus } from '@domain/subject'
-import { ISubjectEvaluationInResponse } from '@domain/subject/subjectEvaluation'
 import { toast } from 'react-toastify'
-import { EVALUATION_NAME, EVALUATION_QUALITY } from '@constants/subjectEvaluation'
-import { useGetSubjectShort } from '@src/apis/subject/useQuerySubject'
-import { useGetListSubjectEvaluation } from '@src/apis/subjectEvaluation/useQuerySubjectEvaluation'
-import { useGetSubjectEvaluationQuestions } from '@src/apis/subjectEvaluationQuestion/useQuerySubjectEvaluationQuestion'
+import { PAGE_SIZE_OPTIONS_DEFAULT } from '@/constants/index'
+import {
+  EVALUATION_NAME,
+  EVALUATION_QUALITY,
+} from '@/constants/subjectEvaluation'
+
 // import ModalView from './ModalView'
 
 const ListSubjectEvaluationV: FC = () => {
@@ -42,23 +45,25 @@ const ListSubjectEvaluationV: FC = () => {
     status: [ESubjectStatus.COMPLETED, ESubjectStatus.SENT_EVALUATION],
   })
 
-  const { data: listSubjectEvaluation, isLoading: isLoadingSubjectEvaluation } = useGetListSubjectEvaluation(
-    {
-      subject_id: selectSubject!,
-      page_index: tableQueries.current,
-      page_size: tableQueries.pageSize,
-      search: search || undefined,
-      sort,
-      sort_by: sortBy,
-      group,
-    },
-    { enabled: !!selectSubject },
-  )
+  const { data: listSubjectEvaluation, isLoading: isLoadingSubjectEvaluation } =
+    useGetListSubjectEvaluation(
+      {
+        subject_id: selectSubject!,
+        page_index: tableQueries.current,
+        page_size: tableQueries.pageSize,
+        search: search || undefined,
+        sort,
+        sort_by: sortBy,
+        group,
+      },
+      { enabled: !!selectSubject }
+    )
 
-  const { data: questions, isLoading: isLoadingQuestions } = useGetSubjectEvaluationQuestions({
-    subjectId: selectSubject!,
-    enabled: !!selectSubject,
-  })
+  const { data: questions, isLoading: isLoadingQuestions } =
+    useGetSubjectEvaluationQuestions({
+      subjectId: selectSubject!,
+      enabled: !!selectSubject,
+    })
 
   useEffect(() => {
     ;(async () => {
@@ -74,7 +79,10 @@ const ListSubjectEvaluationV: FC = () => {
 
   useEffect(() => {
     if (listSubjectEvaluation) {
-      setPaging({ current: listSubjectEvaluation.pagination.page_index, total: listSubjectEvaluation.pagination.total })
+      setPaging({
+        current: listSubjectEvaluation.pagination.page_index,
+        total: listSubjectEvaluation.pagination.total,
+      })
     }
   }, [listSubjectEvaluation])
 
@@ -86,7 +94,11 @@ const ListSubjectEvaluationV: FC = () => {
         align: 'center',
         key: 'numerical_order',
         width: '80px',
-        render: (_, record: ISubjectEvaluationInResponse) => String(record.student.seasons_info[record.student.seasons_info.length - 1].numerical_order).padStart(3, '0'),
+        render: (_, record: ISubjectEvaluationInResponse) =>
+          String(
+            record.student.seasons_info[record.student.seasons_info.length - 1]
+              .numerical_order
+          ).padStart(3, '0'),
       },
       {
         title: 'Nhóm',
@@ -94,7 +106,9 @@ const ListSubjectEvaluationV: FC = () => {
         key: 'group',
         align: 'center',
         width: '80px',
-        render: (_, record: ISubjectEvaluationInResponse) => record.student.seasons_info[record.student.seasons_info.length - 1].group,
+        render: (_, record: ISubjectEvaluationInResponse) =>
+          record.student.seasons_info[record.student.seasons_info.length - 1]
+            .group,
       },
       {
         title: 'Họ tên',
@@ -142,7 +156,10 @@ const ListSubjectEvaluationV: FC = () => {
     ]
     EVALUATION_QUALITY.forEach((item, idx) => {
       columns.push({
-        title: `6.${idx + 1}. ` + EVALUATION_NAME.get('quality') + ` [${item.label}]`,
+        title:
+          `6.${idx + 1}. ` +
+          EVALUATION_NAME.get('quality') +
+          ` [${item.label}]`,
         dataIndex: ['quality', item.key],
         sorter: true,
         key: item.key,
@@ -178,27 +195,39 @@ const ListSubjectEvaluationV: FC = () => {
     setGroup(val ? Number(val) : undefined)
   }
 
-  const handleTableChange: TableProps<ISubjectEvaluationInResponse>['onChange'] = (_pagination, _filters, sorter) => {
-    if (!isArray(sorter) && sorter?.order) {
-      const field = sorter.field && (isArray(sorter.field) ? sorter.field.join('.') : sorter.field)
-      setSort(sorter.order as ESort)
-      setSortBy(field as string)
-    } else {
-      setSort(undefined)
-      setSortBy(undefined)
+  const handleTableChange: TableProps<ISubjectEvaluationInResponse>['onChange'] =
+    (_pagination, _filters, sorter) => {
+      if (!isArray(sorter) && sorter?.order) {
+        const field =
+          sorter.field &&
+          (isArray(sorter.field) ? sorter.field.join('.') : sorter.field)
+        setSort(sorter.order as ESort)
+        setSortBy(field as string)
+      } else {
+        setSort(undefined)
+        setSortBy(undefined)
+      }
     }
-  }
 
   const subjectOptions = useMemo(() => {
     if (isArray(subjectsSentEvaluation)) {
-      return subjectsSentEvaluation.map((item) => ({ value: item.id, label: item.code + ' ' + item.title }))
+      return subjectsSentEvaluation.map((item) => ({
+        value: item.id,
+        label: item.code + ' ' + item.title,
+      }))
     }
   }, [subjectsSentEvaluation])
 
   return (
-    <div className='min-h-[calc(100vh-48px)] bg-[#d8ecef42] p-6 shadow-lg'>
+    <>
       <div className='mb-4 flex flex-wrap gap-3'>
-        <Input.Search className='w-60' placeholder='Tìm kiếm' size='large' onSearch={onSearch} allowClear />
+        <Input.Search
+          className='w-60'
+          placeholder='Tìm kiếm'
+          size='large'
+          onSearch={onSearch}
+          allowClear
+        />
         <Select
           options={Array.from({ length: 15 }, (_, index) => ({
             value: String(index + 1),
@@ -219,7 +248,9 @@ const ListSubjectEvaluationV: FC = () => {
           value={selectSubject}
           onChange={onChangeSelectSubject}
           filterOption={(input, option) =>
-            isObject(option) && (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
+            isObject(option) &&
+            (option?.label.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+              option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
           }
           showSearch
           allowClear
@@ -252,13 +283,15 @@ const ListSubjectEvaluationV: FC = () => {
         rowKey='id'
         pagination={false}
         dataSource={listSubjectEvaluation?.data}
-        loading={isLoadingQuestions || isLoadingSubjects || isLoadingSubjectEvaluation}
+        loading={
+          isLoadingQuestions || isLoadingSubjects || isLoadingSubjectEvaluation
+        }
         scroll={{ x: 3500 }}
         bordered
       />
 
       {/* {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />} */}
-    </div>
+    </>
   )
 }
 

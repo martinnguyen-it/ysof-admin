@@ -1,4 +1,9 @@
-import { EAccountStatus, IPaginationAPI, IPaginationAPIParams, ISort } from '@domain/common'
+import {
+  EAccountStatus,
+  IPaginationAPI,
+  IPaginationAPIParams,
+  ISort,
+} from '@/domain/common'
 
 export interface IStudentSeason {
   numerical_order: number
@@ -57,7 +62,8 @@ export interface IErrorInImportStudentFromSpreadSheet {
   detail: string
 }
 
-export interface IAttentionInImportStudentFromSpreadSheet extends IErrorInImportStudentFromSpreadSheet {}
+export interface IAttentionInImportStudentFromSpreadSheet
+  extends IErrorInImportStudentFromSpreadSheet {}
 
 export interface IImportStudentFromSpreadSheetsResponse {
   inserteds: string[]

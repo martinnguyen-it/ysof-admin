@@ -1,4 +1,4 @@
-version: "2.1"
+
 services:
     webapp:
         image: ysof_admin
@@ -8,6 +8,6 @@ services:
         restart: unless-stopped
         networks:
             - ysof_admin
-networks:
-    ysof_admin:
-        driver: bridge
+        container_name: ysof_admin_${NODE_ENV}
+        ports:
+            - "3000:80"

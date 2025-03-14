@@ -1,9 +1,9 @@
-import { WarningFilled } from '@ant-design/icons'
-import { IOpenForm } from '@domain/common'
-import { useDeleteGeneralTask } from '@src/apis/generalTask/useMutationGeneralTask'
-import { useQueryClient } from '@tanstack/react-query'
-import { Button, Modal } from 'antd'
 import React, { FC } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useDeleteGeneralTask } from '@/apis/generalTask/useMutationGeneralTask'
+import { IOpenForm } from '@/domain/common'
+import { WarningFilled } from '@ant-design/icons'
+import { Button, Modal } from 'antd'
 import { toast } from 'react-toastify'
 
 interface IProps {
@@ -39,7 +39,13 @@ const ModalDelete: FC<IProps> = ({ open, setOpen }) => {
         <Button key='back' onClick={handleCancel}>
           Hủy
         </Button>,
-        <Button key='submit' type='primary' className='!bg-red-500' loading={isPending} onClick={handleOk}>
+        <Button
+          key='submit'
+          type='primary'
+          className='!bg-red-500'
+          loading={isPending}
+          onClick={handleOk}
+        >
           Xóa
         </Button>,
       ]}
