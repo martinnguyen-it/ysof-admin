@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "format:check": "tsc && npm run prettier && npm run lint",
     "knip": "knip",
-    "check-types": "tsc --noEmit --pretty",
+    "check-types": "tsc -b --noEmit --pretty",
     "prepare": "husky"
   },
   "dependencies": {
