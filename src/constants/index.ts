@@ -46,6 +46,7 @@ export const API_LIST = {
   student: '/api/v1/students',
   manageForm: '/api/v1/manage-form',
   auditLog: '/api/v1/audit-logs',
+  getDailyBibleQuotes: '/api/v1/daily-bible/daily-quotes',
 }
 
 export const OPTIONS_ROLE = Object.keys(EAdminRoleDetail).map((key) => ({
