@@ -5,6 +5,7 @@ import {
   deleteAdmin,
   updateAdmin,
   updateAdminMe,
+  updateAvatar,
 } from '@/services/admin'
 import { toast } from 'react-toastify'
 
@@ -43,6 +44,17 @@ export const useDeleteAdmin = (onSuccess: () => void) =>
   useMutation({
     mutationFn: (id: string) => deleteAdmin(id),
     onSuccess,
+    onError: (error: Error) => {
+      const { message } = error
+      toast.error(message)
+    },
+  })
+
+export const useUpdateAvatar = () =>
+  useMutation({
+    mutationFn: (file: File) => {
+      return updateAvatar(file)
+    },
     onError: (error: Error) => {
       const { message } = error
       toast.error(message)

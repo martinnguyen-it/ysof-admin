@@ -47,9 +47,12 @@ export const API_LIST = {
   manageForm: '/api/v1/manage-form',
   auditLog: '/api/v1/audit-logs',
   getDailyBibleQuotes: '/api/v1/daily-bible/daily-quotes',
+  updateAvatar: '/api/v1/admins/me/avatar',
 }
 
 export const OPTIONS_ROLE = Object.keys(EAdminRoleDetail).map((key) => ({
   value: key,
   label: EAdminRoleDetail[key as EAdminRole],
 }))
+
+export const MAX_AVATAR_SIZE = 200 * 1024 // 200KB
