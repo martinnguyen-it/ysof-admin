@@ -112,6 +112,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
               <span className='flex items-center'>
                 <img
                   className='mr-1 size-4 object-cover'
+                  referrerPolicy='no-referrer'
                   src={item?.avatar || '/images/avatar.png'}
                 ></img>
                 {item?.title ? item.title + ' ' : ''}

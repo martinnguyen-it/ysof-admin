@@ -86,6 +86,7 @@ const UpdateAvatar: React.FC = () => {
       >
         <img
           src={avatar || '/images/avatar.png'}
+          referrerPolicy='no-referrer'
           alt='Avatar'
           className='h-full w-full object-cover'
         />

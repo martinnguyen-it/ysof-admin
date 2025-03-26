@@ -51,6 +51,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                   <Avatar.Group className='flex items-center'>
                     <img
                       className='mr-4 size-7 object-cover'
+                      referrerPolicy='no-referrer'
                       src={open.item.author.avatar || '/images/avatar.png'}
                     ></img>
                     <p className='text-wrap font-medium text-blue-500'>

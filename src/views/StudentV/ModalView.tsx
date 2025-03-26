@@ -38,6 +38,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                     {open.item?.avatar && (
                       <img
                         className='mr-4 size-7 object-cover'
+                        referrerPolicy='no-referrer'
                         src={open.item.avatar}
                       ></img>
                     )}

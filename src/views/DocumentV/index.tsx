@@ -182,6 +182,7 @@ const DocumentV: FC = () => {
           <Avatar.Group className='flex items-center'>
             <img
               className='mr-4 size-7 object-cover'
+              referrerPolicy='no-referrer'
               src={record.author.avatar || '/images/avatar.png'}
             ></img>
             {/* <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
