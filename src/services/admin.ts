@@ -31,3 +31,9 @@ export const updateAdminMe = (data: IUpdateMe): Promise<IAdminInResponse> =>
 
 export const deleteAdmin = (id: string): Promise<IAdminInResponse> =>
   del(API_LIST.admin + '/' + id)
+
+export const updateAvatar = (file: File): Promise<IAdminInResponse> => {
+  const formData = new FormData()
+  formData.append('image', file)
+  return put(API_LIST.updateAvatar, formData)
+}
