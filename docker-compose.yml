@@ -6,8 +6,6 @@ services:
             context: ./
             dockerfile: Dockerfile
         restart: unless-stopped
-        networks:
-            - ysof_admin
         container_name: ysof_admin_${NODE_ENV}
         ports:
             - "3000:80"
