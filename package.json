@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write .",
-    "format:check": "tsc && npm run prettier && npm run lint",
+    "format:check": "tsc && pnpm prettier . && pnpm lint",
     "knip": "knip",
     "check-types": "tsc -b --noEmit --pretty",
     "prepare": "husky install"
