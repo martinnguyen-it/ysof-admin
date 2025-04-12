@@ -8,9 +8,9 @@ import {
   IAdminInResponse,
 } from '@/domain/admin/type'
 import { ESort, IOpenFormWithMode } from '@/domain/common'
-import { FileAddOutlined } from '@ant-design/icons'
-import type { TableProps } from 'antd'
-import { Button, Flex, Input, Pagination } from 'antd'
+import { EditOutlined, FileAddOutlined, MoreOutlined } from '@ant-design/icons'
+import type { MenuProps, TableProps } from 'antd'
+import { Button, Dropdown, Input, Pagination } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
 import { isArray } from 'lodash'
@@ -68,9 +68,8 @@ const AdminV: FC = () => {
     setOpenForm({ active: true, mode: 'add' })
   }
 
-  const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
-    const item = data?.data.find((val) => val.id === e.currentTarget.id)
+  const onClickUpdate = (id: string) => {
+    const item = data?.data.find((val) => val.id === id)
     setOpenForm({ active: true, mode: 'update', item })
   }
 
@@ -151,25 +150,45 @@ const AdminV: FC = () => {
       sorter: true,
     },
     {
-      title: 'Hành động',
+      title: '',
       key: 'actions',
       dataIndex: 'actions',
       fixed: 'right',
+      width: '40px',
+      className: '!p-0',
+      align: 'center',
       render: (_, data: IAdminInResponse) => {
+        const items: MenuProps['items'] = [
+          {
+            key: 'edit',
+            label: <span style={{ color: '#3498db' }}>Sửa</span>,
+            icon: <EditOutlined style={{ color: '#3498db' }} />,
+          },
+        ]
+
+        const handleMenuClick: MenuProps['onClick'] = (e) => {
+          e.domEvent.stopPropagation()
+          switch (e.key) {
+            case 'edit':
+              onClickUpdate(data.id)
+              break
+            default:
+              break
+          }
+        }
+
         return (
-          <Flex gap='small' wrap='wrap'>
+          <Dropdown
+            menu={{ items, onClick: handleMenuClick }}
+            placement='bottomRight'
+            trigger={['click']}
+          >
             <Button
-              type='primary'
-              id={data.id}
-              onClick={onClickUpdate}
-              className='!bg-yellow-400 hover:opacity-80'
-            >
-              Sửa
-            </Button>
-            {/* <Button type='primary' id={data.id} onClick={onClickDelete} danger>
-              Xóa
-            </Button> */}
-          </Flex>
+              type='text'
+              icon={<MoreOutlined rotate={90} />}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </Dropdown>
         )
       },
       hidden: !(userInfo && isSuperAdmin(true)),

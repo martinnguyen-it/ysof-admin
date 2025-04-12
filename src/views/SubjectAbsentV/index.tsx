@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useGetSubjectShort } from '@/apis/subject/useQuerySubject'
 import { useGetListSubjectAbsents } from '@/apis/subjectAbsent/useQuerySubjectAbsent'
 import { userInfoState } from '@/atom/authAtom'
@@ -7,8 +7,13 @@ import { EAdminRole } from '@/domain/admin/type'
 import { ESort, IOpenForm } from '@/domain/common'
 import { ESubjectStatus } from '@/domain/subject'
 import { ISubjectAbsentInResponse } from '@/domain/subject/subjectAbsent'
-import { FileAddOutlined } from '@ant-design/icons'
-import { Button, Flex, Select } from 'antd'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  FileAddOutlined,
+  MoreOutlined,
+} from '@ant-design/icons'
+import { Button, Dropdown, MenuProps, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import { isArray, isObject, size } from 'lodash'
 import { toast } from 'react-toastify'
@@ -55,15 +60,13 @@ const SubjectAbsentV: FC = () => {
     setOpenForm({ active: true, item: selectSubject || '' })
   }
 
-  const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
-    const item =
-      tableData && tableData.find((val) => val.id === e.currentTarget.id)
+  const onClickUpdate = (id: string) => {
+    const item = tableData && tableData.find((val) => val.id === id)
     if (item) setOpenForm({ active: true, item: item })
   }
 
-  const onClickDelete = (e: MouseEvent<HTMLButtonElement>) => {
-    const item =
-      tableData && tableData.find((val) => val.id === e.currentTarget.id)
+  const onClickDelete = (id: string) => {
+    const item = tableData && tableData.find((val) => val.id === id)
     if (item)
       setOpenDel({
         active: true,
@@ -122,25 +125,50 @@ const SubjectAbsentV: FC = () => {
       key: 'note',
     },
     {
-      title: 'Hành động',
+      title: '',
       key: 'actions',
       dataIndex: 'actions',
       fixed: 'right',
+      width: '40px',
       render: (_, data) => {
+        const items: MenuProps['items'] = [
+          {
+            key: 'edit',
+            label: <span style={{ color: '#3498db' }}>Sửa</span>,
+            icon: <EditOutlined style={{ color: '#3498db' }} />,
+          },
+          {
+            key: 'delete',
+            label: 'Xóa',
+            danger: true,
+            icon: <DeleteOutlined />,
+          },
+        ]
+
+        const handleMenuClick: MenuProps['onClick'] = (e) => {
+          e.domEvent.stopPropagation()
+          switch (e.key) {
+            case 'edit':
+              onClickUpdate(data.id)
+              break
+            case 'delete':
+              onClickDelete(data.id)
+              break
+            default:
+              break
+          }
+        }
+
         return (
-          <Flex gap='small' wrap='wrap'>
-            <Button
-              type='primary'
-              id={data.id}
-              onClick={onClickUpdate}
-              className='!bg-yellow-400 hover:opacity-80'
-            >
-              Sửa
-            </Button>
-            <Button type='primary' id={data.id} onClick={onClickDelete} danger>
-              Xóa
-            </Button>
-          </Flex>
+          <Dropdown
+            menu={{ items, onClick: handleMenuClick }}
+            placement='bottomRight'
+            trigger={['click']}
+          >
+            <div onClick={(e) => e.stopPropagation()} className='-ml-1'>
+              <MoreOutlined rotate={90} />
+            </div>
+          </Dropdown>
         )
       },
       hidden:

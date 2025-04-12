@@ -1,11 +1,16 @@
-import { FC, MouseEvent, useState } from 'react'
+import { FC, useState } from 'react'
 import { useGetListSeasons } from '@/apis/season/useQuerySeason'
 import { userInfoState } from '@/atom/authAtom'
 import { EAdminRole } from '@/domain/admin/type'
 import { IOpenForm } from '@/domain/common'
 import { ISeasonResponse } from '@/domain/season'
-import { FileAddOutlined } from '@ant-design/icons'
-import { Button, Flex } from 'antd'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  FileAddOutlined,
+  MoreOutlined,
+} from '@ant-design/icons'
+import { Button, Dropdown, MenuProps } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import { includes, isArray } from 'lodash'
 import { useRecoilValue } from 'recoil'
@@ -25,15 +30,13 @@ const SeasonV: FC = () => {
     setOpenForm({ active: true })
   }
 
-  const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
-    const item = isArray(data)
-      ? data.find((val) => val.id === e.currentTarget.id)
-      : undefined
+  const onClickUpdate = (id: string) => {
+    const item = isArray(data) ? data.find((val) => val.id === id) : undefined
     setOpenForm({ active: true, item })
   }
 
-  const onClickDelete = (e: MouseEvent<HTMLButtonElement>) => {
-    setOpenDel({ active: true, item: e.currentTarget.id })
+  const onClickDelete = (id: string) => {
+    setOpenDel({ active: true, item: id })
   }
 
   const isAdmin = userInfo && includes(userInfo.roles, EAdminRole.ADMIN)
@@ -69,31 +72,54 @@ const SeasonV: FC = () => {
       dataIndex: 'academic_year',
     },
     {
-      title: 'Hành động',
+      title: '',
       key: 'actions',
       dataIndex: 'actions',
+      fixed: 'right',
+      width: '40px',
+      className: '!p-0',
+      align: 'center',
       render: (_, data: ISeasonResponse) => {
+        const items: MenuProps['items'] = [
+          {
+            key: 'edit',
+            label: <span style={{ color: '#3498db' }}>Sửa</span>,
+            icon: <EditOutlined style={{ color: '#3498db' }} />,
+          },
+          {
+            key: 'delete',
+            label: 'Xóa',
+            danger: true,
+            icon: <DeleteOutlined />,
+          },
+        ]
+
+        const handleMenuClick: MenuProps['onClick'] = (e) => {
+          e.domEvent.stopPropagation()
+          switch (e.key) {
+            case 'edit':
+              onClickUpdate(data.id)
+              break
+            case 'delete':
+              onClickDelete(data.id)
+              break
+            default:
+              break
+          }
+        }
+
         return (
-          <Flex gap='small' wrap='wrap'>
+          <Dropdown
+            menu={{ items, onClick: handleMenuClick }}
+            placement='bottomRight'
+            trigger={['click']}
+          >
             <Button
-              type='primary'
-              id={data.id}
-              onClick={onClickUpdate}
-              className='!bg-yellow-400 hover:opacity-80'
-            >
-              Sửa
-            </Button>
-            {!data.is_current && (
-              <Button
-                type='primary'
-                id={data.id}
-                onClick={onClickDelete}
-                danger
-              >
-                Xóa
-              </Button>
-            )}
-          </Flex>
+              type='text'
+              icon={<MoreOutlined rotate={90} />}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </Dropdown>
         )
       },
       hidden: !isAdmin,

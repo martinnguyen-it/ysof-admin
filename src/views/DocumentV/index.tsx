@@ -6,9 +6,23 @@ import { currentSeasonState, selectSeasonState } from '@/atom/seasonAtom'
 import { EAdminRole, EAdminRoleDetail } from '@/domain/admin/type'
 import { ESort, IOpenForm } from '@/domain/common'
 import { EDocumentType, IDocumentInResponse } from '@/domain/document'
-import { FileAddOutlined } from '@ant-design/icons'
-import type { TableProps } from 'antd'
-import { Avatar, Button, Flex, Input, Pagination, Select, Tooltip } from 'antd'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  FileAddOutlined,
+  MoreOutlined,
+} from '@ant-design/icons'
+import type { MenuProps, TableProps } from 'antd'
+import {
+  Avatar,
+  Button,
+  Dropdown,
+  Flex,
+  Input,
+  Pagination,
+  Select,
+  Tooltip,
+} from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
 import { isArray, isObject } from 'lodash'
@@ -75,15 +89,13 @@ const DocumentV: FC = () => {
     setOpenForm(true)
   }
 
-  const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
-    const item = data?.data.find((val) => val.id === e.currentTarget.id)
+  const onClickUpdate = (id: string) => {
+    const item = data?.data.find((val) => val.id === id)
     setOpenEdit(item)
   }
 
-  const onClickDelete = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
-    setOpenDel({ active: true, item: e.currentTarget.id })
+  const onClickDelete = (id: string) => {
+    setOpenDel({ active: true, item: id })
   }
 
   useEffect(() => {
@@ -196,32 +208,58 @@ const DocumentV: FC = () => {
       },
     },
     {
-      title: 'Hành động',
+      title: '',
       key: 'actions',
       dataIndex: 'actions',
       fixed: 'right',
+      width: '40px',
+      className: '!p-0',
+      align: 'center',
       render: (_, data: IDocumentInResponse) => {
+        const items: MenuProps['items'] = [
+          {
+            key: 'edit',
+            label: <span style={{ color: '#3498db' }}>Sửa</span>,
+            icon: <EditOutlined style={{ color: '#3498db' }} />,
+          },
+          {
+            key: 'delete',
+            label: 'Xóa',
+            danger: true,
+            icon: <DeleteOutlined />,
+          },
+        ]
+
+        const handleMenuClick: MenuProps['onClick'] = (e) => {
+          e.domEvent.stopPropagation()
+          switch (e.key) {
+            case 'edit':
+              onClickUpdate(data.id)
+              break
+            case 'delete':
+              onClickDelete(data.id)
+              break
+            default:
+              break
+          }
+        }
+
         return (
           <Flex gap='small' wrap='wrap'>
             {userInfo &&
             (userInfo.roles.includes(data.role) || isSuperAdmin(true)) ? (
               <>
-                <Button
-                  type='primary'
-                  id={data.id}
-                  onClick={onClickUpdate}
-                  className='!bg-yellow-400 hover:opacity-80'
+                <Dropdown
+                  menu={{ items, onClick: handleMenuClick }}
+                  placement='bottomRight'
+                  trigger={['click']}
                 >
-                  Sửa
-                </Button>
-                <Button
-                  type='primary'
-                  id={data.id}
-                  onClick={onClickDelete}
-                  danger
-                >
-                  Xóa
-                </Button>
+                  <Button
+                    type='text'
+                    icon={<MoreOutlined rotate={90} />}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </Dropdown>
               </>
             ) : (
               <>--</>

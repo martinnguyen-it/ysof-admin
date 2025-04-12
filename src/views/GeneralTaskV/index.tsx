@@ -5,14 +5,26 @@ import { currentSeasonState, selectSeasonState } from '@/atom/seasonAtom'
 import { EAdminRole, EAdminRoleDetail } from '@/domain/admin/type'
 import { ESort, IOpenForm, IOpenFormWithMode } from '@/domain/common'
 import { EGeneralTaskType, IGeneralTaskInResponse } from '@/domain/generalTask'
-import { FileAddOutlined } from '@ant-design/icons'
-import type { TableProps } from 'antd'
-import { Avatar, Button, Flex, Input, Pagination, Select, Tooltip } from 'antd'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  FileAddOutlined,
+  MoreOutlined,
+} from '@ant-design/icons'
+import type { MenuProps, TableProps } from 'antd'
+import {
+  Avatar,
+  Button,
+  Dropdown,
+  Input,
+  Pagination,
+  Select,
+  Tooltip,
+} from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
 import { isArray, isObject } from 'lodash'
 import { useRecoilValue } from 'recoil'
-import { isSuperAdmin } from '@/lib/utils'
 import {
   EGeneralTaskTypeDetail,
   OPTIONS_GENERAL_TASK_LABEL,
@@ -53,15 +65,13 @@ const GeneralTaskV: FC = () => {
     setOpenForm({ active: true, mode: 'add' })
   }
 
-  const onClickUpdate = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
-    const item = data?.data.find((val) => val.id === e.currentTarget.id)
+  const onClickUpdate = (id: string) => {
+    const item = data?.data.find((val) => val.id === id)
     setOpenForm({ active: true, mode: 'add', item })
   }
 
-  const onClickDelete = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
-    setOpenDel({ active: true, item: e.currentTarget.id })
+  const onClickDelete = (id: string) => {
+    setOpenDel({ active: true, item: id })
   }
 
   useEffect(() => {
@@ -186,37 +196,54 @@ const GeneralTaskV: FC = () => {
       },
     },
     {
-      title: 'Hành động',
+      title: '',
       key: 'actions',
       dataIndex: 'actions',
       fixed: 'right',
+      width: '40px',
+      className: '!p-0',
+      align: 'center',
       render: (_, data: IGeneralTaskInResponse) => {
+        const items: MenuProps['items'] = [
+          {
+            key: 'edit',
+            label: <span style={{ color: '#3498db' }}>Sửa</span>,
+            icon: <EditOutlined style={{ color: '#3498db' }} />,
+          },
+          {
+            key: 'delete',
+            label: 'Xóa',
+            danger: true,
+            icon: <DeleteOutlined />,
+          },
+        ]
+
+        const handleMenuClick: MenuProps['onClick'] = (e) => {
+          e.domEvent.stopPropagation()
+          switch (e.key) {
+            case 'edit':
+              onClickUpdate(data.id)
+              break
+            case 'delete':
+              onClickDelete(data.id)
+              break
+            default:
+              break
+          }
+        }
+
         return (
-          <Flex gap='small' wrap='wrap'>
-            {userInfo &&
-            (userInfo.roles.includes(data.role) || isSuperAdmin(true)) ? (
-              <>
-                <Button
-                  type='primary'
-                  id={data.id}
-                  onClick={onClickUpdate}
-                  className='!bg-yellow-400 hover:opacity-80'
-                >
-                  Sửa
-                </Button>
-                <Button
-                  type='primary'
-                  id={data.id}
-                  onClick={onClickDelete}
-                  danger
-                >
-                  Xóa
-                </Button>
-              </>
-            ) : (
-              <>--</>
-            )}
-          </Flex>
+          <Dropdown
+            menu={{ items, onClick: handleMenuClick }}
+            placement='bottomRight'
+            trigger={['click']}
+          >
+            <Button
+              type='text'
+              icon={<MoreOutlined rotate={90} />}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </Dropdown>
         )
       },
     },
