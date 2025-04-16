@@ -25,6 +25,9 @@ const AuthenticatedTaiLieuLazyImport = createFileRoute(
 const AuthenticatedTaiKhoanLazyImport = createFileRoute(
   '/_authenticated/tai-khoan',
 )()
+const AuthenticatedQuanLyLoiTacVuLazyImport = createFileRoute(
+  '/_authenticated/quan-ly-loi-tac-vu',
+)()
 const AuthenticatedNhatKyChinhSuaLazyImport = createFileRoute(
   '/_authenticated/nhat-ky-chinh-sua',
 )()
@@ -102,6 +105,17 @@ const AuthenticatedTaiKhoanLazyRoute = AuthenticatedTaiKhoanLazyImport.update({
 } as any).lazy(() =>
   import('./routes/_authenticated/tai-khoan.lazy').then((d) => d.Route),
 )
+
+const AuthenticatedQuanLyLoiTacVuLazyRoute =
+  AuthenticatedQuanLyLoiTacVuLazyImport.update({
+    id: '/quan-ly-loi-tac-vu',
+    path: '/quan-ly-loi-tac-vu',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/quan-ly-loi-tac-vu.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 const AuthenticatedNhatKyChinhSuaLazyRoute =
   AuthenticatedNhatKyChinhSuaLazyImport.update({
@@ -405,6 +419,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNhatKyChinhSuaLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/quan-ly-loi-tac-vu': {
+      id: '/_authenticated/quan-ly-loi-tac-vu'
+      path: '/quan-ly-loi-tac-vu'
+      fullPath: '/quan-ly-loi-tac-vu'
+      preLoaderRoute: typeof AuthenticatedQuanLyLoiTacVuLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/tai-khoan': {
       id: '/_authenticated/tai-khoan'
       path: '/tai-khoan'
@@ -493,6 +514,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedGiangVienLazyRoute: typeof AuthenticatedGiangVienLazyRoute
   AuthenticatedMuaLazyRoute: typeof AuthenticatedMuaLazyRoute
   AuthenticatedNhatKyChinhSuaLazyRoute: typeof AuthenticatedNhatKyChinhSuaLazyRoute
+  AuthenticatedQuanLyLoiTacVuLazyRoute: typeof AuthenticatedQuanLyLoiTacVuLazyRoute
   AuthenticatedTaiKhoanLazyRoute: typeof AuthenticatedTaiKhoanLazyRoute
   AuthenticatedTaiLieuLazyRoute: typeof AuthenticatedTaiLieuLazyRoute
   AuthenticatedIndexLazyRoute: typeof AuthenticatedIndexLazyRoute
@@ -512,6 +534,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedGiangVienLazyRoute: AuthenticatedGiangVienLazyRoute,
   AuthenticatedMuaLazyRoute: AuthenticatedMuaLazyRoute,
   AuthenticatedNhatKyChinhSuaLazyRoute: AuthenticatedNhatKyChinhSuaLazyRoute,
+  AuthenticatedQuanLyLoiTacVuLazyRoute: AuthenticatedQuanLyLoiTacVuLazyRoute,
   AuthenticatedTaiKhoanLazyRoute: AuthenticatedTaiKhoanLazyRoute,
   AuthenticatedTaiLieuLazyRoute: AuthenticatedTaiLieuLazyRoute,
   AuthenticatedIndexLazyRoute: AuthenticatedIndexLazyRoute,
@@ -547,6 +570,7 @@ export interface FileRoutesByFullPath {
   '/giang-vien': typeof AuthenticatedGiangVienLazyRoute
   '/mua': typeof AuthenticatedMuaLazyRoute
   '/nhat-ky-chinh-sua': typeof AuthenticatedNhatKyChinhSuaLazyRoute
+  '/quan-ly-loi-tac-vu': typeof AuthenticatedQuanLyLoiTacVuLazyRoute
   '/tai-khoan': typeof AuthenticatedTaiKhoanLazyRoute
   '/tai-lieu': typeof AuthenticatedTaiLieuLazyRoute
   '/': typeof AuthenticatedIndexLazyRoute
@@ -573,6 +597,7 @@ export interface FileRoutesByTo {
   '/giang-vien': typeof AuthenticatedGiangVienLazyRoute
   '/mua': typeof AuthenticatedMuaLazyRoute
   '/nhat-ky-chinh-sua': typeof AuthenticatedNhatKyChinhSuaLazyRoute
+  '/quan-ly-loi-tac-vu': typeof AuthenticatedQuanLyLoiTacVuLazyRoute
   '/tai-khoan': typeof AuthenticatedTaiKhoanLazyRoute
   '/tai-lieu': typeof AuthenticatedTaiLieuLazyRoute
   '/': typeof AuthenticatedIndexLazyRoute
@@ -602,6 +627,7 @@ export interface FileRoutesById {
   '/_authenticated/giang-vien': typeof AuthenticatedGiangVienLazyRoute
   '/_authenticated/mua': typeof AuthenticatedMuaLazyRoute
   '/_authenticated/nhat-ky-chinh-sua': typeof AuthenticatedNhatKyChinhSuaLazyRoute
+  '/_authenticated/quan-ly-loi-tac-vu': typeof AuthenticatedQuanLyLoiTacVuLazyRoute
   '/_authenticated/tai-khoan': typeof AuthenticatedTaiKhoanLazyRoute
   '/_authenticated/tai-lieu': typeof AuthenticatedTaiLieuLazyRoute
   '/_authenticated/': typeof AuthenticatedIndexLazyRoute
@@ -631,6 +657,7 @@ export interface FileRouteTypes {
     | '/giang-vien'
     | '/mua'
     | '/nhat-ky-chinh-sua'
+    | '/quan-ly-loi-tac-vu'
     | '/tai-khoan'
     | '/tai-lieu'
     | '/'
@@ -656,6 +683,7 @@ export interface FileRouteTypes {
     | '/giang-vien'
     | '/mua'
     | '/nhat-ky-chinh-sua'
+    | '/quan-ly-loi-tac-vu'
     | '/tai-khoan'
     | '/tai-lieu'
     | '/'
@@ -683,6 +711,7 @@ export interface FileRouteTypes {
     | '/_authenticated/giang-vien'
     | '/_authenticated/mua'
     | '/_authenticated/nhat-ky-chinh-sua'
+    | '/_authenticated/quan-ly-loi-tac-vu'
     | '/_authenticated/tai-khoan'
     | '/_authenticated/tai-lieu'
     | '/_authenticated/'
@@ -750,6 +779,7 @@ export const routeTree = rootRoute
         "/_authenticated/giang-vien",
         "/_authenticated/mua",
         "/_authenticated/nhat-ky-chinh-sua",
+        "/_authenticated/quan-ly-loi-tac-vu",
         "/_authenticated/tai-khoan",
         "/_authenticated/tai-lieu",
         "/_authenticated/",
@@ -805,6 +835,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/nhat-ky-chinh-sua": {
       "filePath": "_authenticated/nhat-ky-chinh-sua.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/quan-ly-loi-tac-vu": {
+      "filePath": "_authenticated/quan-ly-loi-tac-vu.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/tai-khoan": {

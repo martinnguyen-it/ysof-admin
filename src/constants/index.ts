@@ -48,6 +48,9 @@ export const API_LIST = {
   auditLog: '/api/v1/audit-logs',
   getDailyBibleQuotes: '/api/v1/daily-bible/daily-quotes',
   updateAvatar: '/api/v1/admins/me/avatar',
+  failedTask: '/api/v1/celery-result/failed',
+  markResolvedFailedTasks: '/api/v1/celery-result/mark-resolved-failed',
+  undoMarkResolvedFailedTasks: '/api/v1/celery-result/undo-mark-resolved',
 }
 
 export const OPTIONS_ROLE = Object.keys(EAdminRoleDetail).map((key) => ({
