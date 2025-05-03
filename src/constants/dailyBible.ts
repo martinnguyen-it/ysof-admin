@@ -5,5 +5,5 @@ export const LiturgicalSeasonColors: { [key in ELiturgicalSeason]: string } = {
   [ELiturgicalSeason.CHRISTMAS]: '#bdc3c7',
   [ELiturgicalSeason.ORDINARY_TIME]: '#2ecc71',
   [ELiturgicalSeason.LENT]: '#9b59b6',
-  [ELiturgicalSeason.EASTER]: '#bdc3c7',
+  [ELiturgicalSeason.EASTER]: '#e74c3c',
 }

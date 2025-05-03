@@ -12,7 +12,7 @@ import {
   MoreOutlined,
 } from '@ant-design/icons'
 import type { MenuProps, TableProps } from 'antd'
-import { Button, Dropdown, Flex, Input, Select } from 'antd'
+import { Button, Dropdown, Input, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
 import { isArray, isObject } from 'lodash'
@@ -205,41 +205,38 @@ const SubjectV: FC = () => {
         }
 
         return (
-          <Flex gap='small' wrap='wrap'>
-            {userInfo &&
-              (((userInfo.roles.includes(EAdminRole.BHV) ||
-                isSuperAdmin(true)) && (
-                <>
-                  <Dropdown
-                    menu={{ items, onClick: handleMenuClick }}
-                    placement='bottomRight'
-                    trigger={['click']}
-                  >
-                    <Button
-                      type='text'
-                      icon={<MoreOutlined rotate={90} />}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </Dropdown>
-                </>
-              )) ||
-                (userInfo.roles.includes(EAdminRole.BKT) && (
-                  <Dropdown
-                    menu={{
-                      items: [items[0]],
-                      onClick: handleMenuClick,
-                    }}
-                    placement='bottomRight'
-                    trigger={['click']}
-                  >
-                    <Button
-                      type='text'
-                      icon={<MoreOutlined rotate={90} />}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </Dropdown>
-                )))}
-          </Flex>
+          userInfo &&
+          (((userInfo.roles.includes(EAdminRole.BHV) || isSuperAdmin(true)) && (
+            <>
+              <Dropdown
+                menu={{ items, onClick: handleMenuClick }}
+                placement='bottomRight'
+                trigger={['click']}
+              >
+                <Button
+                  type='text'
+                  icon={<MoreOutlined rotate={90} />}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </Dropdown>
+            </>
+          )) ||
+            (userInfo.roles.includes(EAdminRole.BKT) && (
+              <Dropdown
+                menu={{
+                  items: [items[0]],
+                  onClick: handleMenuClick,
+                }}
+                placement='bottomRight'
+                trigger={['click']}
+              >
+                <Button
+                  type='text'
+                  icon={<MoreOutlined rotate={90} />}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </Dropdown>
+            )))
         )
       },
       hidden:

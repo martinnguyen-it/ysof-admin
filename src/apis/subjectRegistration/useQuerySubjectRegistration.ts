@@ -27,11 +27,12 @@ export const useGetListSubjectRegistrations = (
 }
 
 export const useGetListSubjectRegistrationsBySubjectId = (
-  subjectId: string
+  subjectId: string,
+  search?: string
 ) => {
   const query = useQuery<IStudentInSubject[], AxiosError>({
-    queryKey: ['getListSubjectRegistrationsBySubjectId', subjectId],
-    queryFn: () => getListSubjectRegistrationsBySubjectId(subjectId),
+    queryKey: ['getListSubjectRegistrationsBySubjectId', subjectId, search],
+    queryFn: () => getListSubjectRegistrationsBySubjectId(subjectId, search),
   })
   useQueryErrorToast(query.isError, query?.error?.message!)
 

@@ -180,7 +180,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
         <Form.Item name='job' label='Công việc'>
           <Input placeholder='Nhập công việc' />
         </Form.Item>
-        <Form.Item label='Ghi chú' name='note'>
+        <Form.Item label='Ghi chú (Học viên không thấy phần này)' name='note'>
           <Input.TextArea />
         </Form.Item>
       </Form>

@@ -6,7 +6,10 @@ import { currentSeasonState } from '@/atom/seasonAtom'
 import { EAdminRole } from '@/domain/admin/type'
 import { ESort, IOpenForm } from '@/domain/common'
 import { ESubjectStatus } from '@/domain/subject'
-import { ISubjectAbsentInResponse } from '@/domain/subject/subjectAbsent'
+import {
+  EAbsentType,
+  ISubjectAbsentInResponse,
+} from '@/domain/subject/subjectAbsent'
 import {
   DeleteOutlined,
   EditOutlined,
@@ -19,6 +22,7 @@ import { isArray, isObject, size } from 'lodash'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
 import { isSuperAdmin } from '@/lib/utils'
+import { EAbsentTypeDetail } from '@/constants/subjectAbsent'
 import ModalAdd from './ModalAdd'
 import ModalDelete from './ModalDelete'
 
@@ -115,6 +119,19 @@ const SubjectAbsentV: FC = () => {
       width: '200px',
     },
     {
+      title: 'Loại',
+      dataIndex: 'type',
+      key: 'type',
+      width: '100px',
+      render: (value: EAbsentType) => EAbsentTypeDetail[value],
+    },
+    {
+      title: 'Người tạo',
+      dataIndex: 'created_by',
+      key: 'created_by',
+      width: '100px',
+    },
+    {
       title: 'Lý do',
       dataIndex: 'reason',
       key: 'reason',
@@ -130,6 +147,8 @@ const SubjectAbsentV: FC = () => {
       dataIndex: 'actions',
       fixed: 'right',
       width: '40px',
+      className: '!p-0',
+      align: 'center',
       render: (_, data) => {
         const items: MenuProps['items'] = [
           {
@@ -165,9 +184,11 @@ const SubjectAbsentV: FC = () => {
             placement='bottomRight'
             trigger={['click']}
           >
-            <div onClick={(e) => e.stopPropagation()} className='-ml-1'>
-              <MoreOutlined rotate={90} />
-            </div>
+            <Button
+              type='text'
+              icon={<MoreOutlined rotate={90} />}
+              onClick={(e) => e.stopPropagation()}
+            />
           </Dropdown>
         )
       },

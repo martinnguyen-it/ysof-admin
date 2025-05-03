@@ -12,6 +12,9 @@ export const getListSubjectRegistrations = (
   get(API_LIST.subjectRegistration, { params })
 
 export const getListSubjectRegistrationsBySubjectId = (
-  subjectId: string
+  subjectId: string,
+  search?: string
 ): Promise<IStudentInSubject[]> =>
-  get(API_LIST.subjectRegistration + '/subject/' + subjectId)
+  get(API_LIST.subjectRegistration + '/subject/' + subjectId, {
+    params: { search },
+  })

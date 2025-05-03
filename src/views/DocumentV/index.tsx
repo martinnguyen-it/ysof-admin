@@ -17,7 +17,6 @@ import {
   Avatar,
   Button,
   Dropdown,
-  Flex,
   Input,
   Pagination,
   Select,
@@ -244,27 +243,23 @@ const DocumentV: FC = () => {
           }
         }
 
-        return (
-          <Flex gap='small' wrap='wrap'>
-            {userInfo &&
-            (userInfo.roles.includes(data.role) || isSuperAdmin(true)) ? (
-              <>
-                <Dropdown
-                  menu={{ items, onClick: handleMenuClick }}
-                  placement='bottomRight'
-                  trigger={['click']}
-                >
-                  <Button
-                    type='text'
-                    icon={<MoreOutlined rotate={90} />}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </Dropdown>
-              </>
-            ) : (
-              <>--</>
-            )}
-          </Flex>
+        return userInfo &&
+          (userInfo.roles.includes(data.role) || isSuperAdmin(true)) ? (
+          <>
+            <Dropdown
+              menu={{ items, onClick: handleMenuClick }}
+              placement='bottomRight'
+              trigger={['click']}
+            >
+              <Button
+                type='text'
+                icon={<MoreOutlined rotate={90} />}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </Dropdown>
+          </>
+        ) : (
+          <>--</>
         )
       },
     },

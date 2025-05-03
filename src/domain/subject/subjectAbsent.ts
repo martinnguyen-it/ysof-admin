@@ -10,11 +10,23 @@ export interface ISubjectAbsentInResponse {
   reason?: string
   note?: string
   status?: boolean
+  created_by: ECreatedBy
+  type: EAbsentType
+}
+
+export enum EAbsentType {
+  NO_ATTEND = 'no_attend',
+  NO_EVALUATION = 'no_evaluation',
+}
+export enum ECreatedBy {
+  BTC = 'BTC',
+  HV = 'HV',
 }
 
 export interface ICreateSubjectAbsent {
   reason?: string
   note?: string
+  type: EAbsentType
 }
 
 export interface ICreateSubjectAbsentInPayload {
@@ -24,4 +36,8 @@ export interface ICreateSubjectAbsentInPayload {
 }
 
 export interface IUpdateSubjectAbsentInPayload
-  extends ICreateSubjectAbsentInPayload {}
+  extends Omit<ICreateSubjectAbsentInPayload, 'data'> {
+  data: Partial<ICreateSubjectAbsent> & {
+    status?: boolean
+  }
+}
