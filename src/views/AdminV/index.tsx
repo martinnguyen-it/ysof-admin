@@ -10,7 +10,7 @@ import {
 import { ESort, IOpenFormWithMode } from '@/domain/common'
 import { EditOutlined, FileAddOutlined, MoreOutlined } from '@ant-design/icons'
 import type { MenuProps, TableProps } from 'antd'
-import { Button, Dropdown, Input, Pagination } from 'antd'
+import { Avatar, Button, Dropdown, Input, Pagination } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
 import { isArray } from 'lodash'
@@ -94,9 +94,19 @@ const AdminV: FC = () => {
       key: 'full_name',
       sorter: true,
       render: (_, record: IAdminInResponse) => (
-        <>
-          {record.holy_name} {record.full_name}
-        </>
+        <Avatar.Group className='flex items-center'>
+          <img
+            className='mr-4 size-7 object-cover'
+            referrerPolicy='no-referrer'
+            src={record.avatar || '/images/avatar.png'}
+          />
+          {/* <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
+            {record.author.full_name}
+          </Link> */}
+          <p className='text-wrap font-medium text-black'>
+            {record.holy_name} {record.full_name}
+          </p>
+        </Avatar.Group>
       ),
     },
     {

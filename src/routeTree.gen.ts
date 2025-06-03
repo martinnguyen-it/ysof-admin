@@ -32,6 +32,9 @@ const AuthenticatedNhatKyChinhSuaLazyImport = createFileRoute(
   '/_authenticated/nhat-ky-chinh-sua',
 )()
 const AuthenticatedMuaLazyImport = createFileRoute('/_authenticated/mua')()
+const AuthenticatedHocVienLazyImport = createFileRoute(
+  '/_authenticated/hoc-vien',
+)()
 const AuthenticatedGiangVienLazyImport = createFileRoute(
   '/_authenticated/giang-vien',
 )()
@@ -46,18 +49,15 @@ const errors500LazyImport = createFileRoute('/(errors)/500')()
 const errors404LazyImport = createFileRoute('/(errors)/404')()
 const errors403LazyImport = createFileRoute('/(errors)/403')()
 const errors401LazyImport = createFileRoute('/(errors)/401')()
-const authSignInLazyImport = createFileRoute('/(auth)/sign-in')()
 const authForgotPasswordLazyImport = createFileRoute(
   '/(auth)/forgot-password',
 )()
+const authDangNhapLazyImport = createFileRoute('/(auth)/dang-nhap')()
 const AuthenticatedLuongGiaQuanLyFormLazyImport = createFileRoute(
   '/_authenticated/luong-gia/quan-ly-form',
 )()
 const AuthenticatedLuongGiaKetQuaLazyImport = createFileRoute(
   '/_authenticated/luong-gia/ket-qua',
-)()
-const AuthenticatedHocVienDanhSachHocVienLazyImport = createFileRoute(
-  '/_authenticated/hoc-vien/danh-sach-hoc-vien',
 )()
 const AuthenticatedDangKyMonQuanLyFormLazyImport = createFileRoute(
   '/_authenticated/dang-ky-mon/quan-ly-form',
@@ -67,6 +67,9 @@ const AuthenticatedDangKyMonKetQuaDangKyLazyImport = createFileRoute(
 )()
 const AuthenticatedChuDeNghiPhepLazyImport = createFileRoute(
   '/_authenticated/chu-de/nghi-phep',
+)()
+const AuthenticatedChuDeKetQuaDiemDanhLazyImport = createFileRoute(
+  '/_authenticated/chu-de/ket-qua-diem-danh',
 )()
 const AuthenticatedChuDeGuiEmailLazyImport = createFileRoute(
   '/_authenticated/chu-de/gui-email',
@@ -134,6 +137,14 @@ const AuthenticatedMuaLazyRoute = AuthenticatedMuaLazyImport.update({
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any).lazy(() =>
   import('./routes/_authenticated/mua.lazy').then((d) => d.Route),
+)
+
+const AuthenticatedHocVienLazyRoute = AuthenticatedHocVienLazyImport.update({
+  id: '/hoc-vien',
+  path: '/hoc-vien',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any).lazy(() =>
+  import('./routes/_authenticated/hoc-vien.lazy').then((d) => d.Route),
 )
 
 const AuthenticatedGiangVienLazyRoute = AuthenticatedGiangVienLazyImport.update(
@@ -205,14 +216,6 @@ const errors401LazyRoute = errors401LazyImport
   } as any)
   .lazy(() => import('./routes/(errors)/401.lazy').then((d) => d.Route))
 
-const authSignInLazyRoute = authSignInLazyImport
-  .update({
-    id: '/(auth)/sign-in',
-    path: '/sign-in',
-    getParentRoute: () => rootRoute,
-  } as any)
-  .lazy(() => import('./routes/(auth)/sign-in.lazy').then((d) => d.Route))
-
 const authForgotPasswordLazyRoute = authForgotPasswordLazyImport
   .update({
     id: '/(auth)/forgot-password',
@@ -222,6 +225,14 @@ const authForgotPasswordLazyRoute = authForgotPasswordLazyImport
   .lazy(() =>
     import('./routes/(auth)/forgot-password.lazy').then((d) => d.Route),
   )
+
+const authDangNhapLazyRoute = authDangNhapLazyImport
+  .update({
+    id: '/(auth)/dang-nhap',
+    path: '/dang-nhap',
+    getParentRoute: () => rootRoute,
+  } as any)
+  .lazy(() => import('./routes/(auth)/dang-nhap.lazy').then((d) => d.Route))
 
 const auth500Route = auth500Import.update({
   id: '/(auth)/500',
@@ -247,17 +258,6 @@ const AuthenticatedLuongGiaKetQuaLazyRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/luong-gia/ket-qua.lazy').then(
-      (d) => d.Route,
-    ),
-  )
-
-const AuthenticatedHocVienDanhSachHocVienLazyRoute =
-  AuthenticatedHocVienDanhSachHocVienLazyImport.update({
-    id: '/hoc-vien/danh-sach-hoc-vien',
-    path: '/hoc-vien/danh-sach-hoc-vien',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/hoc-vien/danh-sach-hoc-vien.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -291,6 +291,17 @@ const AuthenticatedChuDeNghiPhepLazyRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/chu-de/nghi-phep.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const AuthenticatedChuDeKetQuaDiemDanhLazyRoute =
+  AuthenticatedChuDeKetQuaDiemDanhLazyImport.update({
+    id: '/chu-de/ket-qua-diem-danh',
+    path: '/chu-de/ket-qua-diem-danh',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/chu-de/ket-qua-diem-danh.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -335,18 +346,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof auth500Import
       parentRoute: typeof rootRoute
     }
+    '/(auth)/dang-nhap': {
+      id: '/(auth)/dang-nhap'
+      path: '/dang-nhap'
+      fullPath: '/dang-nhap'
+      preLoaderRoute: typeof authDangNhapLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/(auth)/forgot-password': {
       id: '/(auth)/forgot-password'
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof authForgotPasswordLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/sign-in': {
-      id: '/(auth)/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof authSignInLazyImport
       parentRoute: typeof rootRoute
     }
     '/(errors)/401': {
@@ -405,6 +416,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGiangVienLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/hoc-vien': {
+      id: '/_authenticated/hoc-vien'
+      path: '/hoc-vien'
+      fullPath: '/hoc-vien'
+      preLoaderRoute: typeof AuthenticatedHocVienLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/mua': {
       id: '/_authenticated/mua'
       path: '/mua'
@@ -461,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChuDeGuiEmailLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/chu-de/ket-qua-diem-danh': {
+      id: '/_authenticated/chu-de/ket-qua-diem-danh'
+      path: '/chu-de/ket-qua-diem-danh'
+      fullPath: '/chu-de/ket-qua-diem-danh'
+      preLoaderRoute: typeof AuthenticatedChuDeKetQuaDiemDanhLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/chu-de/nghi-phep': {
       id: '/_authenticated/chu-de/nghi-phep'
       path: '/chu-de/nghi-phep'
@@ -480,13 +505,6 @@ declare module '@tanstack/react-router' {
       path: '/dang-ky-mon/quan-ly-form'
       fullPath: '/dang-ky-mon/quan-ly-form'
       preLoaderRoute: typeof AuthenticatedDangKyMonQuanLyFormLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/hoc-vien/danh-sach-hoc-vien': {
-      id: '/_authenticated/hoc-vien/danh-sach-hoc-vien'
-      path: '/hoc-vien/danh-sach-hoc-vien'
-      fullPath: '/hoc-vien/danh-sach-hoc-vien'
-      preLoaderRoute: typeof AuthenticatedHocVienDanhSachHocVienLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/luong-gia/ket-qua': {
@@ -512,6 +530,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBanToChucLazyRoute: typeof AuthenticatedBanToChucLazyRoute
   AuthenticatedCongViecChungLazyRoute: typeof AuthenticatedCongViecChungLazyRoute
   AuthenticatedGiangVienLazyRoute: typeof AuthenticatedGiangVienLazyRoute
+  AuthenticatedHocVienLazyRoute: typeof AuthenticatedHocVienLazyRoute
   AuthenticatedMuaLazyRoute: typeof AuthenticatedMuaLazyRoute
   AuthenticatedNhatKyChinhSuaLazyRoute: typeof AuthenticatedNhatKyChinhSuaLazyRoute
   AuthenticatedQuanLyLoiTacVuLazyRoute: typeof AuthenticatedQuanLyLoiTacVuLazyRoute
@@ -520,10 +539,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexLazyRoute: typeof AuthenticatedIndexLazyRoute
   AuthenticatedChuDeDanhSachChuDeLazyRoute: typeof AuthenticatedChuDeDanhSachChuDeLazyRoute
   AuthenticatedChuDeGuiEmailLazyRoute: typeof AuthenticatedChuDeGuiEmailLazyRoute
+  AuthenticatedChuDeKetQuaDiemDanhLazyRoute: typeof AuthenticatedChuDeKetQuaDiemDanhLazyRoute
   AuthenticatedChuDeNghiPhepLazyRoute: typeof AuthenticatedChuDeNghiPhepLazyRoute
   AuthenticatedDangKyMonKetQuaDangKyLazyRoute: typeof AuthenticatedDangKyMonKetQuaDangKyLazyRoute
   AuthenticatedDangKyMonQuanLyFormLazyRoute: typeof AuthenticatedDangKyMonQuanLyFormLazyRoute
-  AuthenticatedHocVienDanhSachHocVienLazyRoute: typeof AuthenticatedHocVienDanhSachHocVienLazyRoute
   AuthenticatedLuongGiaKetQuaLazyRoute: typeof AuthenticatedLuongGiaKetQuaLazyRoute
   AuthenticatedLuongGiaQuanLyFormLazyRoute: typeof AuthenticatedLuongGiaQuanLyFormLazyRoute
 }
@@ -532,6 +551,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBanToChucLazyRoute: AuthenticatedBanToChucLazyRoute,
   AuthenticatedCongViecChungLazyRoute: AuthenticatedCongViecChungLazyRoute,
   AuthenticatedGiangVienLazyRoute: AuthenticatedGiangVienLazyRoute,
+  AuthenticatedHocVienLazyRoute: AuthenticatedHocVienLazyRoute,
   AuthenticatedMuaLazyRoute: AuthenticatedMuaLazyRoute,
   AuthenticatedNhatKyChinhSuaLazyRoute: AuthenticatedNhatKyChinhSuaLazyRoute,
   AuthenticatedQuanLyLoiTacVuLazyRoute: AuthenticatedQuanLyLoiTacVuLazyRoute,
@@ -541,13 +561,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChuDeDanhSachChuDeLazyRoute:
     AuthenticatedChuDeDanhSachChuDeLazyRoute,
   AuthenticatedChuDeGuiEmailLazyRoute: AuthenticatedChuDeGuiEmailLazyRoute,
+  AuthenticatedChuDeKetQuaDiemDanhLazyRoute:
+    AuthenticatedChuDeKetQuaDiemDanhLazyRoute,
   AuthenticatedChuDeNghiPhepLazyRoute: AuthenticatedChuDeNghiPhepLazyRoute,
   AuthenticatedDangKyMonKetQuaDangKyLazyRoute:
     AuthenticatedDangKyMonKetQuaDangKyLazyRoute,
   AuthenticatedDangKyMonQuanLyFormLazyRoute:
     AuthenticatedDangKyMonQuanLyFormLazyRoute,
-  AuthenticatedHocVienDanhSachHocVienLazyRoute:
-    AuthenticatedHocVienDanhSachHocVienLazyRoute,
   AuthenticatedLuongGiaKetQuaLazyRoute: AuthenticatedLuongGiaKetQuaLazyRoute,
   AuthenticatedLuongGiaQuanLyFormLazyRoute:
     AuthenticatedLuongGiaQuanLyFormLazyRoute,
@@ -559,8 +579,8 @@ const AuthenticatedRouteRouteWithChildren =
 export interface FileRoutesByFullPath {
   '': typeof AuthenticatedRouteRouteWithChildren
   '/500': typeof errors500LazyRoute
+  '/dang-nhap': typeof authDangNhapLazyRoute
   '/forgot-password': typeof authForgotPasswordLazyRoute
-  '/sign-in': typeof authSignInLazyRoute
   '/401': typeof errors401LazyRoute
   '/403': typeof errors403LazyRoute
   '/404': typeof errors404LazyRoute
@@ -568,6 +588,7 @@ export interface FileRoutesByFullPath {
   '/ban-to-chuc': typeof AuthenticatedBanToChucLazyRoute
   '/cong-viec-chung': typeof AuthenticatedCongViecChungLazyRoute
   '/giang-vien': typeof AuthenticatedGiangVienLazyRoute
+  '/hoc-vien': typeof AuthenticatedHocVienLazyRoute
   '/mua': typeof AuthenticatedMuaLazyRoute
   '/nhat-ky-chinh-sua': typeof AuthenticatedNhatKyChinhSuaLazyRoute
   '/quan-ly-loi-tac-vu': typeof AuthenticatedQuanLyLoiTacVuLazyRoute
@@ -576,18 +597,18 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexLazyRoute
   '/chu-de/danh-sach-chu-de': typeof AuthenticatedChuDeDanhSachChuDeLazyRoute
   '/chu-de/gui-email': typeof AuthenticatedChuDeGuiEmailLazyRoute
+  '/chu-de/ket-qua-diem-danh': typeof AuthenticatedChuDeKetQuaDiemDanhLazyRoute
   '/chu-de/nghi-phep': typeof AuthenticatedChuDeNghiPhepLazyRoute
   '/dang-ky-mon/ket-qua-dang-ky': typeof AuthenticatedDangKyMonKetQuaDangKyLazyRoute
   '/dang-ky-mon/quan-ly-form': typeof AuthenticatedDangKyMonQuanLyFormLazyRoute
-  '/hoc-vien/danh-sach-hoc-vien': typeof AuthenticatedHocVienDanhSachHocVienLazyRoute
   '/luong-gia/ket-qua': typeof AuthenticatedLuongGiaKetQuaLazyRoute
   '/luong-gia/quan-ly-form': typeof AuthenticatedLuongGiaQuanLyFormLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/500': typeof errors500LazyRoute
+  '/dang-nhap': typeof authDangNhapLazyRoute
   '/forgot-password': typeof authForgotPasswordLazyRoute
-  '/sign-in': typeof authSignInLazyRoute
   '/401': typeof errors401LazyRoute
   '/403': typeof errors403LazyRoute
   '/404': typeof errors404LazyRoute
@@ -595,6 +616,7 @@ export interface FileRoutesByTo {
   '/ban-to-chuc': typeof AuthenticatedBanToChucLazyRoute
   '/cong-viec-chung': typeof AuthenticatedCongViecChungLazyRoute
   '/giang-vien': typeof AuthenticatedGiangVienLazyRoute
+  '/hoc-vien': typeof AuthenticatedHocVienLazyRoute
   '/mua': typeof AuthenticatedMuaLazyRoute
   '/nhat-ky-chinh-sua': typeof AuthenticatedNhatKyChinhSuaLazyRoute
   '/quan-ly-loi-tac-vu': typeof AuthenticatedQuanLyLoiTacVuLazyRoute
@@ -603,10 +625,10 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexLazyRoute
   '/chu-de/danh-sach-chu-de': typeof AuthenticatedChuDeDanhSachChuDeLazyRoute
   '/chu-de/gui-email': typeof AuthenticatedChuDeGuiEmailLazyRoute
+  '/chu-de/ket-qua-diem-danh': typeof AuthenticatedChuDeKetQuaDiemDanhLazyRoute
   '/chu-de/nghi-phep': typeof AuthenticatedChuDeNghiPhepLazyRoute
   '/dang-ky-mon/ket-qua-dang-ky': typeof AuthenticatedDangKyMonKetQuaDangKyLazyRoute
   '/dang-ky-mon/quan-ly-form': typeof AuthenticatedDangKyMonQuanLyFormLazyRoute
-  '/hoc-vien/danh-sach-hoc-vien': typeof AuthenticatedHocVienDanhSachHocVienLazyRoute
   '/luong-gia/ket-qua': typeof AuthenticatedLuongGiaKetQuaLazyRoute
   '/luong-gia/quan-ly-form': typeof AuthenticatedLuongGiaQuanLyFormLazyRoute
 }
@@ -615,8 +637,8 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/(auth)/500': typeof auth500Route
+  '/(auth)/dang-nhap': typeof authDangNhapLazyRoute
   '/(auth)/forgot-password': typeof authForgotPasswordLazyRoute
-  '/(auth)/sign-in': typeof authSignInLazyRoute
   '/(errors)/401': typeof errors401LazyRoute
   '/(errors)/403': typeof errors403LazyRoute
   '/(errors)/404': typeof errors404LazyRoute
@@ -625,6 +647,7 @@ export interface FileRoutesById {
   '/_authenticated/ban-to-chuc': typeof AuthenticatedBanToChucLazyRoute
   '/_authenticated/cong-viec-chung': typeof AuthenticatedCongViecChungLazyRoute
   '/_authenticated/giang-vien': typeof AuthenticatedGiangVienLazyRoute
+  '/_authenticated/hoc-vien': typeof AuthenticatedHocVienLazyRoute
   '/_authenticated/mua': typeof AuthenticatedMuaLazyRoute
   '/_authenticated/nhat-ky-chinh-sua': typeof AuthenticatedNhatKyChinhSuaLazyRoute
   '/_authenticated/quan-ly-loi-tac-vu': typeof AuthenticatedQuanLyLoiTacVuLazyRoute
@@ -633,10 +656,10 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexLazyRoute
   '/_authenticated/chu-de/danh-sach-chu-de': typeof AuthenticatedChuDeDanhSachChuDeLazyRoute
   '/_authenticated/chu-de/gui-email': typeof AuthenticatedChuDeGuiEmailLazyRoute
+  '/_authenticated/chu-de/ket-qua-diem-danh': typeof AuthenticatedChuDeKetQuaDiemDanhLazyRoute
   '/_authenticated/chu-de/nghi-phep': typeof AuthenticatedChuDeNghiPhepLazyRoute
   '/_authenticated/dang-ky-mon/ket-qua-dang-ky': typeof AuthenticatedDangKyMonKetQuaDangKyLazyRoute
   '/_authenticated/dang-ky-mon/quan-ly-form': typeof AuthenticatedDangKyMonQuanLyFormLazyRoute
-  '/_authenticated/hoc-vien/danh-sach-hoc-vien': typeof AuthenticatedHocVienDanhSachHocVienLazyRoute
   '/_authenticated/luong-gia/ket-qua': typeof AuthenticatedLuongGiaKetQuaLazyRoute
   '/_authenticated/luong-gia/quan-ly-form': typeof AuthenticatedLuongGiaQuanLyFormLazyRoute
 }
@@ -646,8 +669,8 @@ export interface FileRouteTypes {
   fullPaths:
     | ''
     | '/500'
+    | '/dang-nhap'
     | '/forgot-password'
-    | '/sign-in'
     | '/401'
     | '/403'
     | '/404'
@@ -655,6 +678,7 @@ export interface FileRouteTypes {
     | '/ban-to-chuc'
     | '/cong-viec-chung'
     | '/giang-vien'
+    | '/hoc-vien'
     | '/mua'
     | '/nhat-ky-chinh-sua'
     | '/quan-ly-loi-tac-vu'
@@ -663,17 +687,17 @@ export interface FileRouteTypes {
     | '/'
     | '/chu-de/danh-sach-chu-de'
     | '/chu-de/gui-email'
+    | '/chu-de/ket-qua-diem-danh'
     | '/chu-de/nghi-phep'
     | '/dang-ky-mon/ket-qua-dang-ky'
     | '/dang-ky-mon/quan-ly-form'
-    | '/hoc-vien/danh-sach-hoc-vien'
     | '/luong-gia/ket-qua'
     | '/luong-gia/quan-ly-form'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/500'
+    | '/dang-nhap'
     | '/forgot-password'
-    | '/sign-in'
     | '/401'
     | '/403'
     | '/404'
@@ -681,6 +705,7 @@ export interface FileRouteTypes {
     | '/ban-to-chuc'
     | '/cong-viec-chung'
     | '/giang-vien'
+    | '/hoc-vien'
     | '/mua'
     | '/nhat-ky-chinh-sua'
     | '/quan-ly-loi-tac-vu'
@@ -689,18 +714,18 @@ export interface FileRouteTypes {
     | '/'
     | '/chu-de/danh-sach-chu-de'
     | '/chu-de/gui-email'
+    | '/chu-de/ket-qua-diem-danh'
     | '/chu-de/nghi-phep'
     | '/dang-ky-mon/ket-qua-dang-ky'
     | '/dang-ky-mon/quan-ly-form'
-    | '/hoc-vien/danh-sach-hoc-vien'
     | '/luong-gia/ket-qua'
     | '/luong-gia/quan-ly-form'
   id:
     | '__root__'
     | '/_authenticated'
     | '/(auth)/500'
+    | '/(auth)/dang-nhap'
     | '/(auth)/forgot-password'
-    | '/(auth)/sign-in'
     | '/(errors)/401'
     | '/(errors)/403'
     | '/(errors)/404'
@@ -709,6 +734,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ban-to-chuc'
     | '/_authenticated/cong-viec-chung'
     | '/_authenticated/giang-vien'
+    | '/_authenticated/hoc-vien'
     | '/_authenticated/mua'
     | '/_authenticated/nhat-ky-chinh-sua'
     | '/_authenticated/quan-ly-loi-tac-vu'
@@ -717,10 +743,10 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/chu-de/danh-sach-chu-de'
     | '/_authenticated/chu-de/gui-email'
+    | '/_authenticated/chu-de/ket-qua-diem-danh'
     | '/_authenticated/chu-de/nghi-phep'
     | '/_authenticated/dang-ky-mon/ket-qua-dang-ky'
     | '/_authenticated/dang-ky-mon/quan-ly-form'
-    | '/_authenticated/hoc-vien/danh-sach-hoc-vien'
     | '/_authenticated/luong-gia/ket-qua'
     | '/_authenticated/luong-gia/quan-ly-form'
   fileRoutesById: FileRoutesById
@@ -729,8 +755,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   auth500Route: typeof auth500Route
+  authDangNhapLazyRoute: typeof authDangNhapLazyRoute
   authForgotPasswordLazyRoute: typeof authForgotPasswordLazyRoute
-  authSignInLazyRoute: typeof authSignInLazyRoute
   errors401LazyRoute: typeof errors401LazyRoute
   errors403LazyRoute: typeof errors403LazyRoute
   errors404LazyRoute: typeof errors404LazyRoute
@@ -741,8 +767,8 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   auth500Route: auth500Route,
+  authDangNhapLazyRoute: authDangNhapLazyRoute,
   authForgotPasswordLazyRoute: authForgotPasswordLazyRoute,
-  authSignInLazyRoute: authSignInLazyRoute,
   errors401LazyRoute: errors401LazyRoute,
   errors403LazyRoute: errors403LazyRoute,
   errors404LazyRoute: errors404LazyRoute,
@@ -762,8 +788,8 @@ export const routeTree = rootRoute
       "children": [
         "/_authenticated",
         "/(auth)/500",
+        "/(auth)/dang-nhap",
         "/(auth)/forgot-password",
-        "/(auth)/sign-in",
         "/(errors)/401",
         "/(errors)/403",
         "/(errors)/404",
@@ -777,6 +803,7 @@ export const routeTree = rootRoute
         "/_authenticated/ban-to-chuc",
         "/_authenticated/cong-viec-chung",
         "/_authenticated/giang-vien",
+        "/_authenticated/hoc-vien",
         "/_authenticated/mua",
         "/_authenticated/nhat-ky-chinh-sua",
         "/_authenticated/quan-ly-loi-tac-vu",
@@ -785,10 +812,10 @@ export const routeTree = rootRoute
         "/_authenticated/",
         "/_authenticated/chu-de/danh-sach-chu-de",
         "/_authenticated/chu-de/gui-email",
+        "/_authenticated/chu-de/ket-qua-diem-danh",
         "/_authenticated/chu-de/nghi-phep",
         "/_authenticated/dang-ky-mon/ket-qua-dang-ky",
         "/_authenticated/dang-ky-mon/quan-ly-form",
-        "/_authenticated/hoc-vien/danh-sach-hoc-vien",
         "/_authenticated/luong-gia/ket-qua",
         "/_authenticated/luong-gia/quan-ly-form"
       ]
@@ -796,11 +823,11 @@ export const routeTree = rootRoute
     "/(auth)/500": {
       "filePath": "(auth)/500.tsx"
     },
+    "/(auth)/dang-nhap": {
+      "filePath": "(auth)/dang-nhap.lazy.tsx"
+    },
     "/(auth)/forgot-password": {
       "filePath": "(auth)/forgot-password.lazy.tsx"
-    },
-    "/(auth)/sign-in": {
-      "filePath": "(auth)/sign-in.lazy.tsx"
     },
     "/(errors)/401": {
       "filePath": "(errors)/401.lazy.tsx"
@@ -827,6 +854,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/giang-vien": {
       "filePath": "_authenticated/giang-vien.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/hoc-vien": {
+      "filePath": "_authenticated/hoc-vien.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/mua": {
@@ -861,6 +892,10 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/chu-de/gui-email.lazy.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/chu-de/ket-qua-diem-danh": {
+      "filePath": "_authenticated/chu-de/ket-qua-diem-danh.lazy.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/chu-de/nghi-phep": {
       "filePath": "_authenticated/chu-de/nghi-phep.lazy.tsx",
       "parent": "/_authenticated"
@@ -871,10 +906,6 @@ export const routeTree = rootRoute
     },
     "/_authenticated/dang-ky-mon/quan-ly-form": {
       "filePath": "_authenticated/dang-ky-mon/quan-ly-form.lazy.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/hoc-vien/danh-sach-hoc-vien": {
-      "filePath": "_authenticated/hoc-vien/danh-sach-hoc-vien.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/luong-gia/ket-qua": {

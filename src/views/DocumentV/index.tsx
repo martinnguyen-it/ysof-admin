@@ -184,9 +184,9 @@ const DocumentV: FC = () => {
     },
     {
       title: 'Người tạo',
-      dataIndex: 'name',
+      dataIndex: 'author',
       sorter: true,
-      key: 'name',
+      key: 'author',
       width: '150px',
       render: (_, record: IDocumentInResponse) => {
         return (
@@ -195,7 +195,7 @@ const DocumentV: FC = () => {
               className='mr-4 size-7 object-cover'
               referrerPolicy='no-referrer'
               src={record.author.avatar || '/images/avatar.png'}
-            ></img>
+            />
             {/* <Link to={record.webViewLink} target='_blank' className='text-wrap font-medium text-blue-500'>
                 {record.author.full_name}
               </Link> */}

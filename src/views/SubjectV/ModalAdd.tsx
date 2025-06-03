@@ -271,9 +271,18 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
             </Form.Item>
           </>
         )}
-        {(userInfo.roles.includes(EAdminRole.BKL) || isSuperAdmin(true)) && (
+        {(userInfo.roles.includes(EAdminRole.BKT) || isSuperAdmin(true)) && (
           <>
-            <Form.Item name={['zoom', 'link']} label='Link Zoom'>
+            <Form.Item
+              rules={[
+                {
+                  type: 'url',
+                  message: 'Vui lòng nhập link zoom hợp lệ',
+                },
+              ]}
+              name={['zoom', 'link']}
+              label='Link Zoom'
+            >
               <Input placeholder='Link zoom' />
             </Form.Item>
             <Form.Item name={['zoom', 'meeting_id']} label='ID'>

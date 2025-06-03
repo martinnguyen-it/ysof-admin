@@ -94,6 +94,7 @@ const StudentV: FC = () => {
       key: 'numerical_order',
       width: '80px',
       sorter: true,
+      align: 'center',
       render: (_, record: IStudentInResponse) =>
         String(
           record.seasons_info[record.seasons_info.length - 1].numerical_order

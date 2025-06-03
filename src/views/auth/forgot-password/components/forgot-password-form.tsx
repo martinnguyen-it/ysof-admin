@@ -34,7 +34,7 @@ export function ForgotForm({ className, ...props }: ForgotFormProps) {
           <Input prefix={<MailOutlined />} placeholder='ysofweb21@gmail.com' />
         </Form.Item>
         <Form.Item className='text-right'>
-          <Link to='/sign-in'>Quay lại đăng nhập</Link>
+          <Link to='/dang-nhap'>Quay lại đăng nhập</Link>
         </Form.Item>
         <Button htmlType='submit' className='w-full' type='primary'>
           Quên mật khẩu

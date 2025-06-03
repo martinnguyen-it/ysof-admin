@@ -64,11 +64,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {open ? <span className='font-bold'>MÙA</span> : null}
           <Select
             value={(selectSeason && String(selectSeason)) || ''}
-            style={{ width: 40, textAlign: 'center' }}
+            style={{ width: 35, textAlign: 'center' }}
             onChange={handleChangeSeason}
             options={optionSeasons}
             suffixIcon={null}
             loading={isLoading}
+            className='select-season'
+            popupClassName='select-season'
           />
         </div>
       </SidebarHeader>

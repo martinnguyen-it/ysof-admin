@@ -28,3 +28,11 @@ export const isSuperAdmin = (requiredActive?: boolean) => {
 export const hasMatch = <T>(arrayA: T[], arrayB: T[]): boolean => {
   return some(arrayA, (item) => includes(arrayB, item))
 }
+
+export const getRollCallResultBgColor = (result?: string) => {
+  if (!result) return '!bg-purple-100/30'
+  if (result === 'completed') return ''
+  if (result === 'no_complete') return '!bg-green-100/30'
+  if (result === 'absent') return '!bg-yellow-100/30'
+  return ''
+}

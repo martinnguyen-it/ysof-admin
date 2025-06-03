@@ -171,9 +171,9 @@ const GeneralTaskV: FC = () => {
     },
     {
       title: 'Người tạo',
-      dataIndex: 'name',
+      dataIndex: 'author',
       sorter: true,
-      key: 'name',
+      key: 'author',
       width: '150px',
       render: (_, record: IGeneralTaskInResponse) => {
         return (

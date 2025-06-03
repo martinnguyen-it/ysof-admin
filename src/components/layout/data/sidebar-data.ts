@@ -41,12 +41,7 @@ export const sidebarData: NavItem[] = [
   {
     title: 'Học viên',
     icon: UserOutlined,
-    items: [
-      {
-        title: 'Danh sách học viên',
-        url: '/hoc-vien/danh-sach-hoc-vien',
-      },
-    ],
+    url: '/hoc-vien',
   },
   {
     title: 'Chủ đề',
@@ -66,6 +61,11 @@ export const sidebarData: NavItem[] = [
         url: '/chu-de/nghi-phep',
         requiredCurrent: true,
         title: 'Nghỉ phép',
+      },
+      {
+        url: '/chu-de/ket-qua-diem-danh',
+        requiredCurrent: true,
+        title: 'Kết quả điểm danh',
       },
     ],
   },

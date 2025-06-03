@@ -63,7 +63,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                     <p>- ID: {open.item.zoom?.meeting_id}</p>
                   ) : null}
                   {open.item.zoom?.meeting_id ? (
-                    <p>- pass_code: {open.item.zoom?.pass_code}</p>
+                    <p>- Passcode: {open.item.zoom?.pass_code}</p>
                   ) : null}
                 </>
               ) : (

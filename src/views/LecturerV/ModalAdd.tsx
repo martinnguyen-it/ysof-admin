@@ -103,16 +103,16 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
         >
           <Input placeholder='Nhập họ và tên' />
         </Form.Item>
-        <Form.Item
-          label='Thông tin cơ bản (Lưu ý: Học viên sẽ thấy phần này)'
-          name='information'
-        >
+        <Form.Item label='Thông tin cơ bản' name='information'>
           <Input.TextArea
             rows={3}
             placeholder='Tốt nghiệp, nơi đang phục vụ,...'
           />
         </Form.Item>
-        <Form.Item label='Thông tin liên hệ' name='contact'>
+        <Form.Item
+          label='Thông tin liên hệ (Lưu ý: Học viên sẽ thấy phần này)'
+          name='contact'
+        >
           <Input.TextArea rows={3} placeholder='Email, số điện thoại,...' />
         </Form.Item>
       </Form>

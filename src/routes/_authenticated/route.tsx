@@ -28,7 +28,7 @@ export const Route = createFileRoute('/_authenticated')({
     const accessToken = getRecoil(accessTokenState)
     if (!accessToken) {
       throw redirect({
-        to: '/sign-in',
+        to: '/dang-nhap',
         search: {
           backUrl: location.pathname === '/' ? undefined : location.pathname,
         },

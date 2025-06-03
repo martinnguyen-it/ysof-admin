@@ -148,3 +148,12 @@ input:-webkit-autofill:active {
     @apply min-h-svh w-full bg-background text-foreground;
   }
 }
+
+.select-season {
+  .ant-select-selector {
+    @apply !h-full !p-0;
+  }
+  .ant-select-item {
+    @apply items-center !p-0 !text-center;
+  }
+}
