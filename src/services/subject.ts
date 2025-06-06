@@ -4,6 +4,7 @@ import {
   IParamsGetListSubject,
   IUpdateSubject,
   ISubjectShortInResponse,
+  IGenerateQuestionSpreadsheet,
 } from '@/domain/subject'
 import { API_LIST } from '@/constants/index'
 import { del, get, put, post } from './HTTPService'
@@ -44,3 +45,8 @@ export const updateSubject = (
 
 export const deleteSubject = (id: string): Promise<ISubjectInResponse> =>
   del(API_LIST.subject + '/' + id)
+
+export const generateQuestionSpreadsheet = (
+  subjectId: string
+): Promise<IGenerateQuestionSpreadsheet> =>
+  post(API_LIST.subject + '/generate-question-spreadsheet/' + subjectId)

@@ -246,9 +246,6 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
                 loading={loadingGetLecturers}
               />
             </Form.Item>
-            <Form.Item name='question_url' label='Link câu hỏi gửi giảng viên'>
-              <Input />
-            </Form.Item>
             <Form.Item name='attachments' label='Tài liệu đính kèm'>
               <Select
                 placeholder='Chọn tài liệu đính kèm'

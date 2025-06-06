@@ -15,6 +15,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated/route'
 import { Route as auth500Import } from './routes/(auth)/500'
+import { Route as AuthenticatedLuongGiaKetQuaImport } from './routes/_authenticated/luong-gia/ket-qua'
 
 // Create Virtual Routes
 
@@ -55,9 +56,6 @@ const authForgotPasswordLazyImport = createFileRoute(
 const authDangNhapLazyImport = createFileRoute('/(auth)/dang-nhap')()
 const AuthenticatedLuongGiaQuanLyFormLazyImport = createFileRoute(
   '/_authenticated/luong-gia/quan-ly-form',
-)()
-const AuthenticatedLuongGiaKetQuaLazyImport = createFileRoute(
-  '/_authenticated/luong-gia/ket-qua',
 )()
 const AuthenticatedDangKyMonQuanLyFormLazyImport = createFileRoute(
   '/_authenticated/dang-ky-mon/quan-ly-form',
@@ -251,17 +249,6 @@ const AuthenticatedLuongGiaQuanLyFormLazyRoute =
     ),
   )
 
-const AuthenticatedLuongGiaKetQuaLazyRoute =
-  AuthenticatedLuongGiaKetQuaLazyImport.update({
-    id: '/luong-gia/ket-qua',
-    path: '/luong-gia/ket-qua',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/luong-gia/ket-qua.lazy').then(
-      (d) => d.Route,
-    ),
-  )
-
 const AuthenticatedDangKyMonQuanLyFormLazyRoute =
   AuthenticatedDangKyMonQuanLyFormLazyImport.update({
     id: '/dang-ky-mon/quan-ly-form',
@@ -327,6 +314,13 @@ const AuthenticatedChuDeDanhSachChuDeLazyRoute =
       (d) => d.Route,
     ),
   )
+
+const AuthenticatedLuongGiaKetQuaRoute =
+  AuthenticatedLuongGiaKetQuaImport.update({
+    id: '/luong-gia/ket-qua',
+    path: '/luong-gia/ket-qua',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -465,6 +459,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/luong-gia/ket-qua': {
+      id: '/_authenticated/luong-gia/ket-qua'
+      path: '/luong-gia/ket-qua'
+      fullPath: '/luong-gia/ket-qua'
+      preLoaderRoute: typeof AuthenticatedLuongGiaKetQuaImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/chu-de/danh-sach-chu-de': {
       id: '/_authenticated/chu-de/danh-sach-chu-de'
       path: '/chu-de/danh-sach-chu-de'
@@ -507,13 +508,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDangKyMonQuanLyFormLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
-    '/_authenticated/luong-gia/ket-qua': {
-      id: '/_authenticated/luong-gia/ket-qua'
-      path: '/luong-gia/ket-qua'
-      fullPath: '/luong-gia/ket-qua'
-      preLoaderRoute: typeof AuthenticatedLuongGiaKetQuaLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
     '/_authenticated/luong-gia/quan-ly-form': {
       id: '/_authenticated/luong-gia/quan-ly-form'
       path: '/luong-gia/quan-ly-form'
@@ -537,13 +531,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTaiKhoanLazyRoute: typeof AuthenticatedTaiKhoanLazyRoute
   AuthenticatedTaiLieuLazyRoute: typeof AuthenticatedTaiLieuLazyRoute
   AuthenticatedIndexLazyRoute: typeof AuthenticatedIndexLazyRoute
+  AuthenticatedLuongGiaKetQuaRoute: typeof AuthenticatedLuongGiaKetQuaRoute
   AuthenticatedChuDeDanhSachChuDeLazyRoute: typeof AuthenticatedChuDeDanhSachChuDeLazyRoute
   AuthenticatedChuDeGuiEmailLazyRoute: typeof AuthenticatedChuDeGuiEmailLazyRoute
   AuthenticatedChuDeKetQuaDiemDanhLazyRoute: typeof AuthenticatedChuDeKetQuaDiemDanhLazyRoute
   AuthenticatedChuDeNghiPhepLazyRoute: typeof AuthenticatedChuDeNghiPhepLazyRoute
   AuthenticatedDangKyMonKetQuaDangKyLazyRoute: typeof AuthenticatedDangKyMonKetQuaDangKyLazyRoute
   AuthenticatedDangKyMonQuanLyFormLazyRoute: typeof AuthenticatedDangKyMonQuanLyFormLazyRoute
-  AuthenticatedLuongGiaKetQuaLazyRoute: typeof AuthenticatedLuongGiaKetQuaLazyRoute
   AuthenticatedLuongGiaQuanLyFormLazyRoute: typeof AuthenticatedLuongGiaQuanLyFormLazyRoute
 }
 
@@ -558,6 +552,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTaiKhoanLazyRoute: AuthenticatedTaiKhoanLazyRoute,
   AuthenticatedTaiLieuLazyRoute: AuthenticatedTaiLieuLazyRoute,
   AuthenticatedIndexLazyRoute: AuthenticatedIndexLazyRoute,
+  AuthenticatedLuongGiaKetQuaRoute: AuthenticatedLuongGiaKetQuaRoute,
   AuthenticatedChuDeDanhSachChuDeLazyRoute:
     AuthenticatedChuDeDanhSachChuDeLazyRoute,
   AuthenticatedChuDeGuiEmailLazyRoute: AuthenticatedChuDeGuiEmailLazyRoute,
@@ -568,7 +563,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedDangKyMonKetQuaDangKyLazyRoute,
   AuthenticatedDangKyMonQuanLyFormLazyRoute:
     AuthenticatedDangKyMonQuanLyFormLazyRoute,
-  AuthenticatedLuongGiaKetQuaLazyRoute: AuthenticatedLuongGiaKetQuaLazyRoute,
   AuthenticatedLuongGiaQuanLyFormLazyRoute:
     AuthenticatedLuongGiaQuanLyFormLazyRoute,
 }
@@ -595,13 +589,13 @@ export interface FileRoutesByFullPath {
   '/tai-khoan': typeof AuthenticatedTaiKhoanLazyRoute
   '/tai-lieu': typeof AuthenticatedTaiLieuLazyRoute
   '/': typeof AuthenticatedIndexLazyRoute
+  '/luong-gia/ket-qua': typeof AuthenticatedLuongGiaKetQuaRoute
   '/chu-de/danh-sach-chu-de': typeof AuthenticatedChuDeDanhSachChuDeLazyRoute
   '/chu-de/gui-email': typeof AuthenticatedChuDeGuiEmailLazyRoute
   '/chu-de/ket-qua-diem-danh': typeof AuthenticatedChuDeKetQuaDiemDanhLazyRoute
   '/chu-de/nghi-phep': typeof AuthenticatedChuDeNghiPhepLazyRoute
   '/dang-ky-mon/ket-qua-dang-ky': typeof AuthenticatedDangKyMonKetQuaDangKyLazyRoute
   '/dang-ky-mon/quan-ly-form': typeof AuthenticatedDangKyMonQuanLyFormLazyRoute
-  '/luong-gia/ket-qua': typeof AuthenticatedLuongGiaKetQuaLazyRoute
   '/luong-gia/quan-ly-form': typeof AuthenticatedLuongGiaQuanLyFormLazyRoute
 }
 
@@ -623,13 +617,13 @@ export interface FileRoutesByTo {
   '/tai-khoan': typeof AuthenticatedTaiKhoanLazyRoute
   '/tai-lieu': typeof AuthenticatedTaiLieuLazyRoute
   '/': typeof AuthenticatedIndexLazyRoute
+  '/luong-gia/ket-qua': typeof AuthenticatedLuongGiaKetQuaRoute
   '/chu-de/danh-sach-chu-de': typeof AuthenticatedChuDeDanhSachChuDeLazyRoute
   '/chu-de/gui-email': typeof AuthenticatedChuDeGuiEmailLazyRoute
   '/chu-de/ket-qua-diem-danh': typeof AuthenticatedChuDeKetQuaDiemDanhLazyRoute
   '/chu-de/nghi-phep': typeof AuthenticatedChuDeNghiPhepLazyRoute
   '/dang-ky-mon/ket-qua-dang-ky': typeof AuthenticatedDangKyMonKetQuaDangKyLazyRoute
   '/dang-ky-mon/quan-ly-form': typeof AuthenticatedDangKyMonQuanLyFormLazyRoute
-  '/luong-gia/ket-qua': typeof AuthenticatedLuongGiaKetQuaLazyRoute
   '/luong-gia/quan-ly-form': typeof AuthenticatedLuongGiaQuanLyFormLazyRoute
 }
 
@@ -654,13 +648,13 @@ export interface FileRoutesById {
   '/_authenticated/tai-khoan': typeof AuthenticatedTaiKhoanLazyRoute
   '/_authenticated/tai-lieu': typeof AuthenticatedTaiLieuLazyRoute
   '/_authenticated/': typeof AuthenticatedIndexLazyRoute
+  '/_authenticated/luong-gia/ket-qua': typeof AuthenticatedLuongGiaKetQuaRoute
   '/_authenticated/chu-de/danh-sach-chu-de': typeof AuthenticatedChuDeDanhSachChuDeLazyRoute
   '/_authenticated/chu-de/gui-email': typeof AuthenticatedChuDeGuiEmailLazyRoute
   '/_authenticated/chu-de/ket-qua-diem-danh': typeof AuthenticatedChuDeKetQuaDiemDanhLazyRoute
   '/_authenticated/chu-de/nghi-phep': typeof AuthenticatedChuDeNghiPhepLazyRoute
   '/_authenticated/dang-ky-mon/ket-qua-dang-ky': typeof AuthenticatedDangKyMonKetQuaDangKyLazyRoute
   '/_authenticated/dang-ky-mon/quan-ly-form': typeof AuthenticatedDangKyMonQuanLyFormLazyRoute
-  '/_authenticated/luong-gia/ket-qua': typeof AuthenticatedLuongGiaKetQuaLazyRoute
   '/_authenticated/luong-gia/quan-ly-form': typeof AuthenticatedLuongGiaQuanLyFormLazyRoute
 }
 
@@ -685,13 +679,13 @@ export interface FileRouteTypes {
     | '/tai-khoan'
     | '/tai-lieu'
     | '/'
+    | '/luong-gia/ket-qua'
     | '/chu-de/danh-sach-chu-de'
     | '/chu-de/gui-email'
     | '/chu-de/ket-qua-diem-danh'
     | '/chu-de/nghi-phep'
     | '/dang-ky-mon/ket-qua-dang-ky'
     | '/dang-ky-mon/quan-ly-form'
-    | '/luong-gia/ket-qua'
     | '/luong-gia/quan-ly-form'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -712,13 +706,13 @@ export interface FileRouteTypes {
     | '/tai-khoan'
     | '/tai-lieu'
     | '/'
+    | '/luong-gia/ket-qua'
     | '/chu-de/danh-sach-chu-de'
     | '/chu-de/gui-email'
     | '/chu-de/ket-qua-diem-danh'
     | '/chu-de/nghi-phep'
     | '/dang-ky-mon/ket-qua-dang-ky'
     | '/dang-ky-mon/quan-ly-form'
-    | '/luong-gia/ket-qua'
     | '/luong-gia/quan-ly-form'
   id:
     | '__root__'
@@ -741,13 +735,13 @@ export interface FileRouteTypes {
     | '/_authenticated/tai-khoan'
     | '/_authenticated/tai-lieu'
     | '/_authenticated/'
+    | '/_authenticated/luong-gia/ket-qua'
     | '/_authenticated/chu-de/danh-sach-chu-de'
     | '/_authenticated/chu-de/gui-email'
     | '/_authenticated/chu-de/ket-qua-diem-danh'
     | '/_authenticated/chu-de/nghi-phep'
     | '/_authenticated/dang-ky-mon/ket-qua-dang-ky'
     | '/_authenticated/dang-ky-mon/quan-ly-form'
-    | '/_authenticated/luong-gia/ket-qua'
     | '/_authenticated/luong-gia/quan-ly-form'
   fileRoutesById: FileRoutesById
 }
@@ -810,13 +804,13 @@ export const routeTree = rootRoute
         "/_authenticated/tai-khoan",
         "/_authenticated/tai-lieu",
         "/_authenticated/",
+        "/_authenticated/luong-gia/ket-qua",
         "/_authenticated/chu-de/danh-sach-chu-de",
         "/_authenticated/chu-de/gui-email",
         "/_authenticated/chu-de/ket-qua-diem-danh",
         "/_authenticated/chu-de/nghi-phep",
         "/_authenticated/dang-ky-mon/ket-qua-dang-ky",
         "/_authenticated/dang-ky-mon/quan-ly-form",
-        "/_authenticated/luong-gia/ket-qua",
         "/_authenticated/luong-gia/quan-ly-form"
       ]
     },
@@ -884,6 +878,10 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/index.lazy.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/luong-gia/ket-qua": {
+      "filePath": "_authenticated/luong-gia/ket-qua.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/chu-de/danh-sach-chu-de": {
       "filePath": "_authenticated/chu-de/danh-sach-chu-de.lazy.tsx",
       "parent": "/_authenticated"
@@ -906,10 +904,6 @@ export const routeTree = rootRoute
     },
     "/_authenticated/dang-ky-mon/quan-ly-form": {
       "filePath": "_authenticated/dang-ky-mon/quan-ly-form.lazy.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/luong-gia/ket-qua": {
-      "filePath": "_authenticated/luong-gia/ket-qua.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/luong-gia/quan-ly-form": {

@@ -270,6 +270,12 @@ const RollCallResultV: FC = () => {
             key='subject_not_completed'
             align='center'
           />
+          <Column
+            title='ĐK'
+            dataIndex='subject_registered'
+            key='subject_registered'
+            align='center'
+          />
         </ColumnGroup>
       </Table>
       <ModalRollCall open={openRollCall} setOpen={setOpenRollCall} />

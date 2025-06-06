@@ -60,3 +60,7 @@ export enum ESubjectStatus {
   CLOSE_EVALUATION = 'close_evaluation',
   COMPLETED = 'completed',
 }
+
+export interface IGenerateQuestionSpreadsheet {
+  question_url: string
+}

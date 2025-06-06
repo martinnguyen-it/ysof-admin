@@ -1,15 +1,17 @@
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useGetListDocuments } from '@/apis/document/useQueryDocument'
+import { useGenerateQuestionSpreadsheet } from '@/apis/subject/useMutationSubject'
 import {
   useGetSubjectLastSentStudentRecent,
   useGetSubjectNextMostRecent,
 } from '@/apis/subject/useQuerySubject'
 import { currentSeasonState } from '@/atom/seasonAtom'
 import { EDocumentType } from '@/domain/document'
-import { ESubjectStatus } from '@/domain/subject'
-import { Button, Divider, Form, Input, Select, Spin } from 'antd'
+import { ESubjectStatus, IGenerateQuestionSpreadsheet } from '@/domain/subject'
+import { Button, Divider, Form, Input, Select, Space, Spin } from 'antd'
 import dayjs from 'dayjs'
 import { isEmpty, size } from 'lodash'
+import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
 import { ESubjectStatusDetail } from '@/constants/subject'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -60,8 +62,8 @@ const SendEmailNotificationSubjectV: FC = () => {
 
   const onOpenConfirm = async () => {
     try {
-      await form.validateFields()
       const data = form.getFieldsValue()
+      await form.validateFields()
       setOpenConfirm({ active: true, item: data })
     } catch {
       /* empty */
@@ -90,6 +92,14 @@ const SendEmailNotificationSubjectV: FC = () => {
         : [],
     [documents]
   )
+
+  const {
+    mutate: generateQuestionSpreadsheet,
+    isPending: isPendingGenerateQuestionSpreadsheet,
+  } = useGenerateQuestionSpreadsheet((data: IGenerateQuestionSpreadsheet) => {
+    form.setFieldValue('question_url', data.question_url)
+    toast.success('Tạo trang tính câu hỏi thành công')
+  })
 
   return (
     <>
@@ -190,8 +200,33 @@ const SendEmailNotificationSubjectV: FC = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Space.Compact style={{ width: '100%' }}>
+                      <Input value={form.getFieldValue('question_url')} />
+                      {recentNextSubject.question_url && (
+                        <Button
+                          type='default'
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              form.getFieldValue('question_url')
+                            )
+                            toast.success('Link đã được sao chép')
+                          }}
+                        >
+                          Sao chép
+                        </Button>
+                      )}
+                      <Button
+                        type='primary'
+                        loading={isPendingGenerateQuestionSpreadsheet}
+                        onClick={() =>
+                          generateQuestionSpreadsheet(recentNextSubject.id)
+                        }
+                      >
+                        {recentNextSubject.question_url ? 'Tạo mới' : 'Tạo'}
+                      </Button>
+                    </Space.Compact>
                   </Form.Item>
+
                   <Form.Item name='attachments' label='Tài liệu đính kèm'>
                     <Select
                       placeholder='Chọn tài liệu đính kèm'

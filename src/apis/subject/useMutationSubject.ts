@@ -1,8 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
-import { ICreateSubject, IUpdateSubject } from '@/domain/subject'
+import {
+  ICreateSubject,
+  IGenerateQuestionSpreadsheet,
+  IUpdateSubject,
+} from '@/domain/subject'
 import {
   createSubject,
   deleteSubject,
+  generateQuestionSpreadsheet,
   subjectSendEvaluation,
   subjectSendNotification,
   updateSubject,
@@ -53,6 +58,18 @@ export const useSubjectSendNotification = (onSuccess: () => void) =>
 export const useSubjectSendEvaluation = () =>
   useMutation({
     mutationFn: (subjectId: string) => subjectSendEvaluation(subjectId),
+    onError: (error: Error) => {
+      const { message } = error
+      toast.error(message)
+    },
+  })
+
+export const useGenerateQuestionSpreadsheet = (
+  onSuccess: (data: IGenerateQuestionSpreadsheet) => void
+) =>
+  useMutation({
+    mutationFn: (subjectId: string) => generateQuestionSpreadsheet(subjectId),
+    onSuccess,
     onError: (error: Error) => {
       const { message } = error
       toast.error(message)

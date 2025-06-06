@@ -22,6 +22,7 @@ export interface IRollCallItemInResponse {
   subjects: Record<string, IRollCallSubjectInfo>
   subject_completed: number
   subject_not_completed: number
+  subject_registered: number
 }
 
 export interface IRollCallResultInResponse {

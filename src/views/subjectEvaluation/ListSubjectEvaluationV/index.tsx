@@ -1,10 +1,12 @@
 import { FC, useEffect, useMemo, useState } from 'react'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useGetSubjectShort } from '@/apis/subject/useQuerySubject'
 import { useGetListSubjectEvaluation } from '@/apis/subjectEvaluation/useQuerySubjectEvaluation'
 import { useGetSubjectEvaluationQuestions } from '@/apis/subjectEvaluationQuestion/useQuerySubjectEvaluationQuestion'
 import { ESort } from '@/domain/common'
 import { ESubjectStatus } from '@/domain/subject'
 import { ISubjectEvaluationInResponse } from '@/domain/subject/subjectEvaluation'
+import { IEvaluationQuestionItem } from '@/domain/subject/subjectEvaluationQuestion'
 import type { TableProps } from 'antd'
 import { Input, Pagination, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
@@ -15,25 +17,33 @@ import {
   EVALUATION_NAME,
   EVALUATION_QUALITY,
 } from '@/constants/subjectEvaluation'
-
-// import ModalView from './ModalView'
+import ModalView from './ModalView'
 
 const ListSubjectEvaluationV: FC = () => {
+  const navigate = useNavigate()
+  const { evaluationId, subjectId } = useSearch({
+    from: '/_authenticated/luong-gia/ket-qua',
+  })
   const initPaging = {
     current: 1,
     pageSize: 300,
   }
   const [tableQueries, setTableQueries] = useState(initPaging)
   const [paging, setPaging] = useState({ total: 0, current: 1 })
-  const [search, setSearch] = useState('')
+  const [searchText, setSearchText] = useState('')
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
   const [group, setGroup] = useState<number>()
-  const [selectSubject, setSelectSubject] = useState<string>()
+  const [selectSubject, setSelectSubject] = useState<string | undefined>(
+    subjectId
+  )
+  const [selectedEvaluation, setSelectedEvaluation] =
+    useState<ISubjectEvaluationInResponse>()
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
 
   useEffect(() => {
     setTableQueries(initPaging)
-  }, [search])
+  }, [searchText])
 
   const {
     data: subjectsSentEvaluation,
@@ -51,7 +61,7 @@ const ListSubjectEvaluationV: FC = () => {
         subject_id: selectSubject!,
         page_index: tableQueries.current,
         page_size: tableQueries.pageSize,
-        search: search || undefined,
+        search: searchText || undefined,
         sort,
         sort_by: sortBy,
         group,
@@ -59,23 +69,40 @@ const ListSubjectEvaluationV: FC = () => {
       { enabled: !!selectSubject }
     )
 
-  const { data: questions, isLoading: isLoadingQuestions } =
-    useGetSubjectEvaluationQuestions({
-      subjectId: selectSubject!,
-      enabled: !!selectSubject,
-    })
+  const {
+    data: { questions } = { questions: [] as IEvaluationQuestionItem[] },
+    isLoading: isLoadingQuestions,
+  } = useGetSubjectEvaluationQuestions({
+    subjectId: selectSubject!,
+    enabled: !!selectSubject,
+  })
 
   useEffect(() => {
-    ;(async () => {
-      if (isSuccess && isArray(subjectsSentEvaluation)) {
-        if (size(subjectsSentEvaluation) > 0) {
-          setSelectSubject(subjectsSentEvaluation[0].id)
-        } else {
-          toast.warn('Chưa có môn học nào có lượng giá')
+    if (!selectSubject && isSuccess && isArray(subjectsSentEvaluation)) {
+      if (size(subjectsSentEvaluation) > 0) {
+        setSelectSubject(subjectsSentEvaluation[0].id)
+
+        // If evaluationId is in URL, find and show that evaluation
+        if (evaluationId && listSubjectEvaluation?.data) {
+          const evaluation = listSubjectEvaluation.data.find(
+            (e) => e.id === evaluationId
+          )
+          if (evaluation) {
+            setSelectedEvaluation(evaluation)
+            setIsViewModalOpen(true)
+          }
         }
+      } else {
+        toast.warn('Chưa có môn học nào có lượng giá')
       }
-    })()
-  }, [isSuccess, subjectsSentEvaluation])
+    }
+  }, [
+    isSuccess,
+    subjectsSentEvaluation,
+    evaluationId,
+    subjectId,
+    listSubjectEvaluation,
+  ])
 
   useEffect(() => {
     if (listSubjectEvaluation) {
@@ -85,6 +112,28 @@ const ListSubjectEvaluationV: FC = () => {
       })
     }
   }, [listSubjectEvaluation])
+
+  const handleViewEvaluation = (record: ISubjectEvaluationInResponse) => {
+    setSelectedEvaluation(record)
+    setIsViewModalOpen(true)
+    // Update URL with subject and evaluation IDs
+    navigate({
+      to: '/luong-gia/ket-qua',
+      search: {
+        subjectId: selectSubject!,
+        evaluationId: record.id,
+      },
+    })
+  }
+
+  const handleCloseViewModal = () => {
+    setIsViewModalOpen(false)
+    setSelectedEvaluation(undefined)
+    // Remove evaluationId from URL but keep subjectId
+    navigate({
+      to: '/luong-gia/ket-qua',
+    })
+  }
 
   const columns: ColumnsType<ISubjectEvaluationInResponse> = useMemo(() => {
     const columns: ColumnsType<ISubjectEvaluationInResponse> = [
@@ -116,9 +165,12 @@ const ListSubjectEvaluationV: FC = () => {
         key: 'full_name',
         width: '200px',
         render: (_, record) => (
-          <>
+          <div
+            className='cursor-pointer text-blue-600 hover:underline'
+            onClick={() => handleViewEvaluation(record)}
+          >
             {record.student.holy_name} {record.student.full_name}
-          </>
+          </div>
         ),
       },
       {
@@ -167,16 +219,14 @@ const ListSubjectEvaluationV: FC = () => {
     })
 
     let index = 7
-    if (isArray(questions)) {
-      questions.forEach((item, idx) => {
-        columns.push({
-          title: `${index++}. ` + item.title,
-          dataIndex: ['answers', idx],
-          key: 'answers' + idx,
-          render: (item) => (isArray(item) ? item.join(', ') : item),
-        })
+    questions.forEach((item, idx) => {
+      columns.push({
+        title: `${index++}. ` + item.title,
+        dataIndex: ['answers', idx],
+        key: 'answers' + idx,
+        render: (item) => (isArray(item) ? item.join(', ') : item),
       })
-    }
+    })
 
     return columns
   }, [questions])
@@ -186,7 +236,7 @@ const ListSubjectEvaluationV: FC = () => {
   }
 
   const onSearch = (val: string) => {
-    setSearch(val)
+    setSearchText(val)
   }
   const onChangeSelectSubject = (val: string) => {
     setSelectSubject(val)
@@ -253,7 +303,6 @@ const ListSubjectEvaluationV: FC = () => {
               option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0)
           }
           showSearch
-          allowClear
         />
       </div>
 
@@ -290,7 +339,12 @@ const ListSubjectEvaluationV: FC = () => {
         bordered
       />
 
-      {/* {openForm.active && openForm.mode !== 'view' && <ModalAdd open={openForm} setOpen={setOpenForm} setReloadData={setReloadData} />} */}
+      <ModalView
+        open={isViewModalOpen}
+        onClose={handleCloseViewModal}
+        data={selectedEvaluation}
+        questions={questions}
+      />
     </>
   )
 }
