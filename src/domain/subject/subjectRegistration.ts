@@ -18,6 +18,7 @@ export interface ISubjectRegistrationInResponse {
 export interface IManySubjectRegistrationInResponse {
   pagination: IPaginationAPI
   data: ISubjectRegistrationInResponse[]
+  summary: Record<string, number>
 }
 
 export interface IParamsGetListSubjectRegistration
@@ -26,4 +27,14 @@ export interface IParamsGetListSubjectRegistration
   group?: number
   search?: string
   season?: number
+}
+
+export interface ICreateSubjectRegistration {
+  student_id: string
+  subjects: string[]
+}
+
+export interface ISubjectRegistrationResponse {
+  student_id: string
+  subjects_registration: string[]
 }

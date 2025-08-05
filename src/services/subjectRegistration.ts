@@ -2,9 +2,11 @@ import {
   IManySubjectRegistrationInResponse,
   IParamsGetListSubjectRegistration,
   IStudentInSubject,
+  ICreateSubjectRegistration,
+  ISubjectRegistrationResponse,
 } from '@/domain/subject/subjectRegistration'
 import { API_LIST } from '@/constants/index'
-import { get } from './HTTPService'
+import { get, post } from './HTTPService'
 
 export const getListSubjectRegistrations = (
   params?: IParamsGetListSubjectRegistration
@@ -18,3 +20,8 @@ export const getListSubjectRegistrationsBySubjectId = (
   get(API_LIST.subjectRegistration + '/subject/' + subjectId, {
     params: { search },
   })
+
+export const createSubjectRegistration = (
+  data: ICreateSubjectRegistration
+): Promise<ISubjectRegistrationResponse> =>
+  post(API_LIST.subjectRegistration, data)

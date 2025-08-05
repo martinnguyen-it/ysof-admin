@@ -1,13 +1,20 @@
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useGetListSubjects } from '@/apis/subject/useQuerySubject'
 import { useGetListSubjectRegistrations } from '@/apis/subjectRegistration/useQuerySubjectRegistration'
-import { ESort } from '@/domain/common'
+import { userInfoState } from '@/atom/authAtom'
+import { currentSeasonState } from '@/atom/seasonAtom'
+import { EAdminRole } from '@/domain/admin/type'
+import { ESort, IOpenForm } from '@/domain/common'
 import { ISubjectRegistrationInResponse } from '@/domain/subject/subjectRegistration'
+import { FileAddOutlined, PlusOutlined } from '@ant-design/icons'
 import type { TableProps } from 'antd'
-import { Input, Select } from 'antd'
+import { Button, Input, Select } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
-import { isArray, size } from 'lodash'
+import { isArray, isEmpty, size } from 'lodash'
+import { useRecoilValue } from 'recoil'
+import { hasMatch, isSuperAdmin } from '@/lib/utils'
+import ModalAdd from './ModalAdd'
 
 const ListSubjectRegistrationV: FC = () => {
   const initPaging = {
@@ -20,6 +27,13 @@ const ListSubjectRegistrationV: FC = () => {
   const [sort, setSort] = useState<ESort>()
   const [sortBy, setSortBy] = useState<string>()
   const [group, setGroup] = useState<number>()
+  const [openForm, setOpenForm] = useState<Required<IOpenForm<string>>>({
+    active: false,
+    item: '',
+  })
+
+  const userInfo = useRecoilValue(userInfoState)
+  const currentSeason = useRecoilValue(currentSeasonState)
 
   useEffect(() => {
     setTableQueries(initPaging)
@@ -43,7 +57,7 @@ const ListSubjectRegistrationV: FC = () => {
     }
   }, [data])
 
-  const { data: listSubject } = useGetListSubjects()
+  const { data: listSubject = [] } = useGetListSubjects()
 
   const columns = useMemo(() => {
     const columns: ColumnsType<ISubjectRegistrationInResponse> = [
@@ -92,8 +106,34 @@ const ListSubjectRegistrationV: FC = () => {
         dataIndex: 'total',
         key: 'total',
       },
+      {
+        title: '',
+        key: 'actions',
+        dataIndex: 'actions',
+        width: '60px',
+        className: '!p-0',
+        align: 'center',
+        render: (_, record: ISubjectRegistrationInResponse) => {
+          return (
+            <Button
+              type='text'
+              icon={<PlusOutlined />}
+              onClick={() => onClickAdd(record.student.id)}
+              title='Cập nhật đăng ký'
+              size='small'
+            />
+          )
+        },
+        hidden:
+          !userInfo ||
+          !(
+            (userInfo?.latest_season === currentSeason?.season &&
+              hasMatch(userInfo.roles, [EAdminRole.BHV, EAdminRole.BKL])) ||
+            isSuperAdmin(true)
+          ),
+      },
     ]
-    if (listSubject && size(listSubject) > 0) {
+    if (size(listSubject) > 0) {
       listSubject.forEach((item) => {
         columns.push({
           title: (
@@ -133,6 +173,10 @@ const ListSubjectRegistrationV: FC = () => {
     setGroup(val ? Number(val) : undefined)
   }
 
+  const onClickAdd = (studentId?: string) => {
+    setOpenForm({ active: true, item: studentId || '' })
+  }
+
   const handleTableChange: TableProps<ISubjectRegistrationInResponse>['onChange'] =
     (_pagination, _filters, sorter) => {
       if (!isArray(sorter) && sorter?.order) {
@@ -169,7 +213,20 @@ const ListSubjectRegistrationV: FC = () => {
       </div>
 
       <div className='mb-4 flex items-center justify-between font-semibold'>
-        {paging.total} học viên
+        <p>{paging.total} học viên</p>
+        {userInfo &&
+          ((userInfo?.latest_season === currentSeason?.season &&
+            hasMatch(userInfo.roles, [EAdminRole.BHV, EAdminRole.BKL])) ||
+            isSuperAdmin(true)) && (
+            <Button
+              type='primary'
+              icon={<FileAddOutlined />}
+              onClick={() => onClickAdd()}
+              size={'middle'}
+            >
+              Cập nhật đăng ký
+            </Button>
+          )}
       </div>
       <Table
         showSorterTooltip={{ target: 'sorter-icon' }}
@@ -182,7 +239,24 @@ const ListSubjectRegistrationV: FC = () => {
         loading={isLoading}
         scroll={{ x: 2000 }}
         bordered
+        summary={() => {
+          let index = 0
+          return !isEmpty(data?.summary) && !!size(listSubject) ? (
+            <Table.Summary.Row className='bg-yellow-100/30 font-bold'>
+              <Table.Summary.Cell index={0} align='center' colSpan={6}>
+                Thống kê
+              </Table.Summary.Cell>
+              {listSubject.map((item) => (
+                <Table.Summary.Cell index={++index} align='center' colSpan={1}>
+                  {data.summary[item.id] || 0}
+                </Table.Summary.Cell>
+              ))}
+            </Table.Summary.Row>
+          ) : null
+        }}
       />
+
+      {openForm.active && <ModalAdd open={openForm} setOpen={setOpenForm} />}
     </>
   )
 }
