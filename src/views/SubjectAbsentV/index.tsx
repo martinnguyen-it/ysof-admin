@@ -232,7 +232,7 @@ const SubjectAbsentV: FC = () => {
         <p className='my-3 font-semibold'>Tổng: {size(tableData) || 0}</p>{' '}
         {userInfo &&
           ((userInfo?.latest_season === currentSeason?.season &&
-            userInfo.roles.includes(EAdminRole.BHV)) ||
+            userInfo.roles.includes(EAdminRole.BKL)) ||
             isSuperAdmin(true)) && (
             <Button
               type='primary'

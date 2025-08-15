@@ -58,4 +58,4 @@ export const OPTIONS_ROLE = Object.keys(EAdminRoleDetail).map((key) => ({
   label: EAdminRoleDetail[key as EAdminRole],
 }))
 
-export const MAX_AVATAR_SIZE = 200 * 1024 // 200KB
+export const MAX_AVATAR_SIZE = 80 * 1024 // 80KB

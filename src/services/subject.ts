@@ -28,8 +28,10 @@ export const getSubjectShort = (
 ): Promise<ISubjectShortInResponse[]> =>
   get(API_LIST.subject + '/list-short', { params })
 
-export const subjectSendNotification = (subjectId: string) =>
-  post(API_LIST.subjectSendNotification + '/' + subjectId)
+export const subjectSendNotification = (
+  subjectId: string,
+  extra_emails: string[]
+) => post(API_LIST.subjectSendNotification + '/' + subjectId, { extra_emails })
 
 export const subjectSendEvaluation = (subjectId: string) =>
   post(API_LIST.subjectSendEvaluation + '/' + subjectId)

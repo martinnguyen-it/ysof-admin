@@ -40,10 +40,6 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
               <span>{open.item.description}</span>
             </Card>
             <Card>
-              <span className='mr-2 text-base font-medium'>Mô tả:</span>
-              <span>{open.item.description}</span>
-            </Card>
-            <Card>
               <span className='mr-2 text-base font-medium'>Dấu vết lỗi:</span>
               <pre className='overflow-auto rounded bg-gray-100 p-2 text-sm'>
                 {open.item.traceback}

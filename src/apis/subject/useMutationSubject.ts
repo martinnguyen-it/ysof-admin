@@ -24,7 +24,7 @@ export const useCreateSubject = (onSuccess: () => void) =>
     },
   })
 
-export const useUpdateSubject = (onSuccess: () => void) =>
+export const useUpdateSubject = (onSuccess?: () => void) =>
   useMutation({
     mutationFn: (payload: { subjectId: string; data: IUpdateSubject }) =>
       updateSubject(payload.subjectId, payload.data),
@@ -47,7 +47,8 @@ export const useDeleteSubject = (onSuccess: () => void) =>
 
 export const useSubjectSendNotification = (onSuccess: () => void) =>
   useMutation({
-    mutationFn: (subjectId: string) => subjectSendNotification(subjectId),
+    mutationFn: (payload: { subjectId: string; extra_emails: string[] }) =>
+      subjectSendNotification(payload.subjectId, payload.extra_emails),
     onSuccess,
     onError: (error: Error) => {
       const { message } = error

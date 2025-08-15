@@ -7,9 +7,6 @@ export default function Dashboard() {
 
   return (
     <Main>
-      <div className='mb-20 flex items-center justify-between space-y-2'>
-        <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
-      </div>
       {dataDailyBibleQuotes && (
         <div className='mx-auto max-w-screen-md text-center'>
           <svg

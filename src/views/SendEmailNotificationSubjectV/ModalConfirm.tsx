@@ -18,10 +18,6 @@ interface IProps {
 const ModalConfirm: FC<IProps> = ({ open, setOpen, subject }) => {
   const queryClient = useQueryClient()
 
-  const onSuccessUpdateSubject = () => {
-    mutateSendNotification(subject.id)
-  }
-
   const onSuccessSendNotification = () => {
     queryClient.invalidateQueries({ queryKey: ['getSubjectNextMostRecent'] })
     queryClient.invalidateQueries({
@@ -32,15 +28,26 @@ const ModalConfirm: FC<IProps> = ({ open, setOpen, subject }) => {
   }
 
   const { mutate: mutateUpdateSubject, isPending: isPendingUpdate } =
-    useUpdateSubject(onSuccessUpdateSubject)
+    useUpdateSubject()
   const { mutate: mutateSendNotification, isPending: isPendingSend } =
     useSubjectSendNotification(onSuccessSendNotification)
 
   const onSubmit = () => {
-    mutateUpdateSubject({
-      subjectId: subject.id,
-      data: open.item,
-    })
+    const { extra_emails, ...rest } = open.item
+    mutateUpdateSubject(
+      {
+        subjectId: subject.id,
+        data: rest,
+      },
+      {
+        onSuccess: () => {
+          mutateSendNotification({
+            subjectId: subject.id,
+            extra_emails,
+          })
+        },
+      }
+    )
   }
   const handleCancel = () => {
     setOpen({ active: false, item: undefined })

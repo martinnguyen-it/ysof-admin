@@ -13,6 +13,7 @@ export interface ISubjectInResponse {
   abstract?: string
   zoom?: IZoomInfo
   documents_url?: string[]
+  extra_emails?: string[]
   id: string
   lecturer: ILecturerInResponse
   season: number
@@ -34,6 +35,7 @@ export interface ICreateSubject {
   question_url?: string
   zoom?: IZoomInfo
   documents_url?: string[]
+  extra_emails?: string[]
   lecturer: string
   abstract?: string
 }

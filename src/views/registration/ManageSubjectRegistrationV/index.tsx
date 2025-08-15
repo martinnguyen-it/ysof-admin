@@ -162,7 +162,7 @@ ký nào của học viên.`)
               </Button>
             </div>
           </div>
-          <div className='my-4 rounded-xl bg-white'>
+          <div className='my-4 rounded-xl bg-white p-4'>
             <div className='text-center text-lg font-medium'>
               Danh sách chủ đề
             </div>
