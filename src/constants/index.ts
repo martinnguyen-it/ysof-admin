@@ -27,6 +27,9 @@ export const API_LIST = {
   auth: {
     login: '/api/v1/admin/auth/login',
     changePassword: '/api/v1/admin/auth/change-password',
+    forgotPassword: '/api/v1/admin/auth/forgot-password',
+    verifyOTP: '/api/v1/admin/auth/verify-otp',
+    resetPassword: '/api/v1/admin/auth/reset-password',
   },
   me: '/api/v1/admins/me',
   admin: '/api/v1/admins',

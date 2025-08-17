@@ -24,7 +24,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     setInfoUser(data.user)
   }
 
-  const { mutate } = useLogin(onSuccess)
+  const { mutate, isPending } = useLogin(onSuccess)
 
   const onSubmit = async (val: ILoginRequest) => {
     mutate(val)
@@ -72,13 +72,19 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           <Input.Password
             prefix={<LockOutlined />}
             type='password'
-            placeholder='Password'
+            placeholder='Mật khẩu'
           />
         </Form.Item>
         <Form.Item className='text-right'>
-          <Link to='/forgot-password'>Bạn quên mật khẩu?</Link>
+          <Link to='/quen-mat-khau'>Bạn quên mật khẩu?</Link>
         </Form.Item>
-        <Button htmlType='submit' className='w-full' type='primary'>
+        <Button
+          disabled={isPending}
+          loading={isPending}
+          htmlType='submit'
+          className='w-full'
+          type='primary'
+        >
           Đăng nhập
         </Button>
       </Form>

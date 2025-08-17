@@ -7,7 +7,14 @@ import tailwindcss from 'eslint-plugin-tailwindcss'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['dist', 'src/components/ui', 'pnpm-lock.yaml'] },
+  {
+    ignores: [
+      'dist',
+      'src/components/ui',
+      'pnpm-lock.yaml',
+      'src/routeTree.gen.ts',
+    ],
+  },
   {
     extends: [
       js.configs.recommended,

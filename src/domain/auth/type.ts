@@ -13,3 +13,21 @@ export interface ILoginResponse {
   access_token: string
   user: IAdminInResponse
 }
+
+export interface IForgotPassword {
+  email: string
+}
+
+export interface IVerifyOTP {
+  email: string
+  otp: string
+}
+
+export interface IResetPasswordRequest {
+  token: string
+  new_password: string
+}
+
+export interface IVerifyOTPResponse {
+  reset_token: string
+}

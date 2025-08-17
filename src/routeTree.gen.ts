@@ -14,7 +14,6 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated/route'
-import { Route as auth500Import } from './routes/(auth)/500'
 import { Route as AuthenticatedLuongGiaKetQuaImport } from './routes/_authenticated/luong-gia/ket-qua'
 
 // Create Virtual Routes
@@ -50,9 +49,7 @@ const errors500LazyImport = createFileRoute('/(errors)/500')()
 const errors404LazyImport = createFileRoute('/(errors)/404')()
 const errors403LazyImport = createFileRoute('/(errors)/403')()
 const errors401LazyImport = createFileRoute('/(errors)/401')()
-const authForgotPasswordLazyImport = createFileRoute(
-  '/(auth)/forgot-password',
-)()
+const authQuenMatKhauLazyImport = createFileRoute('/(auth)/quen-mat-khau')()
 const authDangNhapLazyImport = createFileRoute('/(auth)/dang-nhap')()
 const AuthenticatedLuongGiaQuanLyFormLazyImport = createFileRoute(
   '/_authenticated/luong-gia/quan-ly-form',
@@ -214,15 +211,13 @@ const errors401LazyRoute = errors401LazyImport
   } as any)
   .lazy(() => import('./routes/(errors)/401.lazy').then((d) => d.Route))
 
-const authForgotPasswordLazyRoute = authForgotPasswordLazyImport
+const authQuenMatKhauLazyRoute = authQuenMatKhauLazyImport
   .update({
-    id: '/(auth)/forgot-password',
-    path: '/forgot-password',
+    id: '/(auth)/quen-mat-khau',
+    path: '/quen-mat-khau',
     getParentRoute: () => rootRoute,
   } as any)
-  .lazy(() =>
-    import('./routes/(auth)/forgot-password.lazy').then((d) => d.Route),
-  )
+  .lazy(() => import('./routes/(auth)/quen-mat-khau.lazy').then((d) => d.Route))
 
 const authDangNhapLazyRoute = authDangNhapLazyImport
   .update({
@@ -231,12 +226,6 @@ const authDangNhapLazyRoute = authDangNhapLazyImport
     getParentRoute: () => rootRoute,
   } as any)
   .lazy(() => import('./routes/(auth)/dang-nhap.lazy').then((d) => d.Route))
-
-const auth500Route = auth500Import.update({
-  id: '/(auth)/500',
-  path: '/500',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const AuthenticatedLuongGiaQuanLyFormLazyRoute =
   AuthenticatedLuongGiaQuanLyFormLazyImport.update({
@@ -333,13 +322,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRoute
     }
-    '/(auth)/500': {
-      id: '/(auth)/500'
-      path: '/500'
-      fullPath: '/500'
-      preLoaderRoute: typeof auth500Import
-      parentRoute: typeof rootRoute
-    }
     '/(auth)/dang-nhap': {
       id: '/(auth)/dang-nhap'
       path: '/dang-nhap'
@@ -347,11 +329,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authDangNhapLazyImport
       parentRoute: typeof rootRoute
     }
-    '/(auth)/forgot-password': {
-      id: '/(auth)/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof authForgotPasswordLazyImport
+    '/(auth)/quen-mat-khau': {
+      id: '/(auth)/quen-mat-khau'
+      path: '/quen-mat-khau'
+      fullPath: '/quen-mat-khau'
+      preLoaderRoute: typeof authQuenMatKhauLazyImport
       parentRoute: typeof rootRoute
     }
     '/(errors)/401': {
@@ -572,12 +554,12 @@ const AuthenticatedRouteRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof AuthenticatedRouteRouteWithChildren
-  '/500': typeof errors500LazyRoute
   '/dang-nhap': typeof authDangNhapLazyRoute
-  '/forgot-password': typeof authForgotPasswordLazyRoute
+  '/quen-mat-khau': typeof authQuenMatKhauLazyRoute
   '/401': typeof errors401LazyRoute
   '/403': typeof errors403LazyRoute
   '/404': typeof errors404LazyRoute
+  '/500': typeof errors500LazyRoute
   '/503': typeof errors503LazyRoute
   '/ban-to-chuc': typeof AuthenticatedBanToChucLazyRoute
   '/cong-viec-chung': typeof AuthenticatedCongViecChungLazyRoute
@@ -600,12 +582,12 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
-  '/500': typeof errors500LazyRoute
   '/dang-nhap': typeof authDangNhapLazyRoute
-  '/forgot-password': typeof authForgotPasswordLazyRoute
+  '/quen-mat-khau': typeof authQuenMatKhauLazyRoute
   '/401': typeof errors401LazyRoute
   '/403': typeof errors403LazyRoute
   '/404': typeof errors404LazyRoute
+  '/500': typeof errors500LazyRoute
   '/503': typeof errors503LazyRoute
   '/ban-to-chuc': typeof AuthenticatedBanToChucLazyRoute
   '/cong-viec-chung': typeof AuthenticatedCongViecChungLazyRoute
@@ -630,9 +612,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/(auth)/500': typeof auth500Route
   '/(auth)/dang-nhap': typeof authDangNhapLazyRoute
-  '/(auth)/forgot-password': typeof authForgotPasswordLazyRoute
+  '/(auth)/quen-mat-khau': typeof authQuenMatKhauLazyRoute
   '/(errors)/401': typeof errors401LazyRoute
   '/(errors)/403': typeof errors403LazyRoute
   '/(errors)/404': typeof errors404LazyRoute
@@ -662,12 +643,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/500'
     | '/dang-nhap'
-    | '/forgot-password'
+    | '/quen-mat-khau'
     | '/401'
     | '/403'
     | '/404'
+    | '/500'
     | '/503'
     | '/ban-to-chuc'
     | '/cong-viec-chung'
@@ -689,12 +670,12 @@ export interface FileRouteTypes {
     | '/luong-gia/quan-ly-form'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/500'
     | '/dang-nhap'
-    | '/forgot-password'
+    | '/quen-mat-khau'
     | '/401'
     | '/403'
     | '/404'
+    | '/500'
     | '/503'
     | '/ban-to-chuc'
     | '/cong-viec-chung'
@@ -717,9 +698,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
-    | '/(auth)/500'
     | '/(auth)/dang-nhap'
-    | '/(auth)/forgot-password'
+    | '/(auth)/quen-mat-khau'
     | '/(errors)/401'
     | '/(errors)/403'
     | '/(errors)/404'
@@ -748,9 +728,8 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  auth500Route: typeof auth500Route
   authDangNhapLazyRoute: typeof authDangNhapLazyRoute
-  authForgotPasswordLazyRoute: typeof authForgotPasswordLazyRoute
+  authQuenMatKhauLazyRoute: typeof authQuenMatKhauLazyRoute
   errors401LazyRoute: typeof errors401LazyRoute
   errors403LazyRoute: typeof errors403LazyRoute
   errors404LazyRoute: typeof errors404LazyRoute
@@ -760,9 +739,8 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  auth500Route: auth500Route,
   authDangNhapLazyRoute: authDangNhapLazyRoute,
-  authForgotPasswordLazyRoute: authForgotPasswordLazyRoute,
+  authQuenMatKhauLazyRoute: authQuenMatKhauLazyRoute,
   errors401LazyRoute: errors401LazyRoute,
   errors403LazyRoute: errors403LazyRoute,
   errors404LazyRoute: errors404LazyRoute,
@@ -781,9 +759,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_authenticated",
-        "/(auth)/500",
         "/(auth)/dang-nhap",
-        "/(auth)/forgot-password",
+        "/(auth)/quen-mat-khau",
         "/(errors)/401",
         "/(errors)/403",
         "/(errors)/404",
@@ -814,14 +791,11 @@ export const routeTree = rootRoute
         "/_authenticated/luong-gia/quan-ly-form"
       ]
     },
-    "/(auth)/500": {
-      "filePath": "(auth)/500.tsx"
-    },
     "/(auth)/dang-nhap": {
       "filePath": "(auth)/dang-nhap.lazy.tsx"
     },
-    "/(auth)/forgot-password": {
-      "filePath": "(auth)/forgot-password.lazy.tsx"
+    "/(auth)/quen-mat-khau": {
+      "filePath": "(auth)/quen-mat-khau.lazy.tsx"
     },
     "/(errors)/401": {
       "filePath": "(errors)/401.lazy.tsx"

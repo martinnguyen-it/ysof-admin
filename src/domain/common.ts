@@ -44,3 +44,7 @@ export enum EAccountStatus {
   INACTIVE = 'inactive',
   DELETED = 'deleted',
 }
+
+export interface IBaseResponse {
+  message: string
+}

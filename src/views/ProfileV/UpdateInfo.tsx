@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useUpdateMe } from '@/apis/admin/useMutationAdmin'
 import { userInfoState } from '@/atom/authAtom'
-import { IAdminInResponse } from '@/domain/admin/type'
+import { OPTIONS_ROLE } from '@/constants'
+import { EAdminRole, IAdminInResponse } from '@/domain/admin/type'
 import { Button, DatePicker, DatePickerProps, Form, Input, Select } from 'antd'
 import dayjs from 'dayjs'
 import { toast } from 'react-toastify'
@@ -103,7 +104,14 @@ const UpdateInfo = () => {
             },
           ]}
         >
-          <Select disabled mode='multiple' placeholder='Chọn ban' />
+          <Select
+            disabled
+            mode='multiple'
+            placeholder='Chọn ban'
+            options={OPTIONS_ROLE.filter(
+              (item) => item.value != EAdminRole.ADMIN
+            )}
+          />
         </Form.Item>
         <Form.Item name='phone_number' label='Số điện thoại'>
           <Select
