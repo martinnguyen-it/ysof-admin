@@ -45,7 +45,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp email',
+              message: 'Vui lòng nhập email',
             },
             {
               type: 'email',
@@ -61,7 +61,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp email',
+              message: 'Vui lòng nhập mật khẩu',
             },
             {
               min: 8,

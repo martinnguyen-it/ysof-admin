@@ -218,7 +218,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp tiêu đề',
+              message: 'Vui lòng nhập tiêu đề',
             },
           ]}
         >

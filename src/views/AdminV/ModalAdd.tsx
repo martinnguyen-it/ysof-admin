@@ -100,7 +100,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp tên thánh',
+              message: 'Vui lòng nhập tên thánh',
             },
           ]}
         >
@@ -124,7 +124,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp email',
+              message: 'Vui lòng nhập email',
             },
             {
               type: 'email',
@@ -168,15 +168,18 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
         <Form.Item name={['address', 'diocese']} label='Giáo phận'>
           <Input />
         </Form.Item>
+        <Form.Item name='facebook' label='Facebook'>
+          <Input />
+        </Form.Item>
+        <Form.Item name='patronal_day' label='Ngày bổn mạng'>
+          <Input />
+        </Form.Item>
         <Form.Item name='date_of_birth_temp' label='Ngày sinh'>
           <DatePicker
             format={'DD/MM/YYYY'}
             placeholder='DD/MM/YYYY'
             onChange={onChangeDateOfBirth}
           />
-        </Form.Item>
-        <Form.Item name='facebook' label='Facebook'>
-          <Input />
         </Form.Item>
       </Form>
     </Modal>

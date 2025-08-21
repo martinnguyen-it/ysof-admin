@@ -224,7 +224,7 @@ const GeneralTaskV: FC = () => {
           <Avatar.Group className='flex items-center'>
             <img
               referrerPolicy='no-referrer'
-              className='mr-4 size-7 object-cover'
+              className='mr-4 size-7 rounded-full object-cover'
               src={record.author.avatar || '/images/avatar.png'}
             ></img>
             <Tooltip placement='bottom' title='Nhấn vào đây để xem file'>

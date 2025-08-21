@@ -16,6 +16,7 @@ export interface IAdminInResponse {
   phone_number?: string[]
   address?: IAddressAdmin
   date_of_birth?: string
+  patronal_day?: string
   facebook?: string
   latest_season: number
   seasons: number[]
@@ -43,6 +44,7 @@ export interface ICreateAdmin {
   address?: IAddressAdmin
   date_of_birth?: string
   facebook?: string
+  patronal_day?: string
 }
 
 export interface IUpdateAdmin extends Partial<ICreateAdmin> {

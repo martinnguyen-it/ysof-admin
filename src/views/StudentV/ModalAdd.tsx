@@ -101,7 +101,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp MSHV',
+              message: 'Vui lòng nhập MSHV',
             },
           ]}
         >
@@ -113,7 +113,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp nhóm',
+              message: 'Vui lòng nhập nhóm',
             },
           ]}
         >

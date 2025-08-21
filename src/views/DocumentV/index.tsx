@@ -192,7 +192,7 @@ const DocumentV: FC = () => {
         return (
           <Avatar.Group className='flex items-center'>
             <img
-              className='mr-4 size-7 object-cover'
+              className='mr-4 size-7 rounded-full object-cover'
               referrerPolicy='no-referrer'
               src={record.author.avatar || '/images/avatar.png'}
             />

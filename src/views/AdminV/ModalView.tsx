@@ -1,13 +1,11 @@
 import { Dispatch, FC } from 'react'
+import { EAdminRoleDetail, IAdminInResponse } from '@/domain/admin/type'
 import { IOpenFormWithMode } from '@/domain/common'
-import { ILecturerInResponse } from '@/domain/lecturer'
-import { Avatar, Card, Divider, Modal } from 'antd'
+import { Divider, Modal } from 'antd'
 
 interface IProps {
-  open: IOpenFormWithMode<ILecturerInResponse>
-  setOpen: Dispatch<
-    React.SetStateAction<IOpenFormWithMode<ILecturerInResponse>>
-  >
+  open: IOpenFormWithMode<IAdminInResponse>
+  setOpen: Dispatch<React.SetStateAction<IOpenFormWithMode<IAdminInResponse>>>
 }
 
 const ModalView: FC<IProps> = ({ open, setOpen }) => {
@@ -25,48 +23,128 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
           okButtonProps={{ style: { display: 'none' } }}
           cancelText='Đóng'
           okText={false}
+          width={800}
         >
           <Divider />
-          <div className='flex flex-col gap-4 text-base'>
-            <Card>
+          <div className='flex flex-col text-base'>
+            <div className='group relative mx-auto h-32 w-32 overflow-hidden rounded-full border'>
+              <img
+                src={open.item?.avatar || '/images/avatar.png'}
+                referrerPolicy='no-referrer'
+                alt='Avatar'
+                className='h-32 w-32 object-cover'
+              />
+            </div>
+            <div className='mt-4 grid gap-4 md:grid-cols-2'>
               <div className='flex items-center'>
-                <p className='mr-2 inline-block text-base font-medium'>
+                <span className='mr-2 inline-block text-base font-medium'>
                   Họ tên:
-                </p>
-                <p>
-                  <Avatar.Group className='flex items-center'>
-                    {open.item?.avatar && (
-                      <img
-                        className='mr-4 size-7 object-cover'
-                        referrerPolicy='no-referrer'
-                        src={open.item.avatar}
-                      ></img>
-                    )}
-                    <p className='text-wrap font-medium text-blue-500'>
-                      {open.item?.title ? open.item.title + ' ' : ''}
-                      {open.item?.holy_name ? open.item.holy_name + ' ' : ''}
-                      {open.item.full_name}
-                    </p>
-                  </Avatar.Group>
-                </p>
+                </span>
+                <span className='text-wrap font-medium text-blue-500'>
+                  {open.item?.holy_name ? open.item.holy_name + ' ' : ''}
+                  {open.item.full_name}
+                </span>
               </div>
-            </Card>
-            {open.item?.information && (
-              <Card>
-                <p className='mr-2 text-base font-medium'>Thông tin cơ bản:</p>
-                <div style={{ whiteSpace: 'pre-line' }}>
-                  {open.item.information}
+
+              {open.item?.address && (
+                <div className='flex items-center'>
+                  <span className='mr-2 inline-block text-base font-medium'>
+                    Quê quán:
+                  </span>
+                  <span style={{ whiteSpace: 'pre-line' }}>
+                    {open.item.address.original}
+                  </span>
                 </div>
-              </Card>
-            )}
-            {open.item?.contact && (
-              <Card>
-                <p className='mr-2 text-base font-medium'>Thông tin liên hệ:</p>
-                <div style={{ whiteSpace: 'pre-line' }}>
-                  {open.item.contact}
+              )}
+              {open.item?.address && (
+                <div className='flex items-center'>
+                  <span className='mr-2 inline-block text-base font-medium'>
+                    Nơi ở hiện tại:
+                  </span>
+                  <span style={{ whiteSpace: 'pre-line' }}>
+                    {open.item.address.current}
+                  </span>
                 </div>
-              </Card>
-            )}
+              )}
+              {open.item?.address && (
+                <div className='flex items-center'>
+                  <span className='mr-2 inline-block text-base font-medium'>
+                    Giáo phận:
+                  </span>
+                  <span style={{ whiteSpace: 'pre-line' }}>
+                    {open.item.address.diocese}
+                  </span>
+                </div>
+              )}
+
+              {open.item?.patronal_day && (
+                <div className='flex items-center'>
+                  <span className='mr-2 inline-block text-base font-medium'>
+                    Ngày bổn mạng:
+                  </span>
+                  <span style={{ whiteSpace: 'pre-line' }}>
+                    {open.item.patronal_day}
+                  </span>
+                </div>
+              )}
+              {open.item?.date_of_birth && (
+                <div className='flex items-center'>
+                  <span className='mr-2 inline-block text-base font-medium'>
+                    Ngày sinh:
+                  </span>
+                  <span style={{ whiteSpace: 'pre-line' }}>
+                    {open.item.date_of_birth}
+                  </span>
+                </div>
+              )}
+              {open.item?.phone_number && (
+                <div className='flex items-center'>
+                  <span className='mr-2 inline-block text-base font-medium'>
+                    Số điện thoại:
+                  </span>
+                  <span style={{ whiteSpace: 'pre-line' }}>
+                    {open.item.phone_number.join(', ')}
+                  </span>
+                </div>
+              )}
+              {open.item?.email && (
+                <div className='flex items-center'>
+                  <span className='mr-2 inline-block text-base font-medium'>
+                    Email:
+                  </span>
+                  <span style={{ whiteSpace: 'pre-line' }}>
+                    {open.item.email}
+                  </span>
+                </div>
+              )}
+              {open.item?.roles && (
+                <div className='flex items-center'>
+                  <span className='mr-2 inline-block text-base font-medium'>
+                    Ban:
+                  </span>
+                  <span style={{ whiteSpace: 'pre-line' }}>
+                    {open.item.roles
+                      .map((role) => EAdminRoleDetail[role])
+                      .join(', ')}
+                  </span>
+                </div>
+              )}
+              {open.item?.facebook && (
+                <div className='flex items-center'>
+                  <span className='mr-2 inline-block text-base font-medium'>
+                    Facebook:
+                  </span>
+                  <a
+                    href={open.item.facebook}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-blue-500'
+                  >
+                    {open.item.facebook}
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         </Modal>
       )}

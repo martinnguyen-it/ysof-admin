@@ -38,7 +38,7 @@ export function ForgotForm({ setEmail }: IProps) {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp email',
+              message: 'Vui lòng nhập email',
             },
             {
               type: 'email',

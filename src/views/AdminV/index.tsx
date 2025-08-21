@@ -18,6 +18,7 @@ import { useRecoilValue } from 'recoil'
 import { isSuperAdmin } from '@/lib/utils'
 import { PAGE_SIZE_OPTIONS_DEFAULT } from '@/constants/index'
 import ModalAdd from './ModalAdd'
+import ModalView from './ModalView'
 
 // import ModalAdd from './ModalAdd'
 // import ModalView from './ModalView'
@@ -96,7 +97,7 @@ const AdminV: FC = () => {
       render: (_, record: IAdminInResponse) => (
         <Avatar.Group className='flex items-center'>
           <img
-            className='mr-4 size-7 object-cover'
+            className='mr-4 size-7 rounded-full object-cover'
             referrerPolicy='no-referrer'
             src={record.avatar || '/images/avatar.png'}
           />
@@ -123,6 +124,12 @@ const AdminV: FC = () => {
       key: 'date_of_birth',
       sorter: true,
       render: (text) => <>{text ? dayjs(text).format('DD-MM-YYYY') : ''}</>,
+    },
+    {
+      title: 'Ngày bổn mạng',
+      dataIndex: 'patronal_day',
+      key: 'patronal_day',
+      sorter: true,
     },
     {
       title: 'Giáo phận',
@@ -293,7 +300,9 @@ const AdminV: FC = () => {
       {openForm.active && openForm.mode !== 'view' && (
         <ModalAdd open={openForm} setOpen={setOpenForm} />
       )}
-      {/* {openForm.active && openForm.mode === 'view' && <ModalView open={openForm} setOpen={setOpenForm} />} */}
+      {openForm.active && openForm.mode === 'view' && (
+        <ModalView open={openForm} setOpen={setOpenForm} />
+      )}
       {/* {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} setReloadData={setReloadData} />} */}
     </>
   )

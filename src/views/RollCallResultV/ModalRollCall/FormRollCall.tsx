@@ -70,7 +70,7 @@ const FormRollCall: FC<IProps> = ({ form }) => {
             {
               required: true,
               type: 'url',
-              message: 'Vui lòng nhâp link',
+              message: 'Vui lòng nhập link',
             },
           ]}
         >
@@ -82,7 +82,7 @@ const FormRollCall: FC<IProps> = ({ form }) => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp tên sheet',
+              message: 'Vui lòng nhập tên sheet',
             },
           ]}
         >

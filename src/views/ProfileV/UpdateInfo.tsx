@@ -60,7 +60,7 @@ const UpdateInfo = () => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp tên thánh',
+              message: 'Vui lòng nhập tên thánh',
             },
           ]}
         >
@@ -84,7 +84,7 @@ const UpdateInfo = () => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp email',
+              message: 'Vui lòng nhập email',
             },
             {
               type: 'email',
@@ -131,6 +131,9 @@ const UpdateInfo = () => {
           <Input />
         </Form.Item>
         <Form.Item name='facebook' label='Facebook'>
+          <Input />
+        </Form.Item>
+        <Form.Item name='patronal_day' label='Ngày bổn mạng'>
           <Input />
         </Form.Item>
         <Form.Item name='date_of_birth_temp' label='Ngày sinh'>

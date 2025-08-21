@@ -38,7 +38,7 @@ export function VerifyCodeResetForm({ email, setToken }: IProps) {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp email',
+              message: 'Vui lòng nhập email',
             },
             {
               type: 'email',
@@ -58,7 +58,7 @@ export function VerifyCodeResetForm({ email, setToken }: IProps) {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp mã OTP',
+              message: 'Vui lòng nhập mã OTP',
             },
             {
               min: 6,

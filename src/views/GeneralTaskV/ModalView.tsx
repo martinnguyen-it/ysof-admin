@@ -99,7 +99,7 @@ const ModalView: FC<IProps> = ({ open, setOpen, onClose, data }) => {
                 <p>
                   <Avatar.Group className='flex items-center'>
                     <img
-                      className='mr-4 size-7 object-cover'
+                      className='mr-4 size-7 rounded-full object-cover'
                       referrerPolicy='no-referrer'
                       src={taskData.author.avatar || '/images/avatar.png'}
                     ></img>

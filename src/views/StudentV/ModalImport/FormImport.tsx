@@ -1,5 +1,5 @@
-import { Divider, Form, FormInstance, Input } from 'antd'
 import { FC } from 'react'
+import { Divider, Form, FormInstance, Input } from 'antd'
 
 interface IProps {
   form: FormInstance
@@ -11,7 +11,12 @@ const FormImport: FC<IProps> = ({ form }) => {
       <div className='mt-4 flex flex-col gap-1'>
         <div>
           <span className='mr-2 font-medium'>B1:</span>
-          <a className='text-blue-500' href='https://docs.google.com/spreadsheets/d/1T3Z1nMr_gW2KcjU4AG-IGwZYRLMbvpSFqHOiRHLAgDs/edit?usp=sharing' target='_blank' rel='noreferrer'>
+          <a
+            className='text-blue-500'
+            href='https://docs.google.com/spreadsheets/d/1T3Z1nMr_gW2KcjU4AG-IGwZYRLMbvpSFqHOiRHLAgDs/edit?usp=sharing'
+            target='_blank'
+            rel='noreferrer'
+          >
             Truy cập vào đây để lấy mẫu
           </a>
         </div>
@@ -33,7 +38,8 @@ const FormImport: FC<IProps> = ({ form }) => {
         </div>
         <div className='italic'>
           <span className='mr-2 font-medium'>Lưu ý:</span>
-          Mỗi học viên import thành công sẽ nhận được một email thông báo tài khoản đăng nhập.
+          Mỗi học viên import thành công sẽ nhận được một email thông báo tài
+          khoản đăng nhập.
         </div>
       </div>
       <Divider />
@@ -45,7 +51,7 @@ const FormImport: FC<IProps> = ({ form }) => {
             {
               required: true,
               type: 'url',
-              message: 'Vui lòng nhâp link',
+              message: 'Vui lòng nhập link',
             },
           ]}
         >
@@ -57,7 +63,7 @@ const FormImport: FC<IProps> = ({ form }) => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp tên sheet',
+              message: 'Vui lòng nhập tên sheet',
             },
           ]}
         >

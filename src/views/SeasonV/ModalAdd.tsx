@@ -79,7 +79,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp tên chủ đề',
+              message: 'Vui lòng nhập tên chủ đề',
             },
           ]}
         >
@@ -91,7 +91,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp mùa',
+              message: 'Vui lòng nhập mùa',
             },
           ]}
         >
@@ -103,7 +103,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhâp năm học',
+              message: 'Vui lòng nhập năm học',
             },
           ]}
         >

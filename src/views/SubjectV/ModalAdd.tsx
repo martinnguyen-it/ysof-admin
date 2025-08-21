@@ -111,7 +111,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
             label: (
               <span className='flex items-center'>
                 <img
-                  className='mr-1 size-4 object-cover'
+                  className='mr-1 size-4 rounded-full object-cover'
                   referrerPolicy='no-referrer'
                   src={item?.avatar || '/images/avatar.png'}
                 ></img>
@@ -181,7 +181,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng nhâp mã chủ đề',
+                  message: 'Vui lòng nhập mã chủ đề',
                 },
               ]}
             >
@@ -193,7 +193,7 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng nhâp tên chủ đề',
+                  message: 'Vui lòng nhập tên chủ đề',
                 },
               ]}
             >
