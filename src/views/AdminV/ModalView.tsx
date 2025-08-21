@@ -27,12 +27,12 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
         >
           <Divider />
           <div className='flex flex-col text-base'>
-            <div className='group relative mx-auto h-32 w-32 overflow-hidden rounded-full border'>
+            <div className='group relative mx-auto h-52 w-52 overflow-hidden rounded-full border'>
               <img
                 src={open.item?.avatar || '/images/avatar.png'}
                 referrerPolicy='no-referrer'
                 alt='Avatar'
-                className='h-32 w-32 object-cover'
+                className='h-52 w-52 object-cover'
               />
             </div>
             <div className='mt-4 grid gap-4 md:grid-cols-2'>
@@ -45,8 +45,19 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                   {open.item.full_name}
                 </span>
               </div>
-
-              {open.item?.address && (
+              {open.item?.roles && (
+                <div className='flex items-center'>
+                  <span className='mr-2 inline-block text-base font-medium'>
+                    Ban:
+                  </span>
+                  <span style={{ whiteSpace: 'pre-line' }}>
+                    {open.item.roles
+                      .map((role) => EAdminRoleDetail[role])
+                      .join(', ')}
+                  </span>
+                </div>
+              )}
+              {open.item?.address?.original && (
                 <div className='flex items-center'>
                   <span className='mr-2 inline-block text-base font-medium'>
                     Quê quán:
@@ -56,7 +67,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                   </span>
                 </div>
               )}
-              {open.item?.address && (
+              {open.item?.address?.current && (
                 <div className='flex items-center'>
                   <span className='mr-2 inline-block text-base font-medium'>
                     Nơi ở hiện tại:
@@ -66,7 +77,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                   </span>
                 </div>
               )}
-              {open.item?.address && (
+              {open.item?.address?.diocese && (
                 <div className='flex items-center'>
                   <span className='mr-2 inline-block text-base font-medium'>
                     Giáo phận:
@@ -117,18 +128,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                   </span>
                 </div>
               )}
-              {open.item?.roles && (
-                <div className='flex items-center'>
-                  <span className='mr-2 inline-block text-base font-medium'>
-                    Ban:
-                  </span>
-                  <span style={{ whiteSpace: 'pre-line' }}>
-                    {open.item.roles
-                      .map((role) => EAdminRoleDetail[role])
-                      .join(', ')}
-                  </span>
-                </div>
-              )}
+
               {open.item?.facebook && (
                 <div className='flex items-center'>
                   <span className='mr-2 inline-block text-base font-medium'>

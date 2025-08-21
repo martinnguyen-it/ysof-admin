@@ -36,7 +36,9 @@ export const getCroppedImg = (
 // Function to compress image
 export const compressImage = (
   imageBlob: Blob,
-  maxSize: number
+  maxSize: number,
+  quality: number = 0.9,
+  minQuality: number = 0.4
 ): Promise<Blob> => {
   return new Promise((resolve) => {
     const reader = new FileReader()
@@ -50,7 +52,7 @@ export const compressImage = (
 
         if (!ctx) return
 
-        const maxWidth = 300
+        const maxWidth = 800
         const scaleFactor = maxWidth / img.width
         canvas.width = maxWidth
         canvas.height = img.height * scaleFactor
@@ -59,20 +61,30 @@ export const compressImage = (
 
         canvas.toBlob(
           (blob) => {
-            if (blob && blob.size <= maxSize) {
-              resolve(blob)
-            } else {
-              canvas.toBlob(
-                (compressedBlob) => {
-                  resolve(compressedBlob!)
-                },
-                'image/jpeg',
-                0.7
-              )
+            if (!blob) {
+              resolve(imageBlob)
+              return
             }
+
+            if (blob.size <= maxSize) {
+              resolve(blob)
+              return
+            }
+
+            if (quality <= minQuality) {
+              resolve(blob)
+              return
+            }
+
+            compressImage(
+              imageBlob,
+              maxSize,
+              Math.max(minQuality, quality - 0.1),
+              minQuality
+            ).then(resolve)
           },
           'image/jpeg',
-          0.8
+          quality
         )
       }
     }

@@ -94,6 +94,7 @@ const AdminV: FC = () => {
       dataIndex: 'full_name',
       key: 'full_name',
       sorter: true,
+      width: 200,
       render: (_, record: IAdminInResponse) => (
         <Avatar.Group className='flex items-center'>
           <img
