@@ -163,7 +163,11 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           <Select placeholder='Chọn giới tính' options={OPTION_SEX} />
         </Form.Item>
         <Form.Item name='date_of_birth_temp' label='Ngày sinh'>
-          <DatePicker format={'DD/MM/YYYY'} onChange={onChangeDateOfBirth} />
+          <DatePicker
+            placeholder='DD/MM/YYYY'
+            format={'DD/MM/YYYY'}
+            onChange={onChangeDateOfBirth}
+          />
         </Form.Item>
         <Form.Item name='origin_address' label='Quê quán'>
           <Input placeholder='Nhập quê quán' />

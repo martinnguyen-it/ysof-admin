@@ -224,7 +224,11 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
                 },
               ]}
             >
-              <DatePicker format={'DD/MM/YYYY'} onChange={onChangeStartAt} />
+              <DatePicker
+                placeholder='DD/MM/YYYY'
+                format={'DD/MM/YYYY'}
+                onChange={onChangeStartAt}
+              />
             </Form.Item>
             <Form.Item
               name='lecturer'

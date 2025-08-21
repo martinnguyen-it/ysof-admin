@@ -17,7 +17,7 @@ export const isSuperAdmin = (requiredActive?: boolean) => {
   if (userInfo) {
     if (userInfo.roles.includes(EAdminRole.ADMIN)) return true
     if (userInfo.roles.includes(EAdminRole.BDH)) {
-      if (requiredActive && userInfo.latest_season !== currentSeason.season)
+      if (requiredActive && userInfo.latest_season !== currentSeason?.season)
         return false
       else return true
     }

@@ -144,14 +144,14 @@ const DocumentV: FC = () => {
       render: (text: EAdminRole) => EAdminRoleDetail[text],
     },
     {
-      title: 'Loại tài liệu',
+      title: 'Loại',
       dataIndex: 'type',
       key: 'type',
       sorter: true,
       render: (text: EDocumentType) => EDocumentTypeDetail[text],
     },
     {
-      title: 'Nhãn tài liệu',
+      title: 'Nhãn',
       dataIndex: 'label',
       key: 'label',
       render: (text: string[]) => text.join(', '),

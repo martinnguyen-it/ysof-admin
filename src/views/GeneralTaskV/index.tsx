@@ -1,5 +1,9 @@
 import { FC, MouseEvent, useEffect, useState } from 'react'
-import { useGetListGeneralTasks } from '@/apis/generalTask/useQueryGeneralTask'
+import { useNavigate, useSearch } from '@tanstack/react-router'
+import {
+  useGetListGeneralTasks,
+  useGetGeneralTaskDetail,
+} from '@/apis/generalTask/useQueryGeneralTask'
 import { userInfoState } from '@/atom/authAtom'
 import { currentSeasonState, selectSeasonState } from '@/atom/seasonAtom'
 import { EAdminRole, EAdminRoleDetail } from '@/domain/admin/type'
@@ -40,12 +44,18 @@ import ModalDelete from './ModalDelete'
 import ModalView from './ModalView'
 
 const GeneralTaskV: FC = () => {
+  const navigate = useNavigate()
+  const { taskId } = useSearch({
+    from: '/_authenticated/cong-viec-chung',
+  }) as { taskId?: string }
   const userInfo = useRecoilValue(userInfoState)
   const currentSeason = useRecoilValue(currentSeasonState)
   const [openForm, setOpenForm] = useState<
     IOpenFormWithMode<IGeneralTaskInResponse>
   >({ active: false, mode: 'add' })
   const [openDel, setOpenDel] = useState<IOpenForm<string>>({ active: false })
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<IGeneralTaskInResponse>()
 
   const initPaging = {
     current: 1,
@@ -92,6 +102,11 @@ const GeneralTaskV: FC = () => {
     season,
   })
 
+  // Fetch detail data when taskId is in URL
+  const { data: taskDetail } = useGetGeneralTaskDetail(taskId || '', {
+    enabled: !!taskId,
+  })
+
   useEffect(() => {
     if (data) {
       setPaging({
@@ -100,6 +115,35 @@ const GeneralTaskV: FC = () => {
       })
     }
   }, [data])
+
+  // Handle URL-based modal opening
+  useEffect(() => {
+    if (taskId && taskDetail) {
+      setSelectedTask(taskDetail)
+      setIsViewModalOpen(true)
+    }
+  }, [taskId, taskDetail])
+
+  const handleViewTask = (record: IGeneralTaskInResponse) => {
+    setSelectedTask(record)
+    setIsViewModalOpen(true)
+    // Update URL with task ID
+    navigate({
+      to: '/cong-viec-chung',
+      search: {
+        taskId: record.id,
+      },
+    })
+  }
+
+  const handleCloseViewModal = () => {
+    setIsViewModalOpen(false)
+    setSelectedTask(undefined)
+    // Remove taskId from URL
+    navigate({
+      to: '/cong-viec-chung',
+    })
+  }
 
   const columns: ColumnsType<IGeneralTaskInResponse> = [
     {
@@ -124,14 +168,14 @@ const GeneralTaskV: FC = () => {
       render: (text: EAdminRole) => EAdminRoleDetail[text],
     },
     {
-      title: 'Loại tài liệu',
+      title: 'Loại',
       dataIndex: 'type',
       key: 'type',
       sorter: true,
       render: (text: EGeneralTaskType) => EGeneralTaskTypeDetail[text],
     },
     {
-      title: 'Nhãn tài liệu',
+      title: 'Nhãn',
       dataIndex: 'label',
       key: 'label',
       render: (text: string[]) => text.join(', '),
@@ -364,7 +408,7 @@ const GeneralTaskV: FC = () => {
         onRow={(record) => {
           return {
             onClick: () => {
-              setOpenForm({ active: true, mode: 'view', item: record })
+              handleViewTask(record)
             },
           }
         }}
@@ -385,11 +429,16 @@ const GeneralTaskV: FC = () => {
         showQuickJumper
         showSizeChanger
       />
+      {isViewModalOpen && (
+        <ModalView
+          open={{ active: isViewModalOpen, mode: 'view', item: selectedTask }}
+          setOpen={setOpenForm}
+          onClose={handleCloseViewModal}
+          data={selectedTask}
+        />
+      )}
       {openForm.active && openForm.mode !== 'view' && (
         <ModalAdd open={openForm} setOpen={setOpenForm} />
-      )}
-      {openForm.active && openForm.mode === 'view' && (
-        <ModalView open={openForm} setOpen={setOpenForm} />
       )}
       {openDel.active && <ModalDelete open={openDel} setOpen={setOpenDel} />}
     </>

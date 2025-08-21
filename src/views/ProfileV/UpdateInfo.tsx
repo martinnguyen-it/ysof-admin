@@ -134,7 +134,11 @@ const UpdateInfo = () => {
           <Input />
         </Form.Item>
         <Form.Item name='date_of_birth_temp' label='Ngày sinh'>
-          <DatePicker format={'DD/MM/YYYY'} onChange={onChangeDateOfBirth} />
+          <DatePicker
+            placeholder='DD/MM/YYYY'
+            format={'DD/MM/YYYY'}
+            onChange={onChangeDateOfBirth}
+          />
         </Form.Item>
       </div>
       <div className='flex justify-end'>

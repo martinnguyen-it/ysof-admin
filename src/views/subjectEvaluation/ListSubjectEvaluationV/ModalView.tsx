@@ -1,7 +1,9 @@
 import { FC } from 'react'
 import { ISubjectEvaluationInResponse } from '@/domain/subject/subjectEvaluation'
 import { IEvaluationQuestionItem } from '@/domain/subject/subjectEvaluationQuestion'
-import { Modal } from 'antd'
+import { Modal, Tooltip } from 'antd'
+import { Link2 } from 'lucide-react'
+import { toast } from 'react-toastify'
 import {
   EVALUATION_NAME,
   EVALUATION_QUALITY,
@@ -17,9 +19,48 @@ interface ModalViewProps {
 const ModalView: FC<ModalViewProps> = ({ open, onClose, data, questions }) => {
   if (!data) return null
 
+  const handleCopyLink = async () => {
+    const url = window.location.href
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url)
+      } else {
+        const textArea = document.createElement('textarea')
+        textArea.value = url
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-9999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textArea)
+      }
+      toast.success('Đã sao chép liên kết')
+    } catch (_error) {
+      toast.error('Sao chép liên kết thất bại')
+    }
+  }
+
   return (
     <Modal
-      title='Chi tiết lượng giá'
+      title={
+        <div className='flex items-center gap-2'>
+          <span>Chi tiết lượng giá</span>
+          <Tooltip title='Sao chép liên kết'>
+            <button
+              type='button'
+              aria-label='Sao chép liên kết'
+              className='inline-flex items-center justify-center rounded p-1 hover:bg-slate-100'
+              onClick={(e) => {
+                e.stopPropagation()
+                handleCopyLink()
+              }}
+            >
+              <Link2 className='size-4' />
+            </button>
+          </Tooltip>
+        </div>
+      }
       open={open}
       onCancel={onClose}
       footer={null}

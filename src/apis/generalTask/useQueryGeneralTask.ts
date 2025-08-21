@@ -21,10 +21,14 @@ export const useGetListGeneralTasks = (params?: IParamsGetListGeneralTask) => {
   return query
 }
 
-export const useGetGeneralTaskDetail = (id: string) => {
+export const useGetGeneralTaskDetail = (
+  id: string,
+  options?: { enabled?: boolean }
+) => {
   const query = useQuery<IGeneralTaskInResponse, AxiosError>({
     queryKey: ['getGeneralTaskDetail', id],
     queryFn: () => getGeneralTaskDetail(id),
+    enabled: options?.enabled !== false && !!id,
   })
   useQueryErrorToast(query.isError, query?.error?.message!)
 

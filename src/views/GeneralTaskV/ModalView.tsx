@@ -6,6 +6,8 @@ import { IGeneralTaskInResponse } from '@/domain/generalTask'
 import { Avatar, Card, Divider, Modal, Tooltip } from 'antd'
 import dayjs from 'dayjs'
 import { size } from 'lodash'
+import { Link2 } from 'lucide-react'
+import { toast } from 'react-toastify'
 import { EGeneralTaskTypeDetail } from '@/constants/generalTask'
 
 interface IProps {
@@ -13,18 +15,65 @@ interface IProps {
   setOpen: Dispatch<
     React.SetStateAction<IOpenFormWithMode<IGeneralTaskInResponse>>
   >
+  onClose?: () => void
+  data?: IGeneralTaskInResponse
 }
 
-const ModalView: FC<IProps> = ({ open, setOpen }) => {
+const ModalView: FC<IProps> = ({ open, setOpen, onClose, data }) => {
   const handleCancel = () => {
-    setOpen({ active: false, mode: 'add' })
+    if (onClose) {
+      onClose()
+    } else {
+      setOpen({ active: false, mode: 'add' })
+    }
   }
+
+  const handleCopyLink = async () => {
+    const url = window.location.href
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url)
+      } else {
+        const textArea = document.createElement('textarea')
+        textArea.value = url
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-9999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textArea)
+      }
+      toast.success('Đã sao chép liên kết')
+    } catch (_error) {
+      toast.error('Sao chép liên kết thất bại')
+    }
+  }
+
+  const taskData = data || open.item
 
   return (
     <>
-      {open.item && (
+      {taskData && (
         <Modal
-          title={'Xem'}
+          title={
+            <div className='flex items-center gap-2'>
+              <span>Xem</span>
+              <Tooltip title='Sao chép liên kết'>
+                <button
+                  type='button'
+                  aria-label='Sao chép liên kết'
+                  className='inline-flex items-center justify-center rounded p-1 hover:bg-slate-100'
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleCopyLink()
+                  }}
+                >
+                  <Link2 className='size-4' />
+                </button>
+              </Tooltip>
+            </div>
+          }
           open={open.active}
           onCancel={handleCancel}
           cancelText='Đóng'
@@ -36,11 +85,11 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
           <div className='flex flex-col gap-4 text-base'>
             <Card>
               <span className='mr-2 text-base font-medium'>Tiêu đề:</span>
-              <span>{open.item.title}</span>
+              <span>{taskData.title}</span>
             </Card>
             <Card>
               <span className='mr-2 text-base font-medium'>Quản lý:</span>
-              <span>{EAdminRoleDetail[open.item.role]}</span>
+              <span>{EAdminRoleDetail[taskData.role]}</span>
             </Card>
             <Card>
               <div className='flex items-center'>
@@ -52,10 +101,10 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                     <img
                       className='mr-4 size-7 object-cover'
                       referrerPolicy='no-referrer'
-                      src={open.item.author.avatar || '/images/avatar.png'}
+                      src={taskData.author.avatar || '/images/avatar.png'}
                     ></img>
                     <p className='text-wrap font-medium text-blue-500'>
-                      {open.item.author.full_name}
+                      {taskData.author.full_name}
                     </p>
                   </Avatar.Group>
                 </p>
@@ -65,12 +114,12 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
               <span className='mr-2 text-base font-medium'>
                 Loại công việc:
               </span>
-              <span>{EGeneralTaskTypeDetail[open.item.type]}</span>
+              <span>{EGeneralTaskTypeDetail[taskData.type]}</span>
             </Card>
             <Card>
               <span className='mr-2 text-base font-medium'>Ngày bắt đầu:</span>
-              <span>{dayjs(open.item.start_at).format('DD-MM-YYYY')}</span>
-              {open.item?.end_at && (
+              <span>{dayjs(taskData.start_at).format('DD-MM-YYYY')}</span>
+              {taskData?.end_at && (
                 <>
                   <span className='mx-5 inline-block text-base font-medium'>
                     -
@@ -78,27 +127,27 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
                   <span className='mr-2 text-base font-medium'>
                     Ngày kết thúc:
                   </span>
-                  <span>{dayjs(open.item.end_at).format('DD-MM-YYYY')}</span>
+                  <span>{dayjs(taskData.end_at).format('DD-MM-YYYY')}</span>
                 </>
               )}
             </Card>
-            {size(open.item.label) > 0 && (
+            {size(taskData.label) > 0 && (
               <Card>
                 <span className='mr-2 text-base font-medium'>Nhãn:</span>
-                <span>{open.item.label?.join(', ')}</span>
+                <span>{taskData.label?.join(', ')}</span>
               </Card>
             )}
-            {open.item?.short_desc && (
+            {taskData?.short_desc && (
               <Card>
                 <p className='text-base font-medium'>Mô tả ngắn:</p>
-                <p>{open.item?.short_desc}</p>
+                <p>{taskData?.short_desc}</p>
               </Card>
             )}
-            {open.item?.attachments && size(open.item.attachments) > 0 && (
+            {taskData?.attachments && size(taskData.attachments) > 0 && (
               <Card>
                 <p className='mb-1 text-base font-medium'>Tài liệu đính kèm:</p>
                 <div className='flex flex-wrap gap-2'>
-                  {open.item.attachments.map((item) => (
+                  {taskData.attachments.map((item) => (
                     <Tooltip
                       key={item.id}
                       placement='bottom'
@@ -126,7 +175,7 @@ const ModalView: FC<IProps> = ({ open, setOpen }) => {
             )}
             <Card>
               <p className='text-base font-medium'>Mô tả:</p>
-              <p dangerouslySetInnerHTML={{ __html: open.item.description }} />
+              <p dangerouslySetInnerHTML={{ __html: taskData.description }} />
             </Card>
           </div>
         </Modal>

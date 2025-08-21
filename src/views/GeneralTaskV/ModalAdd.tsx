@@ -284,11 +284,16 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
               },
             ]}
           >
-            <DatePicker format={'DD/MM/YYYY'} onChange={onChangeStartAt} />
+            <DatePicker
+              placeholder='DD/MM/YYYY'
+              format={'DD/MM/YYYY'}
+              onChange={onChangeStartAt}
+            />
           </Form.Item>
           <Form.Item name='date_end_at' label='Ngày kết thúc'>
             <DatePicker
               format={'DD/MM/YYYY'}
+              placeholder='DD/MM/YYYY'
               onChange={onChangeEndAt}
               minDate={startAt ? dayjs(startAt as unknown as Date) : undefined}
             />

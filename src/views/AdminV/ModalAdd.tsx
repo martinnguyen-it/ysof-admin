@@ -169,7 +169,11 @@ const ModalAdd: FC<IProps> = ({ open, setOpen }) => {
           <Input />
         </Form.Item>
         <Form.Item name='date_of_birth_temp' label='Ngày sinh'>
-          <DatePicker format={'DD/MM/YYYY'} onChange={onChangeDateOfBirth} />
+          <DatePicker
+            format={'DD/MM/YYYY'}
+            placeholder='DD/MM/YYYY'
+            onChange={onChangeDateOfBirth}
+          />
         </Form.Item>
         <Form.Item name='facebook' label='Facebook'>
           <Input />

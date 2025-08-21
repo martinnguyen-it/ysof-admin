@@ -36,8 +36,8 @@ const AdminV: FC = () => {
   const [tableQueries, setTableQueries] = useState(initPaging)
   const [paging, setPaging] = useState({ total: 0, current: 1 })
   const [search, setSearch] = useState('')
-  const [sort, setSort] = useState<ESort>()
-  const [sortBy, setSortBy] = useState<string>()
+  const [sort, setSort] = useState<ESort>(ESort.ASCE)
+  const [sortBy, setSortBy] = useState<string>('roles')
 
   useEffect(() => {
     setTableQueries(initPaging)
@@ -113,6 +113,7 @@ const AdminV: FC = () => {
       title: 'Thuộc ban',
       dataIndex: 'roles',
       key: 'roles',
+      sorter: true,
       render: (text: EAdminRole[]) =>
         text.map((item) => EAdminRoleDetail[item]).join(', '),
     },
@@ -225,8 +226,8 @@ const AdminV: FC = () => {
       setSort(sorter.order as ESort)
       setSortBy(field as string)
     } else {
-      setSort(undefined)
-      setSortBy(undefined)
+      setSort(ESort.ASCE)
+      setSortBy('roles')
     }
   }
 
